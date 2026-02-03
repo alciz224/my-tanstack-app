@@ -1,8 +1,23 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 import * as React from 'react'
 import { emitAuthEvent } from '@/auth/authEvents'
+import { safeRedirectPath } from '@/auth/redirects'
+import { getCurrentUserFn } from '@/server/auth'
 
 export const Route = createFileRoute('/login')({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      from: (search.from as string) || undefined,
+    }
+  },
+  beforeLoad: async ({ search }) => {
+    // If already authenticated, redirect away from login page
+    const user = await getCurrentUserFn()
+    if (user) {
+      const destination = safeRedirectPath(search.from, '/dashboard')
+      throw redirect({ to: destination, replace: true })
+    }
+  },
   component: LoginPage,
 })
 
@@ -11,6 +26,8 @@ function LoginPage() {
   const [password, setPassword] = React.useState('')
   const [error, setError] = React.useState<string | null>(null)
   const [loading, setLoading] = React.useState(false)
+  const router = useRouter()
+  const search = Route.useSearch()
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -58,13 +75,14 @@ function LoginPage() {
         throw new Error(errorMessage)
       }
       
-      // Notify other tabs about login (optional: refreshes their auth state)
+      // Notify other tabs about login (they will invalidate and redirect)
       if (typeof window !== 'undefined') {
         emitAuthEvent('login')
       }
       
-      // After successful login, navigate to dashboard.
-      window.location.href = '/dashboard'
+      // Navigate to the safe redirect destination
+      const destination = safeRedirectPath(search.from, '/dashboard')
+      router.navigate({ to: destination, replace: true })
     } catch (err: any) {
       setError(err?.message || 'Login failed')
     } finally {

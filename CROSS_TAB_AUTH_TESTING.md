@@ -1,11 +1,14 @@
-# Cross-Tab Auth Sync - Testing Guide
+# Cross-Tab Auth Sync & Security - Testing Guide
 
 ## What Was Implemented
 
-Cross-tab authentication synchronization allows tabs to communicate auth state changes (login/logout) so that:
-- ✅ Logout in one tab forces other tabs on protected routes to redirect to `/login`
-- ✅ Public routes (like `/`, `/login`) remain unaffected
-- ✅ Login in one tab invalidates auth state in other tabs (optional refresh behavior)
+Comprehensive authentication security and cross-tab synchronization:
+- ✅ **Cross-tab logout:** Logout in one tab forces other tabs on protected routes to redirect to `/login`
+- ✅ **Cross-tab login:** Login in one tab redirects other tabs away from `/login` page
+- ✅ **Auth-protected login:** Authenticated users cannot access `/login` (auto-redirect to dashboard)
+- ✅ **Safe redirects:** Prevents open-redirect attacks via sanitized `from` parameter
+- ✅ **Session revalidation:** Auto-revalidates auth on tab focus/visibility change
+- ✅ **Route-based protection:** Dynamic detection of protected routes (no hard-coded path lists)
 
 ## Architecture
 
@@ -28,10 +31,17 @@ Cross-tab authentication synchronization allows tabs to communicate auth state c
 - On `login` event:
   - Invalidates router state (optional: allows tabs to refresh user data)
 
-### 4. Protected Route Detection (`src/auth/protectedRoutes.ts`)
-- `isProtectedPath(pathname)` determines if a route requires auth
-- Protected paths: `/dashboard`, `/admin`
+### 4. Protected Route Detection (`src/auth/routeProtection.ts`)
+- `isCurrentRouteProtected(router)` - Dynamic detection based on route tree (checks for `/_authed` layout)
+- `isProtectedPath(pathname)` - Fallback path-based check
+- Protected paths: Any route under `/_authed` layout (e.g., `/dashboard`, `/admin`)
 - Public paths: `/`, `/login`, `/logout`, `/unauthorized`, `/demo/*`
+
+### 5. Safe Redirect Utilities (`src/auth/redirects.ts`)
+- `safeRedirectPath(path, fallback)` - Sanitizes redirect paths to prevent open-redirect attacks
+  - Only allows internal paths starting with `/`
+  - Rejects external URLs, protocol-relative URLs (`//evil.com`), and JavaScript schemes
+- `buildFromParameter(location)` - Builds safe internal path from location (not full href)
 
 ---
 
@@ -60,16 +70,24 @@ Cross-tab authentication synchronization allows tabs to communicate auth state c
    - ✅ Tab B: remains on `/` (no redirect, but auth state invalidated)
    - ✅ Tab C: remains on `/login` (no change)
 
-### Test 3: Login from one tab refreshes other tabs (optional)
+### Test 3: Login from one tab redirects other tabs away from /login
 
 1. **Open two tabs, both logged out:**
    - Tab A: `/login`
-   - Tab B: `/` (public)
+   - Tab B: `/login`
 2. **In tab A, login successfully**
 3. **Expected result:**
    - ✅ Tab A: redirects to `/dashboard`
-   - ✅ Tab B: remains on `/`, but auth state is invalidated/refreshed
-   - If tab B navigates to `/dashboard` manually, it should not redirect to login
+   - ✅ Tab B: receives login event → invalidates auth → auto-redirects to `/dashboard`
+   - ✅ Both tabs now show the dashboard
+
+### Test 3b: Login redirect with "from" parameter
+
+1. **Attempt to access `/admin` while logged out** (should redirect to `/login?from=/admin`)
+2. **In tab A, complete the login**
+3. **Expected result:**
+   - ✅ Tab A: redirects back to `/admin` (the original destination)
+   - ✅ URL is clean (no `from` parameter remaining)
 
 ### Test 4: Multiple tabs on different protected routes
 
@@ -90,6 +108,35 @@ Cross-tab authentication synchronization allows tabs to communicate auth state c
 3. **In window 1, logout**
 4. **Expected result:**
    - ✅ Window 2 also redirects to `/login`
+
+### Test 6: Authenticated users cannot access /login
+
+1. **Login successfully and navigate to `/dashboard`**
+2. **Manually type `/login` in the URL bar**
+3. **Expected result:**
+   - ✅ Immediately redirected to `/dashboard` (cannot view login page when authenticated)
+
+### Test 7: Session revalidation on tab focus
+
+1. **Login and navigate to `/dashboard`**
+2. **Minimize the browser or switch to another app for 30+ seconds**
+3. **In another tab or via API, invalidate the session (logout)**
+4. **Return to the original tab (focus/visibility change)**
+5. **Expected result:**
+   - ✅ Tab detects session is invalid and redirects to `/login`
+
+### Test 8: Open redirect prevention
+
+1. **Attempt to access:** `/login?from=https://evil.com`
+2. **Login successfully**
+3. **Expected result:**
+   - ✅ Redirects to `/dashboard` (NOT to `https://evil.com`)
+   - ✅ Malicious redirect is blocked
+
+4. **Attempt to access:** `/login?from=//evil.com/steal-cookies`
+5. **Login successfully**
+6. **Expected result:**
+   - ✅ Redirects to `/dashboard` (protocol-relative URL blocked)
 
 ---
 
@@ -119,9 +166,9 @@ Cross-tab authentication synchronization allows tabs to communicate auth state c
    ```
 
 ### Issue: Public tabs redirect to login after logout
-**Cause:** `isProtectedPath` incorrectly identifies a public route as protected.
+**Cause:** `isCurrentRouteProtected` incorrectly identifies a public route as protected.
 
-**Fix:** Update `src/auth/protectedRoutes.ts` to include the public route in the exclusion list.
+**Fix:** Verify the route is not under `/_authed` layout, or update `src/auth/routeProtection.ts` to include the public route in the exclusion list.
 
 ### Issue: Tabs redirect but immediately navigate back
 **Cause:** Router invalidation + redirect may cause race condition if auth state isn't cleared properly.
@@ -135,10 +182,12 @@ Cross-tab authentication synchronization allows tabs to communicate auth state c
 | File | Purpose |
 |------|---------|
 | `src/auth/authEvents.ts` | Cross-tab event transport (BroadcastChannel + localStorage) |
-| `src/auth/protectedRoutes.ts` | Determine if a path requires authentication |
-| `src/routes/__root.tsx` | Global listener for auth events |
-| `src/routes/login.tsx` | Emits `login` event after successful auth |
-| `src/routes/logout.tsx` | Emits `logout` event after successful logout |
+| `src/auth/routeProtection.ts` | Dynamic route protection detection (route-tree based) |
+| `src/auth/redirects.ts` | Safe redirect utilities (open-redirect prevention) |
+| `src/routes/__root.tsx` | Global listener for auth events + session revalidation |
+| `src/routes/login.tsx` | Login page with auth guard + safe redirects |
+| `src/routes/logout.tsx` | Logout handler (emits logout event) |
+| `src/routes/_authed.tsx` | Protected route layout with beforeLoad guard |
 
 ---
 
@@ -146,24 +195,52 @@ Cross-tab authentication synchronization allows tabs to communicate auth state c
 
 1. **Event Deduplication:** Events are idempotent (logout when already logged out has no effect)
 2. **Race Conditions:** Router invalidation + navigation happens asynchronously; the redirect should still settle correctly
-3. **Security:** Events are client-side only; backend auth validation is still required (Django sessions)
+3. **Security:** 
+   - Events are client-side only; backend auth validation is still required (Django sessions)
+   - All redirects are sanitized to prevent open-redirect attacks
+   - Session revalidation happens on tab focus to detect stale sessions
 4. **Performance:** BroadcastChannel is lightweight; localStorage fallback adds minimal overhead
+5. **SSR Compatibility:** Auth checks use server functions (`getCurrentUserFn`) that work in SSR context
 
 ---
 
+## Security Features Implemented
+
+### ✅ Open Redirect Prevention
+- All redirect paths are sanitized via `safeRedirectPath()`
+- Only internal paths (`/...`) are allowed
+- External URLs, protocol-relative URLs, and JavaScript schemes are blocked
+
+### ✅ Auth-Protected Login Page
+- Authenticated users cannot access `/login`
+- Automatically redirected to dashboard or original destination
+
+### ✅ Session Revalidation
+- Auth state revalidated on tab focus and visibility change
+- Prevents stale sessions from remaining active after logout elsewhere
+
+### ✅ Safe Post-Login Redirects
+- Uses internal path only (not full href)
+- Respects `from` parameter for UX (return to original destination)
+- Falls back to `/dashboard` if redirect is unsafe
+
 ## Future Enhancements (Optional)
 
-- Add toast notifications: "You were logged out in another tab"
+- Add toast notifications: \"You were logged out in another tab\"
 - Track which tab initiated the logout (for analytics)
-- Support session expiry detection (periodic polling + logout event)
-- Add "stay logged in on this device" option that disables cross-tab logout
+- Add \"stay logged in on this device\" option that disables cross-tab logout
+- Global 401 interceptor to auto-logout on session expiry
 
 ---
 
 ## Summary
 
-✅ **Implemented:** Cross-tab logout sync with conditional redirect  
-✅ **Protected routes:** `/dashboard`, `/admin`  
+✅ **Cross-tab sync:** Login/logout events propagate across all tabs  
+✅ **Auth-protected login:** Cannot access `/login` when authenticated  
+✅ **Open redirect prevention:** All redirects are sanitized  
+✅ **Session revalidation:** Auto-revalidates on tab focus/visibility  
+✅ **Dynamic route protection:** Based on route tree (no hard-coded lists)  
+✅ **Protected routes:** Any route under `/_authed` layout  
 ✅ **Public routes:** `/`, `/login`, `/logout`, `/unauthorized`, `/demo/*`  
 ✅ **Browser support:** Modern browsers (BroadcastChannel) + legacy fallback (localStorage)  
 

@@ -1,11 +1,14 @@
 import { getCurrentUserFn } from '@/server/auth'
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import { buildFromParameter } from '@/auth/redirects'
 
 export const Route = createFileRoute('/_authed')({
   beforeLoad: async ({ location }) => {
     const user = await getCurrentUserFn()
     if (!user) {
-      throw redirect({ to: '/login', search: { from: location.href } })
+      // Build a safe internal path (not full href) for post-login redirect
+      const from = buildFromParameter(location)
+      throw redirect({ to: '/login', search: { from } })
     }
     return { user }
   },

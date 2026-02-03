@@ -5,7 +5,8 @@ import * as React from 'react'
 
 import Header from '../components/Header'
 import { subscribeAuthEvents } from '@/auth/authEvents'
-import { isProtectedPath } from '@/auth/protectedRoutes'
+import { isCurrentRouteProtected } from '@/auth/routeProtection'
+import { safeRedirectPath } from '@/auth/redirects'
 
 import appCss from '../styles.css?url'
 
@@ -45,17 +46,46 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         router.invalidate()
 
         // Redirect to login only if currently on a protected route
-        const currentPath = router.state.location.pathname
-        if (isProtectedPath(currentPath)) {
+        if (isCurrentRouteProtected(router)) {
           router.navigate({ to: '/login', replace: true })
         }
       } else if (event.type === 'login') {
-        // Optionally refresh auth state so tabs can show updated user
+        // Refresh auth state so tabs can show updated user
         router.invalidate()
+
+        // If currently on login page, redirect away (user is now authenticated)
+        const currentPath = router.state.location.pathname
+        if (currentPath === '/login') {
+          // Check if there's a "from" param to redirect back to
+          const fromParam = router.state.location.search?.from
+          const destination = safeRedirectPath(fromParam as string, '/dashboard')
+          router.navigate({ to: destination, replace: true })
+        }
       }
     })
 
     return unsubscribe
+  }, [router])
+
+  // Revalidate auth state when tab becomes visible or gains focus
+  React.useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        router.invalidate()
+      }
+    }
+
+    const handleFocus = () => {
+      router.invalidate()
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleFocus)
+    }
   }, [router])
 
   return (
