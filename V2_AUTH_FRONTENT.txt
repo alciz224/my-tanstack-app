@@ -1,0 +1,155 @@
+Got it 👍
+Here is the **condensed, no-noise instruction checklist** for **implementing auth on the TanStack Start side** when the backend is **Django + DRF + session auth**.
+
+---
+
+## 0️⃣ Core rule (don’t break this)
+
+* **TanStack does NOT authenticate**
+* **Django owns auth + sessions**
+* TanStack only **asks “who is the current user?”**
+
+---
+
+## 1️⃣ One required API on Django
+
+TanStack assumes this exists:
+
+```
+GET /api/auth/me/
+→ 200 { id, email, role }
+→ 401 if not authenticated
+```
+
+Session cookie (`sessionid`) must be sent automatically.
+
+---
+
+## 2️⃣ One server function (single source of truth)
+
+```ts
+// server/auth.ts
+export const getCurrentUserFn = createServerFn({ method: 'GET' })
+  .handler(async () => {
+    const res = await fetch('http://backend/api/auth/me/', {
+      credentials: 'include',
+    })
+
+    if (!res.ok) return null
+    return res.json()
+  })
+```
+
+⚠️ Never duplicate this logic.
+
+---
+
+## 3️⃣ Put user in router context (once)
+
+```ts
+// router.ts
+const router = createRouter({
+  context: {
+    user: null as User | null,
+    getCurrentUser: getCurrentUserFn,
+  },
+})
+```
+
+---
+
+## 4️⃣ `_authed` layout = authentication gate
+
+```ts
+// routes/_authed/index.tsx
+export const Route = createFileRoute('/_authed')({
+  beforeLoad: async ({ context }) => {
+    const user = await context.getCurrentUser()
+
+    if (!user) {
+      throw redirect({ to: '/login' })
+    }
+
+    return { user }
+  },
+})
+```
+
+✔ Runs on **server**
+✔ Blocks unauthenticated users
+✔ Passes `user` to children
+
+---
+
+## 5️⃣ Role protection (authorization)
+
+```ts
+// routes/_authed/admin.tsx
+export const Route = createFileRoute('/_authed/admin')({
+  beforeLoad: ({ context }) => {
+    if (context.user.role !== 'admin') {
+      throw redirect({ to: '/unauthorized' })
+    }
+  },
+})
+```
+
+Frontend check = UX
+Backend must still enforce permissions.
+
+---
+
+## 6️⃣ Login & logout (thin client calls)
+
+```ts
+// login
+await fetch('/api/auth/login/', {
+  method: 'POST',
+  credentials: 'include',
+})
+
+// logout
+await fetch('/api/auth/logout/', {
+  method: 'POST',
+  credentials: 'include',
+})
+```
+
+✔ No tokens
+✔ No localStorage
+✔ Cookie handles everything
+
+---
+
+## 7️⃣ Rendering rules
+
+* `beforeLoad` ⇒ **SSR**
+* Server functions ⇒ **SSR**
+* No `useEffect` for auth
+* No client-only guards
+
+---
+
+## 8️⃣ URL rule
+
+* **All backend endpoints use `/api/*`**
+* TanStack never exposes auth URLs publicly
+* Mobile apps reuse the same API
+
+---
+
+## 9️⃣ Absolute “don’ts”
+
+❌ Don’t store user in localStorage
+❌ Don’t decode tokens
+❌ Don’t re-check auth in components
+❌ Don’t skip backend permission checks
+
+---
+
+## 🔑 Final mantra
+
+> **TanStack protects routes. Django authenticates users.
+> They talk only through `/api/auth/me/` and sessions.**
+
+If you want, I can compress this even further into a **10-line implementation recipe** or draw the **request flow diagram**.
