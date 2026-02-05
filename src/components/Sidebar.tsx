@@ -12,7 +12,7 @@ interface SidebarProps {
  */
 export function Sidebar({ user }: SidebarProps) {
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:border-r lg:border-border lg:bg-card">
+    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:border-r lg:border-border lg:bg-card lg:fixed lg:left-0 lg:top-0 lg:h-screen">
       {/* Logo/brand */}
       <div className="p-4 border-b border-border">
         <Link to="/" className="flex items-center gap-2">

@@ -144,11 +144,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {/* Desktop: grid layout with sidebar + main content */}
+        {/* Desktop: fixed sidebar + main content with left margin */}
         {/* Mobile/Tablet: single column, sidebar is drawer */}
-        <div className="lg:grid lg:grid-cols-[auto_1fr] min-h-screen">
+        <div className="min-h-screen">
           <Sidebar user={user} />
-          <div className="flex flex-col min-h-screen">
+          <div className="flex flex-col min-h-screen lg:ml-64">
             <Header />
             <main className="flex-1">{children}</main>
           </div>
