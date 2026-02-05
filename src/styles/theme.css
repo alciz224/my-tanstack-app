@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+:root {
+  /* Light Mode Colors - Academic Blue Theme (OKLCH format) */
+  --color-primary: oklch(0.42 0.16 264);          /* Blue-800 - Academic blue */
+  --color-primary-foreground: oklch(0.98 0.01 264); /* Slate-50 */
+  --color-secondary: oklch(0.55 0.12 205);        /* Cyan-600 - Information */
+  --color-secondary-foreground: oklch(1 0 0);
+  --color-accent: oklch(0.75 0.15 70);            /* Amber-500 - Highlights */
+  --color-accent-foreground: oklch(1 0 0);
+  
+  --color-background: oklch(0.98 0.01 264);       /* Slate-50 */
+  --color-foreground: oklch(0.17 0.02 264);       /* Slate-900 */
+  
+  --color-card: oklch(1 0 0);                     /* White */
+  --color-card-foreground: oklch(0.17 0.02 264);  /* Slate-900 */
+  
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.17 0.02 264);
+  
+  --color-muted: oklch(0.96 0.01 264);            /* Slate-100 */
+  --color-muted-foreground: oklch(0.52 0.02 264); /* Slate-500 */
+  
+  --color-border: oklch(0.92 0.01 264);           /* Slate-200 */
+  --color-input: oklch(0.92 0.01 264);            /* Slate-200 */
+  --color-ring: oklch(0.42 0.16 264);             /* Blue-800 */
+  
+  /* Semantic Colors */
+  --color-success: oklch(0.70 0.17 165);          /* Emerald-500 */
+  --color-success-foreground: oklch(1 0 0);
+  --color-destructive: oklch(0.62 0.25 25);       /* Red-500 */
+  --color-destructive-foreground: oklch(1 0 0);
+  --color-warning: oklch(0.75 0.15 70);           /* Amber-500 */
+  --color-warning-foreground: oklch(1 0 0);
+  --color-info: oklch(0.55 0.12 205);             /* Cyan-600 */
+  --color-info-foreground: oklch(1 0 0);
+  
+  --radius: 0.5rem;
+}
+
+.dark {
+  /* Dark Mode Colors - Academic Blue Theme (OKLCH format) */
+  --color-primary: oklch(0.60 0.20 264);          /* Blue-500 */
+  --color-primary-foreground: oklch(0.98 0.01 264);
+  --color-secondary: oklch(0.70 0.14 205);        /* Cyan-500 */
+  --color-secondary-foreground: oklch(0.98 0.01 264);
+  --color-accent: oklch(0.80 0.13 80);            /* Amber-400 */
+  --color-accent-foreground: oklch(0.17 0.02 264);
+  
+  --color-background: oklch(0.17 0.02 264);       /* Slate-900 */
+  --color-foreground: oklch(0.98 0.01 264);       /* Slate-50 */
+  
+  --color-card: oklch(0.24 0.02 264);             /* Slate-800 */
+  --color-card-foreground: oklch(0.98 0.01 264);
+  
+  --color-popover: oklch(0.24 0.02 264);
+  --color-popover-foreground: oklch(0.98 0.01 264);
+  
+  --color-muted: oklch(0.32 0.02 264);            /* Slate-700 */
+  --color-muted-foreground: oklch(0.64 0.02 264); /* Slate-400 */
+  
+  --color-border: oklch(0.32 0.02 264);           /* Slate-700 */
+  --color-input: oklch(0.32 0.02 264);
+  --color-ring: oklch(0.60 0.20 264);             /* Blue-500 */
+  
+  --color-success: oklch(0.78 0.15 165);          /* Emerald-400 */
+  --color-success-foreground: oklch(0.17 0.02 264);
+  --color-destructive: oklch(0.70 0.20 25);       /* Red-400 */
+  --color-destructive-foreground: oklch(0.98 0.01 264);
+  --color-warning: oklch(0.80 0.13 80);
+  --color-warning-foreground: oklch(0.17 0.02 264);
+  --color-info: oklch(0.70 0.14 205);
+  --color-info-foreground: oklch(0.98 0.01 264);
+}
+
+@theme {
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+  --color-accent: var(--color-accent);
+  --color-accent-foreground: var(--color-accent-foreground);
+  
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  
+  --color-card: var(--color-card);
+  --color-card-foreground: var(--color-card-foreground);
+  
+  --color-popover: var(--color-popover);
+  --color-popover-foreground: var(--color-popover-foreground);
+  
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+  
+  --color-border: var(--color-border);
+  --color-input: var(--color-input);
+  --color-ring: var(--color-ring);
+  
+  --color-success: var(--color-success);
+  --color-success-foreground: var(--color-success-foreground);
+  --color-destructive: var(--color-destructive);
+  --color-destructive-foreground: var(--color-destructive-foreground);
+  --color-warning: var(--color-warning);
+  --color-warning-foreground: var(--color-warning-foreground);
+  --color-info: var(--color-info);
+  --color-info-foreground: var(--color-info-foreground);
+}
+
+/* Smooth theme transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}

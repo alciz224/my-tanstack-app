@@ -10,9 +10,9 @@ export const Route = createFileRoute('/login')({
       from: (search.from as string) || undefined,
     }
   },
-  beforeLoad: async ({ search }) => {
+  beforeLoad: async ({ search, context }) => {
     // If already authenticated, redirect away from login page
-    const user = await getCurrentUserFn()
+    const user = context.user ?? (await getCurrentUserFn())
     if (user) {
       const destination = safeRedirectPath(search.from, '/dashboard')
       throw redirect({ to: destination, replace: true })
@@ -91,38 +91,46 @@ function LoginPage() {
   }
 
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h2 className="text-white text-2xl font-bold">Login</h2>
-      <form onSubmit={onSubmit} className="mt-4 space-y-3">
-        <div>
-          <label className="block text-slate-300 mb-1">Email</label>
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            required
-            className="w-full px-3 py-2 rounded bg-slate-800 text-white border border-slate-700"
-          />
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="w-full max-w-md">
+        <div className="bg-card border border-border rounded-lg shadow-lg p-8">
+          <h2 className="text-foreground text-2xl font-bold mb-6">Login</h2>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div>
+              <label className="block text-foreground font-medium mb-2">Email</label>
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                required
+                className="w-full px-3 py-2 rounded-lg bg-background text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div>
+              <label className="block text-foreground font-medium mb-2">Password</label>
+              <input
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                type="password"
+                required
+                className="w-full px-3 py-2 rounded-lg bg-background text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            {error && (
+              <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg">
+                {error}
+              </div>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold disabled:opacity-60 transition-colors"
+            >
+              {loading ? 'Logging in…' : 'Login'}
+            </button>
+          </form>
         </div>
-        <div>
-          <label className="block text-slate-300 mb-1">Password</label>
-          <input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-            required
-            className="w-full px-3 py-2 rounded bg-slate-800 text-white border border-slate-700"
-          />
-        </div>
-        {error && <div className="text-red-400 text-sm">{error}</div>}
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-4 py-2 rounded bg-cyan-600 hover:bg-cyan-700 text-white disabled:opacity-60"
-        >
-          {loading ? 'Logging in…' : 'Login'}
-        </button>
-      </form>
+      </div>
     </div>
   )
 }

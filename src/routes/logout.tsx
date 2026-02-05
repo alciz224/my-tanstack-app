@@ -58,9 +58,23 @@ function LogoutPage() {
   }, [])
 
   return (
-    <div className="p-6 max-w-md mx-auto text-slate-200">
-      {status === 'loading' && <p>Logging out…</p>}
-      {status === 'error' && <p className="text-red-400">{error}</p>}
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="w-full max-w-md">
+        <div className="bg-card border border-border rounded-lg shadow-lg p-8 text-center">
+          {status === 'loading' && (
+            <div>
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent mb-4"></div>
+              <p className="text-foreground">Logging out…</p>
+            </div>
+          )}
+          {status === 'error' && (
+            <div className="bg-destructive/10 border border-destructive/20 text-destructive p-4 rounded-lg">
+              <p className="font-semibold mb-2">Logout Failed</p>
+              <p className="text-sm">{error}</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

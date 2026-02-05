@@ -44,7 +44,7 @@ export const getCurrentUserFn = createServerFn({ method: 'GET' }).handler(
       // `ctx.request` or `ctx.context.request`.
       const req: Request | undefined = (ctx as any)?.request || (ctx as any)?.context?.request
 
-      const cookieHeader = req?.headers?.get('cookie')
+      const cookieHeader = req?.headers.get('cookie')
       const headers: HeadersInit = {}
 
       if (cookieHeader) {
@@ -64,7 +64,7 @@ export const getCurrentUserFn = createServerFn({ method: 'GET' }).handler(
 
       const data: ApiResponse<{ user: User; authenticated: boolean }> = await res.json()
 
-      return data?.success && data.data?.user ? data.data.user : null
+      return data.success && data.data?.user ? data.data.user : null
     } catch {
       // Treat any network/backend errors as unauthenticated.
       return null

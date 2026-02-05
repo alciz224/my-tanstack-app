@@ -4,13 +4,21 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import * as React from 'react'
 
 import Header from '../components/Header'
-import { subscribeAuthEvents } from '@/auth/authEvents'
-import { isCurrentRouteProtected } from '@/auth/routeProtection'
-import { safeRedirectPath } from '@/auth/redirects'
 
 import appCss from '../styles.css?url'
 
+import { subscribeAuthEvents } from '@/auth/authEvents'
+import { safeRedirectPath } from '@/auth/redirects'
+import { isCurrentRouteProtected } from '@/auth/routeProtection'
+import { getCurrentUserFn } from '@/server/auth'
+
 export const Route = createRootRoute({
+  beforeLoad: async () => {
+    // Provide auth state to all routes (public + protected) so shared UI (Header)
+    // stays in sync across navigation.
+    const user = await getCurrentUserFn()
+    return { user }
+  },
   head: () => ({
     meta: [
       {
@@ -21,13 +29,38 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'School Management System',
       },
     ],
     links: [
       {
         rel: 'stylesheet',
         href: appCss,
+      },
+    ],
+    scripts: [
+      // Prevent FOUC (Flash of Unstyled Content)
+      {
+        children: `
+          (function() {
+            try {
+              const stored = localStorage.getItem('theme-storage');
+              if (stored) {
+                const { state } = JSON.parse(stored);
+                const theme = state.theme === 'system' 
+                  ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                  : state.theme;
+                document.documentElement.classList.add(theme);
+              } else {
+                document.documentElement.classList.add(
+                  window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+                );
+              }
+            } catch (e) {
+              document.documentElement.classList.add('light');
+            }
+          })();
+        `,
       },
     ],
   }),
@@ -41,25 +74,30 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   // Subscribe to cross-tab auth events
   React.useEffect(() => {
     const unsubscribe = subscribeAuthEvents((event) => {
-      if (event.type === 'logout') {
-        // Invalidate router state so protected routes re-run beforeLoad
-        router.invalidate()
+      switch (event.type) {
+        case 'logout': {
+          // Invalidate router state so routes re-run beforeLoad
+          router.invalidate()
 
-        // Redirect to login only if currently on a protected route
-        if (isCurrentRouteProtected(router)) {
-          router.navigate({ to: '/login', replace: true })
+          // Redirect to login only if currently on a protected route
+          if (isCurrentRouteProtected(router)) {
+            router.navigate({ to: '/login', replace: true })
+          }
+          break
         }
-      } else if (event.type === 'login') {
-        // Refresh auth state so tabs can show updated user
-        router.invalidate()
+        case 'login': {
+          // Refresh auth state so tabs can show updated user
+          router.invalidate()
 
-        // If currently on login page, redirect away (user is now authenticated)
-        const currentPath = router.state.location.pathname
-        if (currentPath === '/login') {
-          // Check if there's a "from" param to redirect back to
-          const fromParam = router.state.location.search?.from
-          const destination = safeRedirectPath(fromParam as string, '/dashboard')
-          router.navigate({ to: destination, replace: true })
+          // If currently on login page, redirect away (user is now authenticated)
+          if (router.state.location.pathname === '/login') {
+            const fromParam = (router.state.location.search as any).from as
+              | string
+              | undefined
+            const destination = safeRedirectPath(fromParam, '/dashboard')
+            router.navigate({ to: destination, replace: true })
+          }
+          break
         }
       }
     })

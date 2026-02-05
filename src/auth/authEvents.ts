@@ -86,6 +86,9 @@ export function emitAuthEvent(type: AuthEventType) {
     timestamp: Date.now(),
   }
 
+  // Notify local listeners immediately (same tab)
+  notifyListeners(event)
+
   // Send via BroadcastChannel if available
   if (channel) {
     channel.postMessage(event)
