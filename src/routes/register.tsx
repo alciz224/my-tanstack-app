@@ -194,24 +194,24 @@ function RegisterPage() {
 
   return (
     <AuthCard
-      title="Create account"
-      description="Join EduVault today."
+      title={t('auth.signUpTitle')}
+      description={t('auth.joinToday')}
       footer={
         <div className="text-center text-sm text-muted-foreground">
-          Already have an account?{' '}
+          {t('auth.hasAccount')}{' '}
           <Link
             to="/login"
             search={{ from: search.from }}
             className="text-primary hover:underline font-medium"
           >
-            Sign in
+            {t('nav.signIn')}
           </Link>
         </div>
       }
     >
       <form onSubmit={onSubmit} className="space-y-4" aria-busy={loading}>
         <FormField
-          label="Email"
+          label={t('auth.email')}
           htmlFor="email"
           required
           error={fieldErrors.email}
@@ -232,7 +232,7 @@ function RegisterPage() {
         </FormField>
 
         <FormField
-          label="Password"
+          label={t('auth.password')}
           htmlFor="password"
           required
           error={fieldErrors.password}
@@ -259,7 +259,7 @@ function RegisterPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField
-            label="First name"
+            label={t('auth.firstName')}
             htmlFor="first-name"
             required
             error={fieldErrors.first_name}
@@ -279,7 +279,7 @@ function RegisterPage() {
           </FormField>
 
           <FormField
-            label="Last name"
+            label={t('auth.lastName')}
             htmlFor="last-name"
             required
             error={fieldErrors.last_name}
@@ -300,7 +300,7 @@ function RegisterPage() {
         </div>
 
         <FormField
-          label="Phone (optional)"
+          label={t('auth.phone')}
           htmlFor="phone"
           error={fieldErrors.phone}
         >
@@ -337,21 +337,21 @@ function RegisterPage() {
               className="w-4 h-4 mt-0.5 text-primary bg-background border-input rounded focus:ring-2 focus:ring-ring"
             />
             <label htmlFor="terms" className="ml-2 text-sm text-foreground">
-              I accept the{' '}
+              {t('auth.termsAccept')}{' '}
               <a
                 href="/terms"
                 target="_blank"
                 className="text-primary hover:underline"
               >
-                Terms of Service
+                {t('auth.termsService')}
               </a>{' '}
-              and{' '}
+              {t('auth.and')}{' '}
               <a
                 href="/privacy"
                 target="_blank"
                 className="text-primary hover:underline"
               >
-                Privacy Policy
+                {t('auth.privacyPolicy')}
               </a>
               <span className="text-destructive ml-1">*</span>
             </label>
@@ -385,7 +385,7 @@ function RegisterPage() {
               className="w-4 h-4 mt-0.5 text-primary bg-background border-input rounded focus:ring-2 focus:ring-ring"
             />
             <label htmlFor="marketing" className="ml-2 text-sm text-muted-foreground">
-              Send me product updates and news
+              {t('auth.marketingOptIn')}
             </label>
           </div>
         </div>
@@ -412,7 +412,7 @@ function RegisterPage() {
               </svg>
               <div>
                 <p className="font-semibold">
-                  {rateLimitSeconds ? 'Rate Limited' : 'Error'}
+                  {rateLimitSeconds ? t('errors.rateLimited') : t('common.error')}
                 </p>
                 <p className="mt-1">{globalError}</p>
               </div>
@@ -426,10 +426,10 @@ function RegisterPage() {
           className="w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {loading
-            ? 'Creating account…'
+            ? t('auth.creatingAccount')
             : rateLimitSeconds
-              ? `Try again in ${rateLimitSeconds}s`
-              : 'Create account'}
+              ? t('errors.tryAgainIn', { seconds: rateLimitSeconds })
+              : t('auth.signUpButton')}
         </button>
       </form>
     </AuthCard>

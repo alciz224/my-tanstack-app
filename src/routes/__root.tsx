@@ -8,6 +8,8 @@ import { Sidebar } from '../components/Sidebar'
 
 import appCss from '../styles.css?url'
 
+import { initLanguage } from '@/lib/i18n'
+
 import { subscribeAuthEvents } from '@/auth/authEvents'
 import { safeRedirectPath } from '@/auth/redirects'
 import { isCurrentRouteProtected } from '@/auth/routeProtection'
@@ -70,6 +72,8 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  // Initialize language from localStorage (defaults to fr)
+  initLanguage()
   const router = useRouter()
 
   // Get user from router state to pass to Sidebar

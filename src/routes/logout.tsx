@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import * as React from 'react'
 import { emitAuthEvent } from '@/auth/authEvents'
 import { logoutFn } from '@/server/auth'
+import { t } from '@/lib/i18n'
 
 export const Route = createFileRoute('/logout')({
   component: LogoutPage,
@@ -42,12 +43,12 @@ function LogoutPage() {
           {status === 'loading' && (
             <div>
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent mb-4"></div>
-              <p className="text-foreground">Logging out…</p>
+              <p className="text-foreground">{t('auth.loggingOut')}</p>
             </div>
           )}
           {status === 'error' && (
             <div className="bg-destructive/10 border border-destructive/20 text-destructive p-4 rounded-lg">
-              <p className="font-semibold mb-2">Logout Failed</p>
+              <p className="font-semibold mb-2">{t('errors.logoutFailed')}</p>
               <p className="text-sm">{error}</p>
             </div>
           )}

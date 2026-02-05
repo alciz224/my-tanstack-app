@@ -156,20 +156,33 @@ export async function loginFn(data: LoginInput): Promise<AuthResult> {
       body: JSON.stringify(data),
     })
 
-    const responseData: ApiResponse<{ user: User }> = await res.json()
+    let responseData: any = null
+    const contentType = res.headers.get('content-type') || ''
+    try {
+      responseData = contentType.includes('application/json') ? await res.json() : null
+    } catch {}
 
     if (!res.ok) {
+      const bodyText = responseData ? '' : await res.text().catch(() => '')
+      if (import.meta.env.MODE !== 'production') {
+        console.error('[loginFn] HTTP error', {
+          status: res.status,
+          statusText: res.statusText,
+          bodyPreview: bodyText.slice(0, 300),
+        })
+      }
+
       const result: AuthResult = {
         success: false,
-        error: responseData.message || 'Login failed',
-        errorCode: responseData.error?.code,
+        error: responseData?.message || bodyText || `Login failed (${res.status})`,
+        errorCode: responseData?.error?.code,
       }
 
       // Handle specific error codes
       if (res.status === 429) {
         const retryAfterHeader = res.headers.get('Retry-After')
         result.retryAfter = retryAfterHeader ? parseInt(retryAfterHeader, 10) : 60
-      } else if (res.status === 400 && responseData.error?.details) {
+      } else if (res.status === 400 && responseData?.error?.details) {
         result.fieldErrors = responseData.error.details
       }
 
@@ -178,7 +191,7 @@ export async function loginFn(data: LoginInput): Promise<AuthResult> {
 
     return {
       success: true,
-      user: responseData.data?.user,
+      user: responseData?.data?.user,
     }
   } catch (err: any) {
     return {
@@ -233,25 +246,38 @@ export async function registerFn(data: RegisterInput): Promise<AuthResult> {
       body: JSON.stringify(data),
     })
 
-    const responseData: ApiResponse<{ user: User }> = await res.json()
+    let responseData: any = null
+    const contentType = res.headers.get('content-type') || ''
+    try {
+      responseData = contentType.includes('application/json') ? await res.json() : null
+    } catch {}
 
     if (!res.ok) {
+      const bodyText = responseData ? '' : await res.text().catch(() => '')
+      if (import.meta.env.MODE !== 'production') {
+        console.error('[registerFn] HTTP error', {
+          status: res.status,
+          statusText: res.statusText,
+          bodyPreview: bodyText?.slice(0, 300),
+        })
+      }
+
       const result: AuthResult = {
         success: false,
-        error: responseData.message || 'Registration failed',
-        errorCode: responseData.error?.code,
+        error: responseData?.message || bodyText || `Registration failed (${res.status})`,
+        errorCode: responseData?.error?.code,
       }
 
       // Handle specific error codes
       if (res.status === 429) {
         const retryAfterHeader = res.headers.get('Retry-After')
         result.retryAfter = retryAfterHeader ? parseInt(retryAfterHeader, 10) : 60
-      } else if (res.status === 400 && responseData.error?.details) {
+      } else if (res.status === 400 && responseData?.error?.details) {
         result.fieldErrors = responseData.error.details
       } else if (res.status === 409) {
         // Duplicate user - map to email field
         result.fieldErrors = {
-          email: [responseData.message || 'An account with this email already exists'],
+          email: [responseData?.message || 'An account with this email already exists'],
         }
       }
 
@@ -260,7 +286,7 @@ export async function registerFn(data: RegisterInput): Promise<AuthResult> {
 
     return {
       success: true,
-      user: responseData.data?.user,
+      user: responseData?.data?.user,
     }
   } catch (err: any) {
     return {
@@ -294,7 +320,7 @@ export async function logoutFn(): Promise<{ success: boolean; error?: string }> 
     }
 
     // Step 2: Logout (browser calls via Vite proxy)
-    await fetch('/api/v2/auth/logout/', {
+    const res = await fetch('/api/v2/auth/logout/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -303,7 +329,13 @@ export async function logoutFn(): Promise<{ success: boolean; error?: string }> 
       credentials: 'include',
     })
 
-    return { success: true }
+    if (!res.ok && import.meta.env.MODE !== 'production') {
+      let body = ''
+      try { body = await res.text() } catch {}
+      console.error('[logoutFn] HTTP error', { status: res.status, bodyPreview: body.slice(0, 300) })
+    }
+
+    return { success: res.ok }
   } catch (err: any) {
     return {
       success: false,

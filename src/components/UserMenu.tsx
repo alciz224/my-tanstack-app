@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Link } from '@tanstack/react-router'
 import { LogOut, User as UserIcon } from 'lucide-react'
 import type { User } from '@/server/auth'
+import { t } from '@/lib/i18n'
 
 interface UserMenuProps {
   user: User
@@ -20,15 +21,15 @@ export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted transition-colors"
-        aria-label="User menu"
+        aria-label={t('nav.profile')}
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
         {isAuthRefreshing && (
           <span
             className="h-2 w-2 rounded-full bg-warning animate-pulse"
-            aria-label="Refreshing auth"
-            title="Refreshing auth"
+            aria-label={t('user.refreshingAuth')}
+            title={t('user.refreshingAuth')}
           />
         )}
         <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
@@ -70,7 +71,7 @@ export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
               <div className="mt-3 flex items-center gap-2">
                 {user.is_verified && (
                   <span className="text-xs px-2 py-1 bg-success/10 text-success border border-success/20 rounded-full">
-                    Verified
+                    {t('user.verified')}
                   </span>
                 )}
                 <span
@@ -82,7 +83,7 @@ export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
                         : 'bg-destructive/10 text-destructive border border-destructive/20'
                   }`}
                 >
-                  Security: {user.security.level}
+                  {t('user.security')}: {user.security.level}
                 </span>
               </div>
             </div>
@@ -95,7 +96,7 @@ export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
                 className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-foreground"
               >
                 <UserIcon className="w-4 h-4" />
-                <span>Profile</span>
+                <span>{t('nav.profile')}</span>
               </Link>
               <Link
                 to="/logout"
@@ -103,7 +104,7 @@ export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
                 className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors text-foreground"
               >
                 <LogOut className="w-4 h-4" />
-                <span>Sign out</span>
+                <span>{t('nav.signOut')}</span>
               </Link>
             </div>
           </div>

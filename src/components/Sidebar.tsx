@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { NavLinks } from './NavLinks'
 import type { User } from '@/server/auth'
+import { t } from '@/lib/i18n'
 
 interface SidebarProps {
   user: User | null
@@ -45,13 +46,13 @@ export function Sidebar({ user }: SidebarProps) {
               to="/login"
               className="block px-4 py-2 text-sm bg-primary text-primary-foreground text-center rounded-lg hover:bg-primary/90 transition-colors font-semibold"
             >
-              Sign in
+              {t('nav.signIn')}
             </Link>
             <Link
               to="/register"
               className="block px-4 py-2 text-sm bg-muted text-foreground text-center rounded-lg hover:bg-muted/80 transition-colors"
             >
-              Sign up
+              {t('nav.signUp')}
             </Link>
           </div>
         )}

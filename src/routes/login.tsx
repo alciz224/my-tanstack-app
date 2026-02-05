@@ -6,6 +6,7 @@ import { getCurrentUserFn, loginFn } from '@/server/auth'
 import { AuthCard } from '@/components/auth/AuthCard'
 import { FormField } from '@/components/auth/FormField'
 import { PasswordInput } from '@/components/auth/PasswordInput'
+import { t } from '@/lib/i18n'
 
 export const Route = createFileRoute('/login')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -155,28 +156,28 @@ function LoginPage() {
 
   return (
     <AuthCard
-      title="Sign in"
-      description="Welcome back to EduVault."
+      title={t('auth.signInTitle')}
+      description={t('auth.welcomeBack')}
       footer={
         <div className="text-center text-sm text-muted-foreground">
-          Don't have an account?{' '}
+          {t('auth.noAccount')}{' '}
           <Link
             to="/register"
             search={{ from: search.from }}
             className="text-primary hover:underline font-medium"
           >
-            Register
+            {t('auth.register')}
           </Link>
         </div>
       }
     >
       <form onSubmit={onSubmit} className="space-y-4" aria-busy={loading}>
         <FormField
-          label="Identifier"
+          label={t('auth.identifier')}
           htmlFor="identifier"
           required
           error={fieldErrors.identifier}
-          helperText="Use email, phone, or username"
+          helperText={t('auth.identifierHelper')}
         >
           <input
             id="identifier"
@@ -194,7 +195,7 @@ function LoginPage() {
         </FormField>
 
         <FormField
-          label="Password"
+          label={t('auth.password')}
           htmlFor="password"
           required
           error={fieldErrors.password}
@@ -222,7 +223,7 @@ function LoginPage() {
             className="w-4 h-4 text-primary bg-background border-input rounded focus:ring-2 focus:ring-ring"
           />
           <label htmlFor="remember-me" className="ml-2 text-sm text-foreground">
-            Remember me
+            {t('auth.rememberMe')}
           </label>
         </div>
 
@@ -252,7 +253,11 @@ function LoginPage() {
               </svg>
               <div>
                 <p className="font-semibold">
-                  {isLocked ? 'Account Locked' : rateLimitSeconds ? 'Rate Limited' : 'Error'}
+                  {isLocked
+                    ? t('errors.accountLocked')
+                    : rateLimitSeconds
+                      ? t('errors.rateLimited')
+                      : t('common.error')}
                 </p>
                 <p className="mt-1">{globalError}</p>
                 {isLocked && (
@@ -260,7 +265,7 @@ function LoginPage() {
                     href="mailto:support@eduvault.app"
                     className="mt-2 inline-block text-sm underline"
                   >
-                    Contact Support
+                    {t('errors.contactSupport')}
                   </a>
                 )}
               </div>
@@ -274,10 +279,10 @@ function LoginPage() {
           className="w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {loading
-            ? 'Signing in…'
+            ? t('auth.signingIn')
             : rateLimitSeconds
-              ? `Try again in ${rateLimitSeconds}s`
-              : 'Sign in'}
+              ? t('errors.tryAgainIn', { seconds: rateLimitSeconds })
+              : t('auth.signInButton')}
         </button>
       </form>
     </AuthCard>

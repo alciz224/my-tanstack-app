@@ -2,9 +2,11 @@ import { Link, useRouterState } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
 import { Menu } from 'lucide-react'
 import { ThemeToggle } from './ThemeToggle'
+import { LanguageToggle } from './LanguageToggle'
 import { UserMenu } from './UserMenu'
 import { NavDrawer } from './NavDrawer'
 import type { User } from '@/server/auth'
+import { t } from '@/lib/i18n'
 
 export default function Header() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -39,13 +41,13 @@ export default function Header() {
     // user became null: start a small grace period before switching to "logged out"
     if (lastKnownUserRef.current) {
       setIsAuthRefreshing(true)
-      const t = window.setTimeout(() => {
+      const timer = window.setTimeout(() => {
         setIsAuthRefreshing(false)
         lastKnownUserRef.current = null
       }, 400)
 
       return () => {
-        window.clearTimeout(t)
+        window.clearTimeout(timer)
       }
     }
   }, [user])
@@ -61,7 +63,7 @@ export default function Header() {
             <button
               onClick={() => setIsDrawerOpen(true)}
               className="p-2 hover:bg-muted rounded-lg lg:hidden transition-colors"
-              aria-label="Open navigation menu"
+              aria-label={t('nav.openMenu')}
             >
               <Menu className="w-6 h-6" />
             </button>
@@ -82,6 +84,7 @@ export default function Header() {
 
           {/* Right: Theme toggle + User menu or Login */}
           <div className="flex items-center gap-2">
+            <LanguageToggle />
             <ThemeToggle />
 
             {displayedUser ? (
@@ -91,7 +94,7 @@ export default function Header() {
                 to="/login"
                 className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors text-sm"
               >
-                Sign in
+                {t('nav.signIn')}
               </Link>
             )}
           </div>

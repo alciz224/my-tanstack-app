@@ -1,10 +1,11 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { Home, Layers, LayoutDashboard, Shield } from 'lucide-react'
 import type { User } from '@/server/auth'
+import { t } from '@/lib/i18n'
 
 export interface NavLinkItem {
   to: string
-  label: string
+  labelKey: string
   icon: React.ReactNode
   protected?: boolean
   adminOnly?: boolean
@@ -13,26 +14,26 @@ export interface NavLinkItem {
 export const navLinks: Array<NavLinkItem> = [
   {
     to: '/',
-    label: 'Home',
+    labelKey: 'nav.home',
     icon: <Home className="w-5 h-5" />,
     protected: false,
   },
   {
     to: '/dashboard',
-    label: 'Dashboard',
+    labelKey: 'nav.dashboard',
     icon: <LayoutDashboard className="w-5 h-5" />,
     protected: true,
   },
   {
     to: '/admin',
-    label: 'Admin',
+    labelKey: 'nav.admin',
     icon: <Shield className="w-5 h-5" />,
     protected: true,
     adminOnly: true,
   },
   {
     to: '/demo/start/ssr',
-    label: 'Demos',
+    labelKey: 'nav.demos',
     icon: <Layers className="w-5 h-5" />,
     protected: false,
   },
@@ -76,7 +77,7 @@ export function NavLinks({ user, onLinkClick, className = '' }: NavLinksProps) {
             }`}
           >
             {link.icon}
-            <span>{link.label}</span>
+            <span>{t(link.labelKey as any)}</span>
           </Link>
         )
       })}

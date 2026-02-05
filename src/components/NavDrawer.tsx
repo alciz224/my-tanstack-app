@@ -2,6 +2,7 @@ import * as React from 'react'
 import { X } from 'lucide-react'
 import { NavLinks } from './NavLinks'
 import type { User } from '@/server/auth'
+import { t } from '@/lib/i18n'
 
 interface NavDrawerProps {
   isOpen: boolean
@@ -69,7 +70,7 @@ export function NavDrawer({ isOpen, onClose, user }: NavDrawerProps) {
         ref={drawerRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Navigation menu"
+        aria-label={t('nav.openMenu')}
         className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-card border-r border-border shadow-2xl z-[60] overflow-y-auto animate-slide-in-left"
       >
         {/* Header */}
@@ -87,7 +88,7 @@ export function NavDrawer({ isOpen, onClose, user }: NavDrawerProps) {
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-muted transition-colors"
-            aria-label="Close navigation"
+            aria-label={t('nav.closeMenu')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -102,7 +103,7 @@ export function NavDrawer({ isOpen, onClose, user }: NavDrawerProps) {
         <div className="p-4 border-t border-border mt-auto">
           {user ? (
             <div className="text-sm text-muted-foreground">
-              Signed in as <span className="font-semibold text-foreground">{user.email}</span>
+              {t('user.signedInAs')} <span className="font-semibold text-foreground">{user.email}</span>
             </div>
           ) : (
             <div className="space-y-2">
@@ -110,13 +111,13 @@ export function NavDrawer({ isOpen, onClose, user }: NavDrawerProps) {
                 href="/login"
                 className="block px-4 py-2 bg-primary text-primary-foreground text-center rounded-lg hover:bg-primary/90 transition-colors font-semibold"
               >
-                Sign in
+                {t('nav.signIn')}
               </a>
               <a
                 href="/register"
                 className="block px-4 py-2 bg-muted text-foreground text-center rounded-lg hover:bg-muted/80 transition-colors"
               >
-                Sign up
+                {t('nav.signUp')}
               </a>
             </div>
           )}
