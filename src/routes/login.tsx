@@ -156,7 +156,7 @@ function LoginPage() {
   return (
     <AuthCard
       title="Sign in"
-      description="Welcome back."
+      description="Welcome back to EduVault."
       footer={
         <div className="text-center text-sm text-muted-foreground">
           Don't have an account?{' '}
@@ -257,7 +257,7 @@ function LoginPage() {
                 <p className="mt-1">{globalError}</p>
                 {isLocked && (
                   <a
-                    href="mailto:support@example.com"
+                    href="mailto:support@eduvault.app"
                     className="mt-2 inline-block text-sm underline"
                   >
                     Contact Support

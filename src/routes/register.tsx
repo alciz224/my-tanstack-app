@@ -195,7 +195,7 @@ function RegisterPage() {
   return (
     <AuthCard
       title="Create account"
-      description="Join in minutes."
+      description="Join EduVault today."
       footer={
         <div className="text-center text-sm text-muted-foreground">
           Already have an account?{' '}

@@ -78,11 +78,16 @@ export default function Header() {
         >
           <Menu size={24} />
         </button>
-        <h1 className="ml-4 text-xl font-semibold">
-          <Link to="/" className="text-foreground hover:text-primary transition-colors">
-            School Management System
-          </Link>
-        </h1>
+        <Link to="/" className="ml-4 flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md">
+            <span className="text-base font-black text-primary-foreground">
+              EV
+            </span>
+          </div>
+          <span className="text-xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+            EduVault
+          </span>
+        </Link>
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
 

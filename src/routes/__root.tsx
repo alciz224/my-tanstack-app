@@ -29,7 +29,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'School Management System',
+        title: 'EduVault - Academic Management Platform',
       },
     ],
     links: [
