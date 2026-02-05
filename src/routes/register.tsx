@@ -145,15 +145,13 @@ function RegisterPage() {
 
     try {
       const result = await registerFn({
-        data: {
-          email,
-          password,
-          first_name: firstName,
-          last_name: lastName,
-          phone: phone || undefined,
-          terms_accepted: termsAccepted,
-          marketing_opt_in: marketingOptIn,
-        },
+        email,
+        password,
+        first_name: firstName,
+        last_name: lastName,
+        phone: phone || undefined,
+        terms_accepted: termsAccepted,
+        marketing_opt_in: marketingOptIn,
       })
 
       if (!result.success) {

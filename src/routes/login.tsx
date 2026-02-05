@@ -95,11 +95,9 @@ function LoginPage() {
 
     try {
       const result = await loginFn({
-        data: {
-          identifier,
-          password,
-          remember_me: rememberMe,
-        },
+        identifier,
+        password,
+        remember_me: rememberMe,
       })
 
       if (!result.success) {
