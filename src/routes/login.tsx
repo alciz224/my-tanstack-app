@@ -1,8 +1,11 @@
-import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
+import { Link, createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 import * as React from 'react'
 import { emitAuthEvent } from '@/auth/authEvents'
 import { safeRedirectPath } from '@/auth/redirects'
-import { getCurrentUserFn } from '@/server/auth'
+import { getCurrentUserFn, loginFn } from '@/server/auth'
+import { AuthCard } from '@/components/auth/AuthCard'
+import { FormField } from '@/components/auth/FormField'
+import { PasswordInput } from '@/components/auth/PasswordInput'
 
 export const Route = createFileRoute('/login')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -22,115 +25,263 @@ export const Route = createFileRoute('/login')({
 })
 
 function LoginPage() {
-  const [email, setEmail] = React.useState('')
+  const [identifier, setIdentifier] = React.useState('')
   const [password, setPassword] = React.useState('')
-  const [error, setError] = React.useState<string | null>(null)
+  const [rememberMe, setRememberMe] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
+  
+  // Error states
+  const [globalError, setGlobalError] = React.useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({})
+  const [isLocked, setIsLocked] = React.useState(false)
+  const [rateLimitSeconds, setRateLimitSeconds] = React.useState<number | null>(null)
+  
   const router = useRouter()
   const search = Route.useSearch()
+
+  // Countdown timer for rate limiting
+  React.useEffect(() => {
+    if (rateLimitSeconds === null || rateLimitSeconds <= 0) {
+      setRateLimitSeconds(null)
+      return
+    }
+
+    const timer = window.setInterval(() => {
+      setRateLimitSeconds((prev) => {
+        if (prev === null || prev <= 1) {
+          return null
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => {
+      window.clearInterval(timer)
+    }
+  }, [rateLimitSeconds])
+
+  // Validation on blur
+  const validateIdentifier = () => {
+    if (!identifier.trim()) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        identifier: 'Please enter your email, phone, or username',
+      }))
+    } else {
+      setFieldErrors((prev) => {
+        const { identifier: _, ...rest } = prev
+        return rest
+      })
+    }
+  }
+
+  const validatePassword = () => {
+    if (!password) {
+      setFieldErrors((prev) => ({ ...prev, password: 'Please enter your password' }))
+    } else {
+      setFieldErrors((prev) => {
+        const { password: _, ...rest } = prev
+        return rest
+      })
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    setError(null)
+    setGlobalError(null)
+    setFieldErrors({})
+    setIsLocked(false)
+
     try {
-      // Call Django directly from browser (via Vite proxy)
-      // This ensures cookies are set properly in the browser
-      
-      // Step 1: Get CSRF token
-      const csrfRes = await fetch('/api/v2/auth/csrf/', {
-        credentials: 'include',
+      const result = await loginFn({
+        data: {
+          identifier,
+          password,
+          remember_me: rememberMe,
+        },
       })
-      
-      if (!csrfRes.ok) {
-        throw new Error(`Failed to get CSRF token (${csrfRes.status})`)
+
+      if (!result.success) {
+        // Handle specific error codes
+        if (result.errorCode === 'ACCOUNT_LOCKED' || result.error?.includes('locked')) {
+          setIsLocked(true)
+          setGlobalError(
+            'Account temporarily locked. Please contact support or try again later.',
+          )
+        } else if (result.retryAfter) {
+          // Rate limited
+          setRateLimitSeconds(result.retryAfter)
+          setGlobalError(`Too many attempts. Try again in ${result.retryAfter} seconds.`)
+        } else if (result.fieldErrors) {
+          // Field-level validation errors
+          const mappedErrors: Record<string, string> = {}
+          for (const [field, messages] of Object.entries(result.fieldErrors)) {
+            mappedErrors[field] = messages.join(', ')
+          }
+          setFieldErrors(mappedErrors)
+          setGlobalError('Please fix the highlighted fields.')
+        } else if (
+          result.errorCode === 'INVALID_CREDENTIALS' ||
+          result.error?.includes('Invalid') ||
+          result.error?.includes('Incorrect')
+        ) {
+          // 401 - don't reveal which field is wrong
+          setGlobalError('Incorrect identifier or password.')
+          setFieldErrors({
+            identifier: ' ',
+            password: ' ',
+          })
+        } else {
+          // Generic error
+          setGlobalError(result.error || 'Login failed. Please try again.')
+        }
+        return
       }
 
-      const csrfData = await csrfRes.json()
-      const csrfToken = csrfData?.data?.csrf_token
-      
-      if (!csrfToken) {
-        throw new Error('CSRF token not found in response')
-      }
-      
-      // Step 2: Login
-      const loginRes = await fetch('/api/v2/auth/login/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken,
-        },
-        credentials: 'include',
-        body: JSON.stringify({ identifier: email, password }),
-      })
-      
-      if (!loginRes.ok) {
-        let errorMessage = 'Login failed'
-        try {
-          const errorData = await loginRes.json()
-          errorMessage = errorData.message || errorMessage
-        } catch {
-          errorMessage = await loginRes.text()
-        }
-        throw new Error(errorMessage)
-      }
-      
-      // Notify other tabs about login (they will invalidate and redirect)
+      // Success: emit event and navigate
       if (typeof window !== 'undefined') {
         emitAuthEvent('login')
       }
-      
-      // Navigate to the safe redirect destination
+
       const destination = safeRedirectPath(search.from, '/dashboard')
       router.navigate({ to: destination, replace: true })
     } catch (err: any) {
-      setError(err?.message || 'Login failed')
+      setGlobalError(err?.message || 'Network error. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
+  const isSubmitDisabled = loading || rateLimitSeconds !== null || isLocked
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
-        <div className="bg-card border border-border rounded-lg shadow-lg p-8">
-          <h2 className="text-foreground text-2xl font-bold mb-6">Login</h2>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div>
-              <label className="block text-foreground font-medium mb-2">Email</label>
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                type="email"
-                required
-                className="w-full px-3 py-2 rounded-lg bg-background text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-            <div>
-              <label className="block text-foreground font-medium mb-2">Password</label>
-              <input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type="password"
-                required
-                className="w-full px-3 py-2 rounded-lg bg-background text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-            {error && (
-              <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg">
-                {error}
-              </div>
-            )}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold disabled:opacity-60 transition-colors"
-            >
-              {loading ? 'Logging in…' : 'Login'}
-            </button>
-          </form>
+    <AuthCard
+      title="Sign in"
+      description="Welcome back."
+      footer={
+        <div className="text-center text-sm text-muted-foreground">
+          Don't have an account?{' '}
+          <Link
+            to="/register"
+            search={{ from: search.from }}
+            className="text-primary hover:underline font-medium"
+          >
+            Register
+          </Link>
         </div>
-      </div>
-    </div>
+      }
+    >
+      <form onSubmit={onSubmit} className="space-y-4" aria-busy={loading}>
+        <FormField
+          label="Identifier"
+          htmlFor="identifier"
+          required
+          error={fieldErrors.identifier}
+          helperText="Use email, phone, or username"
+        >
+          <input
+            id="identifier"
+            type="text"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            onBlur={validateIdentifier}
+            disabled={loading}
+            required
+            autoComplete="username"
+            aria-invalid={!!fieldErrors.identifier}
+            aria-describedby={fieldErrors.identifier ? 'identifier-error' : undefined}
+            className="w-full px-3 py-2 rounded-lg bg-background text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-ring transition-colors disabled:opacity-50"
+          />
+        </FormField>
+
+        <FormField
+          label="Password"
+          htmlFor="password"
+          required
+          error={fieldErrors.password}
+        >
+          <PasswordInput
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onBlur={validatePassword}
+            disabled={loading}
+            required
+            autoComplete="current-password"
+            aria-invalid={!!fieldErrors.password}
+            aria-describedby={fieldErrors.password ? 'password-error' : undefined}
+          />
+        </FormField>
+
+        <div className="flex items-center">
+          <input
+            id="remember-me"
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            disabled={loading}
+            className="w-4 h-4 text-primary bg-background border-input rounded focus:ring-2 focus:ring-ring"
+          />
+          <label htmlFor="remember-me" className="ml-2 text-sm text-foreground">
+            Remember me
+          </label>
+        </div>
+
+        {/* Global error/alert area */}
+        {globalError && (
+          <div
+            className={`p-3 rounded-lg text-sm ${
+              isLocked
+                ? 'bg-warning/10 border border-warning/20 text-warning'
+                : 'bg-destructive/10 border border-destructive/20 text-destructive'
+            }`}
+            role="alert"
+          >
+            <div className="flex items-start gap-2">
+              <svg
+                className="w-5 h-5 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <div>
+                <p className="font-semibold">
+                  {isLocked ? 'Account Locked' : rateLimitSeconds ? 'Rate Limited' : 'Error'}
+                </p>
+                <p className="mt-1">{globalError}</p>
+                {isLocked && (
+                  <a
+                    href="mailto:support@example.com"
+                    className="mt-2 inline-block text-sm underline"
+                  >
+                    Contact Support
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={isSubmitDisabled}
+          className="w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {loading
+            ? 'Signing in…'
+            : rateLimitSeconds
+              ? `Try again in ${rateLimitSeconds}s`
+              : 'Sign in'}
+        </button>
+      </form>
+    </AuthCard>
   )
 }

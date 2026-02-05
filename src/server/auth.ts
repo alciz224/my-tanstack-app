@@ -72,3 +72,236 @@ export const getCurrentUserFn = createServerFn({ method: 'GET' }).handler(
   },
 )
 
+// ============================================================================
+// Auth mutation server functions
+// ============================================================================
+
+/**
+ * Get CSRF token from Django
+ * Helper used by login/register/logout
+ */
+async function getCsrfToken(cookieHeader?: string): Promise<string> {
+  const headers: HeadersInit = {}
+  if (cookieHeader) {
+    headers['Cookie'] = cookieHeader
+  }
+
+  const res = await fetch(`${BACKEND_URL}/api/v2/auth/csrf/`, {
+    headers,
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error(`Failed to get CSRF token (${res.status})`)
+  }
+
+  const data = await res.json()
+  const token = data?.data?.csrf_token
+
+  if (!token) {
+    throw new Error('CSRF token not found in response')
+  }
+
+  return token
+}
+
+// Login input
+export interface LoginInput {
+  identifier: string
+  password: string
+  remember_me?: boolean
+}
+
+// Login result
+export interface AuthResult {
+  success: boolean
+  user?: User
+  error?: string
+  errorCode?: string
+  fieldErrors?: Record<string, Array<string>>
+  retryAfter?: number // seconds for rate limit
+}
+
+/**
+ * Server function for login
+ * POST /api/v2/auth/login/
+ */
+export const loginFn = createServerFn({ method: 'POST' })
+  .validator((input: LoginInput) => input)
+  .handler(async ({ data, context }) => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const req: Request | undefined = (context as any)?.request || (context as any)?.context?.request
+      const cookieHeader = req?.headers.get('cookie')
+
+      // Get CSRF token
+      const csrfToken = await getCsrfToken(cookieHeader)
+
+      // Call login endpoint
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      }
+      if (cookieHeader) {
+        headers['Cookie'] = cookieHeader
+      }
+
+      const res = await fetch(`${BACKEND_URL}/api/v2/auth/login/`, {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+        body: JSON.stringify(data),
+      })
+
+      const responseData: ApiResponse<{ user: User }> = await res.json()
+
+      if (!res.ok) {
+        const result: AuthResult = {
+          success: false,
+          error: responseData.message || 'Login failed',
+          errorCode: responseData.error?.code,
+        }
+
+        // Handle specific error codes
+        if (res.status === 429) {
+          // Rate limited - extract retry-after if available
+          const retryAfterHeader = res.headers.get('Retry-After')
+          result.retryAfter = retryAfterHeader ? parseInt(retryAfterHeader, 10) : 60
+        } else if (res.status === 400 && responseData.error?.details) {
+          // Field validation errors
+          result.fieldErrors = responseData.error.details
+        }
+
+        return result
+      }
+
+      return {
+        success: true,
+        user: responseData.data?.user,
+      } as AuthResult
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err?.message || 'Network error during login',
+      } as AuthResult
+    }
+  })
+
+// Register input
+export interface RegisterInput {
+  email: string
+  password: string
+  first_name: string
+  last_name: string
+  phone?: string
+  terms_accepted: boolean
+  marketing_opt_in?: boolean
+}
+
+/**
+ * Server function for registration
+ * POST /api/v2/auth/register/
+ */
+export const registerFn = createServerFn({ method: 'POST' })
+  .validator((input: RegisterInput) => input)
+  .handler(async ({ data, context }) => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const req: Request | undefined = (context as any)?.request || (context as any)?.context?.request
+      const cookieHeader = req?.headers.get('cookie')
+
+      // Get CSRF token
+      const csrfToken = await getCsrfToken(cookieHeader)
+
+      // Call register endpoint
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      }
+      if (cookieHeader) {
+        headers['Cookie'] = cookieHeader
+      }
+
+      const res = await fetch(`${BACKEND_URL}/api/v2/auth/register/`, {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+        body: JSON.stringify(data),
+      })
+
+      const responseData: ApiResponse<{ user: User }> = await res.json()
+
+      if (!res.ok) {
+        const result: AuthResult = {
+          success: false,
+          error: responseData.message || 'Registration failed',
+          errorCode: responseData.error?.code,
+        }
+
+        // Handle specific error codes
+        if (res.status === 429) {
+          const retryAfterHeader = res.headers.get('Retry-After')
+          result.retryAfter = retryAfterHeader ? parseInt(retryAfterHeader, 10) : 60
+        } else if (res.status === 400 && responseData.error?.details) {
+          // Field validation errors
+          result.fieldErrors = responseData.error.details
+        } else if (res.status === 409) {
+          // Duplicate user - map to email field
+          result.fieldErrors = {
+            email: [responseData.message || 'An account with this email already exists'],
+          }
+        }
+
+        return result
+      }
+
+      return {
+        success: true,
+        user: responseData.data?.user,
+      } as AuthResult
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err?.message || 'Network error during registration',
+      } as AuthResult
+    }
+  })
+
+/**
+ * Server function for logout
+ * POST /api/v2/auth/logout/
+ */
+export const logoutFn = createServerFn({ method: 'POST' }).handler(
+  async ({ context }) => {
+    try {
+      const req: Request | undefined = (context as any)?.request || (context as any)?.context?.request
+      const cookieHeader = req?.headers.get('cookie')
+
+      // Get CSRF token
+      const csrfToken = await getCsrfToken(cookieHeader)
+
+      // Call logout endpoint
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      }
+      if (cookieHeader) {
+        headers['Cookie'] = cookieHeader
+      }
+
+      await fetch(`${BACKEND_URL}/api/v2/auth/logout/`, {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+      })
+
+      return { success: true }
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err?.message || 'Logout failed',
+      }
+    }
+  },
+)
+

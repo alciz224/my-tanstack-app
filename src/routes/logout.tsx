@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import * as React from 'react'
 import { emitAuthEvent } from '@/auth/authEvents'
+import { logoutFn } from '@/server/auth'
 
 export const Route = createFileRoute('/logout')({
   component: LogoutPage,
@@ -14,40 +15,17 @@ function LogoutPage() {
     ;(async () => {
       setStatus('loading')
       try {
-        // Call Django directly from browser (via Vite proxy)
-        // This ensures cookies are cleared properly in the browser
-        
-        // Step 1: Get CSRF token
-        const csrfRes = await fetch('/api/v2/auth/csrf/', {
-          credentials: 'include',
-        })
-        
-        if (!csrfRes.ok) {
-          throw new Error(`Failed to get CSRF token (${csrfRes.status})`)
+        const result = await logoutFn()
+
+        if (!result.success) {
+          throw new Error(result.error || 'Logout failed')
         }
 
-        const csrfData = await csrfRes.json()
-        const csrfToken = csrfData?.data?.csrf_token
-        
-        if (!csrfToken) {
-          throw new Error('CSRF token not found in response')
-        }
-        
-        // Step 2: Logout
-        await fetch('/api/v2/auth/logout/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-          },
-          credentials: 'include',
-        })
-        
         // Notify other tabs about logout
         if (typeof window !== 'undefined') {
           emitAuthEvent('logout')
         }
-        
+
         setStatus('done')
         window.location.replace('/login')
       } catch (err: any) {

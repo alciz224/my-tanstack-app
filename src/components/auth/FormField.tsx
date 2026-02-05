@@ -11,6 +11,7 @@ export interface FormFieldProps {
 
 /**
  * Reusable form field wrapper with label, error display, and helper text
+ * Properly supports aria-describedby for accessibility
  */
 export function FormField({
   label,
@@ -20,6 +21,9 @@ export function FormField({
   children,
   htmlFor,
 }: FormFieldProps) {
+  const errorId = htmlFor ? `${htmlFor}-error` : undefined
+  const helperId = htmlFor ? `${htmlFor}-helper` : undefined
+
   return (
     <div className="space-y-2">
       <label
@@ -31,12 +35,13 @@ export function FormField({
       </label>
       {children}
       {error && (
-        <p className="text-sm text-destructive flex items-center gap-1">
+        <p id={errorId} className="text-sm text-destructive flex items-center gap-1">
           <svg
             className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -49,7 +54,9 @@ export function FormField({
         </p>
       )}
       {!error && helperText && (
-        <p className="text-sm text-muted-foreground">{helperText}</p>
+        <p id={helperId} className="text-sm text-muted-foreground">
+          {helperText}
+        </p>
       )}
     </div>
   )
