@@ -4,6 +4,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import * as React from 'react'
 
 import Header from '../components/Header'
+import { Sidebar } from '../components/Sidebar'
 
 import appCss from '../styles.css?url'
 
@@ -71,6 +72,17 @@ export const Route = createRootRoute({
 function RootDocument({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
+  // Get user from router state to pass to Sidebar
+  const user = (() => {
+    for (const match of router.state.matches.slice().reverse()) {
+      const ctx = match.context as unknown
+      if (ctx && typeof ctx === 'object' && 'user' in ctx) {
+        return (ctx as { user?: any }).user ?? null
+      }
+    }
+    return null
+  })()
+
   // Subscribe to cross-tab auth events
   React.useEffect(() => {
     const unsubscribe = subscribeAuthEvents((event) => {
@@ -132,8 +144,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <Header />
-        {children}
+        {/* Desktop: grid layout with sidebar + main content */}
+        {/* Mobile/Tablet: single column, sidebar is drawer */}
+        <div className="lg:grid lg:grid-cols-[auto_1fr] min-h-screen">
+          <Sidebar user={user} />
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-1">{children}</main>
+          </div>
+        </div>
+        <Scripts />
         <TanStackDevtools
           config={{
             position: 'bottom-right',
@@ -145,7 +165,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             },
           ]}
         />
-        <Scripts />
       </body>
     </html>
   )
