@@ -2,7 +2,7 @@ import * as React from 'react'
 import { X } from 'lucide-react'
 import { NavLinks } from './NavLinks'
 import type { User } from '@/server/auth'
-import { t } from '@/lib/i18n'
+import { useTranslation } from '@/lib/i18n'
 
 interface NavDrawerProps {
   isOpen: boolean
@@ -15,6 +15,7 @@ interface NavDrawerProps {
  * Overlay with blur backdrop, slide-in animation, focus trap
  */
 export function NavDrawer({ isOpen, onClose, user }: NavDrawerProps) {
+  const { t } = useTranslation()
   const drawerRef = React.useRef<HTMLDivElement>(null)
 
   // Focus trap: focus first link when opened

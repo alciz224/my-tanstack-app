@@ -1,10 +1,11 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Lock, Shield, Users } from 'lucide-react'
-import { t } from '@/lib/i18n'
+import { useTranslation } from '@/lib/i18n'
 
 export const Route = createFileRoute('/')({ component: HomePage })
 
 function HomePage() {
+  const { t } = useTranslation()
   const features = [
     {
       icon: <Users className="w-6 h-6 text-secondary" />,

@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Link } from '@tanstack/react-router'
 import { LogOut, User as UserIcon } from 'lucide-react'
 import type { User } from '@/server/auth'
-import { t } from '@/lib/i18n'
+import { useTranslation } from '@/lib/i18n'
 
 interface UserMenuProps {
   user: User
@@ -14,6 +14,7 @@ interface UserMenuProps {
  * Works across all viewport sizes
  */
 export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = React.useState(false)
 
   return (
@@ -75,13 +76,12 @@ export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
                   </span>
                 )}
                 <span
-                  className={`text-xs px-2 py-1 rounded-full ${
-                    user.security.level === 'high'
+                  className={`text-xs px-2 py-1 rounded-full ${user.security.level === 'high'
                       ? 'bg-success/10 text-success border border-success/20'
                       : user.security.level === 'medium'
                         ? 'bg-warning/10 text-warning border border-warning/20'
                         : 'bg-destructive/10 text-destructive border border-destructive/20'
-                  }`}
+                    }`}
                 >
                   {t('user.security')}: {user.security.level}
                 </span>

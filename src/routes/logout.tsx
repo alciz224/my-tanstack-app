@@ -2,18 +2,19 @@ import { createFileRoute } from '@tanstack/react-router'
 import * as React from 'react'
 import { emitAuthEvent } from '@/auth/authEvents'
 import { logoutFn } from '@/server/auth'
-import { t } from '@/lib/i18n'
+import { useTranslation } from '@/lib/i18n'
 
 export const Route = createFileRoute('/logout')({
   component: LogoutPage,
 })
 
 function LogoutPage() {
+  const { t } = useTranslation()
   const [status, setStatus] = React.useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [error, setError] = React.useState<string | null>(null)
 
   React.useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       setStatus('loading')
       try {
         const result = await logoutFn()

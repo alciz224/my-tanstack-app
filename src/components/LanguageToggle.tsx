@@ -1,34 +1,27 @@
 import * as React from 'react'
+import { useLanguageStore } from '@/stores/languageStore'
 import type { Language } from '@/lib/i18n'
-import { getLanguage, setLanguage } from '@/lib/i18n'
 
 export function LanguageToggle() {
-  const [lang, setLangState] = React.useState<Language>(getLanguage())
-
-  function change(newLang: Language) {
-    setLanguage(newLang)
-    setLangState(newLang)
-  }
+  const { language, setLanguage } = useLanguageStore()
 
   return (
     <div className="flex items-center gap-1" role="group" aria-label="Language">
       <button
         type="button"
-        onClick={() => change('fr')}
-        className={`px-2 py-1 rounded-md text-sm font-medium border ${
-          lang === 'fr' ? 'bg-muted text-foreground border-border' : 'text-muted-foreground border-transparent hover:bg-muted'
-        }`}
-        aria-pressed={lang === 'fr'}
+        onClick={() => setLanguage('fr')}
+        className={`px-2 py-1 rounded-md text-sm font-medium border ${language === 'fr' ? 'bg-muted text-foreground border-border' : 'text-muted-foreground border-transparent hover:bg-muted'
+          }`}
+        aria-pressed={language === 'fr'}
       >
         FR
       </button>
       <button
         type="button"
-        onClick={() => change('en')}
-        className={`px-2 py-1 rounded-md text-sm font-medium border ${
-          lang === 'en' ? 'bg-muted text-foreground border-border' : 'text-muted-foreground border-transparent hover:bg-muted'
-        }`}
-        aria-pressed={lang === 'en'}
+        onClick={() => setLanguage('en')}
+        className={`px-2 py-1 rounded-md text-sm font-medium border ${language === 'en' ? 'bg-muted text-foreground border-border' : 'text-muted-foreground border-transparent hover:bg-muted'
+          }`}
+        aria-pressed={language === 'en'}
       >
         EN
       </button>

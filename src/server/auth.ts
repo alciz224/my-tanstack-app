@@ -160,7 +160,7 @@ export async function loginFn(data: LoginInput): Promise<AuthResult> {
     const contentType = res.headers.get('content-type') || ''
     try {
       responseData = contentType.includes('application/json') ? await res.json() : null
-    } catch {}
+    } catch { }
 
     if (!res.ok) {
       const bodyText = responseData ? '' : await res.text().catch(() => '')
@@ -201,13 +201,14 @@ export async function loginFn(data: LoginInput): Promise<AuthResult> {
   }
 }
 
-// Register input
+// Register input (matches V2 API contract)
 export interface RegisterInput {
   email: string
+  phone?: string
   password: string
+  password_confirm: string
   first_name: string
   last_name: string
-  phone?: string
   terms_accepted: boolean
   marketing_opt_in?: boolean
 }
@@ -250,7 +251,7 @@ export async function registerFn(data: RegisterInput): Promise<AuthResult> {
     const contentType = res.headers.get('content-type') || ''
     try {
       responseData = contentType.includes('application/json') ? await res.json() : null
-    } catch {}
+    } catch { }
 
     if (!res.ok) {
       const bodyText = responseData ? '' : await res.text().catch(() => '')
@@ -331,7 +332,7 @@ export async function logoutFn(): Promise<{ success: boolean; error?: string }> 
 
     if (!res.ok && import.meta.env.MODE !== 'production') {
       let body = ''
-      try { body = await res.text() } catch {}
+      try { body = await res.text() } catch { }
       console.error('[logoutFn] HTTP error', { status: res.status, bodyPreview: body.slice(0, 300) })
     }
 

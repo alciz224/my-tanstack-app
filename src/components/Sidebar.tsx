@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { NavLinks } from './NavLinks'
 import type { User } from '@/server/auth'
-import { t } from '@/lib/i18n'
+import { useTranslation } from '@/lib/i18n'
 
 interface SidebarProps {
   user: User | null
@@ -12,6 +12,7 @@ interface SidebarProps {
  * Always visible on large screens
  */
 export function Sidebar({ user }: SidebarProps) {
+  const { t } = useTranslation()
   return (
     <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:border-r lg:border-border lg:bg-card lg:fixed lg:left-0 lg:top-0 lg:h-screen">
       {/* Logo/brand */}

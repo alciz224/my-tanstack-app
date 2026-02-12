@@ -72,8 +72,6 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  // Initialize language from localStorage (defaults to fr)
-  initLanguage()
   const router = useRouter()
 
   // Get user from router state to pass to Sidebar

@@ -1,7 +1,7 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { Home, Layers, LayoutDashboard, Shield } from 'lucide-react'
 import type { User } from '@/server/auth'
-import { t } from '@/lib/i18n'
+import { useTranslation } from '@/lib/i18n'
 
 export interface NavLinkItem {
   to: string
@@ -50,6 +50,7 @@ interface NavLinksProps {
  * Used in both Sidebar (desktop) and NavDrawer (mobile/tablet)
  */
 export function NavLinks({ user, onLinkClick, className = '' }: NavLinksProps) {
+  const { t } = useTranslation()
   const routerState = useRouterState()
   const currentPath = routerState.location.pathname
 
@@ -70,11 +71,10 @@ export function NavLinks({ user, onLinkClick, className = '' }: NavLinksProps) {
             key={link.to}
             to={link.to}
             onClick={onLinkClick}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors ${
-              isActive
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors ${isActive
                 ? 'bg-primary text-primary-foreground shadow-sm'
                 : 'text-foreground hover:bg-muted'
-            }`}
+              }`}
           >
             {link.icon}
             <span>{t(link.labelKey as any)}</span>

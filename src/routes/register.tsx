@@ -7,6 +7,8 @@ import { AuthCard } from '@/components/auth/AuthCard'
 import { FormField } from '@/components/auth/FormField'
 import { PasswordInput } from '@/components/auth/PasswordInput'
 import { PasswordStrength } from '@/components/auth/PasswordStrength'
+import { useTranslation } from '@/lib/i18n'
+import { formatPhoneNumber } from '@/lib/validation'
 
 export const Route = createFileRoute('/register')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -26,8 +28,11 @@ export const Route = createFileRoute('/register')({
 })
 
 function RegisterPage() {
+  const { t } = useTranslation()
+
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
+  const [passwordConfirm, setPasswordConfirm] = React.useState('')
   const [firstName, setFirstName] = React.useState('')
   const [lastName, setLastName] = React.useState('')
   const [phone, setPhone] = React.useState('')
@@ -67,9 +72,9 @@ function RegisterPage() {
   // Validation on blur
   const validateEmail = () => {
     if (!email.trim()) {
-      setFieldErrors((prev) => ({ ...prev, email: 'Email is required' }))
+      setFieldErrors((prev) => ({ ...prev, email: t('errors.required', { field: t('auth.email') }) }))
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setFieldErrors((prev) => ({ ...prev, email: 'Please enter a valid email address' }))
+      setFieldErrors((prev) => ({ ...prev, email: t('errors.invalidEmail') }))
     } else {
       setFieldErrors((prev) => {
         const { email: _, ...rest } = prev
@@ -80,11 +85,11 @@ function RegisterPage() {
 
   const validatePassword = () => {
     if (!password) {
-      setFieldErrors((prev) => ({ ...prev, password: 'Password is required' }))
+      setFieldErrors((prev) => ({ ...prev, password: t('errors.required', { field: t('auth.password') }) }))
     } else if (password.length < 8) {
       setFieldErrors((prev) => ({
         ...prev,
-        password: 'Password must be at least 8 characters',
+        password: t('errors.passwordMinLength'),
       }))
     } else {
       setFieldErrors((prev) => {
@@ -94,9 +99,25 @@ function RegisterPage() {
     }
   }
 
+  const validatePasswordConfirm = () => {
+    if (!passwordConfirm) {
+      setFieldErrors((prev) => ({ ...prev, password_confirm: t('errors.required', { field: t('auth.confirmPassword') }) }))
+    } else if (password !== passwordConfirm) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        password_confirm: t('errors.passwordMismatch'),
+      }))
+    } else {
+      setFieldErrors((prev) => {
+        const { password_confirm: _, ...rest } = prev
+        return rest
+      })
+    }
+  }
+
   const validateFirstName = () => {
     if (!firstName.trim()) {
-      setFieldErrors((prev) => ({ ...prev, first_name: 'First name is required' }))
+      setFieldErrors((prev) => ({ ...prev, first_name: t('errors.required', { field: t('auth.firstName') }) }))
     } else {
       setFieldErrors((prev) => {
         const { first_name: _, ...rest } = prev
@@ -107,7 +128,7 @@ function RegisterPage() {
 
   const validateLastName = () => {
     if (!lastName.trim()) {
-      setFieldErrors((prev) => ({ ...prev, last_name: 'Last name is required' }))
+      setFieldErrors((prev) => ({ ...prev, last_name: t('errors.required', { field: t('auth.lastName') }) }))
     } else {
       setFieldErrors((prev) => {
         const { last_name: _, ...rest } = prev
@@ -117,8 +138,8 @@ function RegisterPage() {
   }
 
   const validatePhone = () => {
-    if (phone && !/^[\d\s\-+()]+$/.test(phone)) {
-      setFieldErrors((prev) => ({ ...prev, phone: 'Please enter a valid phone number' }))
+    if (phone && !/^\+224[0-9]{9}$/.test(phone)) {
+      setFieldErrors((prev) => ({ ...prev, phone: t('errors.invalidPhone') }))
     } else {
       setFieldErrors((prev) => {
         const { phone: _, ...rest } = prev
@@ -134,7 +155,16 @@ function RegisterPage() {
     if (!termsAccepted) {
       setFieldErrors((prev) => ({
         ...prev,
-        terms_accepted: 'You must accept the Terms to continue',
+        terms_accepted: t('errors.termsRequired'),
+      }))
+      return
+    }
+
+    // Client-side password match check
+    if (password !== passwordConfirm) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        password_confirm: t('errors.passwordMismatch'),
       }))
       return
     }
@@ -147,6 +177,7 @@ function RegisterPage() {
       const result = await registerFn({
         email,
         password,
+        password_confirm: passwordConfirm,
         first_name: firstName,
         last_name: lastName,
         phone: phone || undefined,
@@ -159,7 +190,7 @@ function RegisterPage() {
         if (result.retryAfter) {
           // Rate limited
           setRateLimitSeconds(result.retryAfter)
-          setGlobalError(`Too many attempts. Try again in ${result.retryAfter} seconds.`)
+          setGlobalError(t('errors.rateLimitMessage', { seconds: result.retryAfter }))
         } else if (result.fieldErrors) {
           // Field-level validation errors
           const mappedErrors: Record<string, string> = {}
@@ -167,10 +198,10 @@ function RegisterPage() {
             mappedErrors[field] = messages.join(', ')
           }
           setFieldErrors(mappedErrors)
-          setGlobalError('Please fix the highlighted fields.')
+          setGlobalError(t('errors.fixFields'))
         } else {
           // Generic error
-          setGlobalError(result.error || 'Registration failed. Please try again.')
+          setGlobalError(result.error || t('errors.generic'))
         }
         return
       }
@@ -184,7 +215,7 @@ function RegisterPage() {
       const destination = safeRedirectPath(search.from, '/dashboard')
       router.navigate({ to: destination, replace: true })
     } catch (err: any) {
-      setGlobalError(err?.message || 'Network error. Please try again.')
+      setGlobalError(err?.message || t('errors.network'))
     } finally {
       setLoading(false)
     }
@@ -210,53 +241,7 @@ function RegisterPage() {
       }
     >
       <form onSubmit={onSubmit} className="space-y-4" aria-busy={loading}>
-        <FormField
-          label={t('auth.email')}
-          htmlFor="email"
-          required
-          error={fieldErrors.email}
-        >
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onBlur={validateEmail}
-            disabled={loading}
-            required
-            autoComplete="email"
-            aria-invalid={!!fieldErrors.email}
-            aria-describedby={fieldErrors.email ? 'email-error' : undefined}
-            className="w-full px-3 py-2 rounded-lg bg-background text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-ring transition-colors disabled:opacity-50"
-          />
-        </FormField>
-
-        <FormField
-          label={t('auth.password')}
-          htmlFor="password"
-          required
-          error={fieldErrors.password}
-        >
-          <PasswordInput
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onBlur={validatePassword}
-            disabled={loading}
-            required
-            autoComplete="new-password"
-            aria-invalid={!!fieldErrors.password}
-            aria-describedby={
-              fieldErrors.password ? 'password-error' : 'password-strength'
-            }
-          />
-          {password && (
-            <div id="password-strength" className="mt-2">
-              <PasswordStrength password={password} showRequirements />
-            </div>
-          )}
-        </FormField>
-
+        {/* Name fields */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField
             label={t('auth.firstName')}
@@ -299,24 +284,97 @@ function RegisterPage() {
           </FormField>
         </div>
 
+        {/* Email */}
+        <FormField
+          label={t('auth.email')}
+          htmlFor="email"
+          required
+          error={fieldErrors.email}
+        >
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onBlur={validateEmail}
+            disabled={loading}
+            required
+            autoComplete="email"
+            aria-invalid={!!fieldErrors.email}
+            aria-describedby={fieldErrors.email ? 'email-error' : undefined}
+            className="w-full px-3 py-2 rounded-lg bg-background text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-ring transition-colors disabled:opacity-50"
+          />
+        </FormField>
+
+        {/* Phone (optional) */}
         <FormField
           label={t('auth.phone')}
           htmlFor="phone"
           error={fieldErrors.phone}
+          helperText={t('auth.phoneHelper')}
         >
           <input
             id="phone"
             type="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
             onBlur={validatePhone}
             disabled={loading}
             autoComplete="tel"
+            placeholder="+224"
             aria-invalid={!!fieldErrors.phone}
             className="w-full px-3 py-2 rounded-lg bg-background text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-ring transition-colors disabled:opacity-50"
           />
         </FormField>
 
+        {/* Password */}
+        <FormField
+          label={t('auth.password')}
+          htmlFor="password"
+          required
+          error={fieldErrors.password}
+        >
+          <PasswordInput
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onBlur={validatePassword}
+            disabled={loading}
+            required
+            autoComplete="new-password"
+            aria-invalid={!!fieldErrors.password}
+            aria-describedby={
+              fieldErrors.password ? 'password-error' : 'password-strength'
+            }
+          />
+          {password && (
+            <div id="password-strength" className="mt-2">
+              <PasswordStrength password={password} showRequirements />
+            </div>
+          )}
+        </FormField>
+
+        {/* Password Confirm */}
+        <FormField
+          label={t('auth.confirmPassword')}
+          htmlFor="password-confirm"
+          required
+          error={fieldErrors.password_confirm}
+        >
+          <PasswordInput
+            id="password-confirm"
+            value={passwordConfirm}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            onBlur={validatePasswordConfirm}
+            disabled={loading}
+            required
+            autoComplete="new-password"
+            aria-invalid={!!fieldErrors.password_confirm}
+            aria-describedby={fieldErrors.password_confirm ? 'password-confirm-error' : undefined}
+          />
+        </FormField>
+
+        {/* Terms & Marketing */}
         <div className="space-y-3">
           <div className="flex items-start">
             <input

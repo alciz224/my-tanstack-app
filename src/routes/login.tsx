@@ -6,7 +6,7 @@ import { getCurrentUserFn, loginFn } from '@/server/auth'
 import { AuthCard } from '@/components/auth/AuthCard'
 import { FormField } from '@/components/auth/FormField'
 import { PasswordInput } from '@/components/auth/PasswordInput'
-import { t } from '@/lib/i18n'
+import { useTranslation } from '@/lib/i18n'
 
 export const Route = createFileRoute('/login')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -26,17 +26,18 @@ export const Route = createFileRoute('/login')({
 })
 
 function LoginPage() {
+  const { t } = useTranslation()
   const [identifier, setIdentifier] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [rememberMe, setRememberMe] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
-  
+
   // Error states
   const [globalError, setGlobalError] = React.useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({})
   const [isLocked, setIsLocked] = React.useState(false)
   const [rateLimitSeconds, setRateLimitSeconds] = React.useState<number | null>(null)
-  
+
   const router = useRouter()
   const search = Route.useSearch()
 
@@ -230,11 +231,10 @@ function LoginPage() {
         {/* Global error/alert area */}
         {globalError && (
           <div
-            className={`p-3 rounded-lg text-sm ${
-              isLocked
+            className={`p-3 rounded-lg text-sm ${isLocked
                 ? 'bg-warning/10 border border-warning/20 text-warning'
                 : 'bg-destructive/10 border border-destructive/20 text-destructive'
-            }`}
+              }`}
             role="alert"
           >
             <div className="flex items-start gap-2">

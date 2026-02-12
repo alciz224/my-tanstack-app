@@ -3,7 +3,7 @@
  * No external dependencies, lightweight
  */
 
-export type Language = 'en' | 'fr'
+import { useLanguageStore, type Language } from '@/stores/languageStore'
 
 const translations = {
   en: {
@@ -45,6 +45,8 @@ const translations = {
       firstName: 'First name',
       lastName: 'Last name',
       phone: 'Phone (optional)',
+      phoneHelper: 'Format: +224XXXXXXXXX',
+      confirmPassword: 'Confirm password',
       termsAccept: 'I accept the',
       termsService: 'Terms of Service',
       and: 'and',
@@ -72,6 +74,7 @@ const translations = {
       invalidEmail: 'Please enter a valid email address',
       invalidPhone: 'Please enter a valid phone number',
       passwordMinLength: 'Password must be at least 8 characters',
+      passwordMismatch: 'Passwords do not match',
       termsRequired: 'You must accept the Terms to continue',
       logoutFailed: 'Logout Failed',
     },
@@ -159,6 +162,8 @@ const translations = {
       firstName: 'Prénom',
       lastName: 'Nom',
       phone: 'Téléphone (optionnel)',
+      phoneHelper: 'Format : +224XXXXXXXXX',
+      confirmPassword: 'Confirmer le mot de passe',
       termsAccept: "J'accepte les",
       termsService: "Conditions d'utilisation",
       and: 'et la',
@@ -186,6 +191,7 @@ const translations = {
       invalidEmail: 'Veuillez saisir une adresse email valide',
       invalidPhone: 'Veuillez saisir un numéro de téléphone valide',
       passwordMinLength: 'Le mot de passe doit contenir au moins 8 caractères',
+      passwordMismatch: 'Les mots de passe ne correspondent pas',
       termsRequired: 'Vous devez accepter les Conditions pour continuer',
       logoutFailed: 'Échec de la Déconnexion',
     },
@@ -235,41 +241,15 @@ const translations = {
   },
 } as const
 
-// Current language (default to French as requested)
-let currentLanguage: Language = 'fr'
-
-export function setLanguage(lang: Language) {
-  currentLanguage = lang
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('eduvault-lang', lang)
-  }
-}
-
-export function getLanguage(): Language {
-  if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('eduvault-lang')
-    if (stored === 'en' || stored === 'fr') {
-      return stored
-    }
-  }
-  return currentLanguage
-}
-
-export function initLanguage() {
-  if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('eduvault-lang')
-    if (stored === 'en' || stored === 'fr') {
-      currentLanguage = stored
-    }
-  }
-}
+// Re-export Language type for convenience
+export type { Language }
 
 type NestedKeyOf<TObject> = TObject extends object
   ? {
-      [Key in keyof TObject & (string | number)]: TObject[Key] extends object
-        ? `${Key}` | `${Key}.${NestedKeyOf<TObject[Key]>}`
-        : `${Key}`
-    }[keyof TObject & (string | number)]
+    [Key in keyof TObject & (string | number)]: TObject[Key] extends object
+    ? `${Key}` | `${Key}.${NestedKeyOf<TObject[Key]>}`
+    : `${Key}`
+  }[keyof TObject & (string | number)]
   : never
 
 type TranslationKey = NestedKeyOf<typeof translations.en>
@@ -278,11 +258,11 @@ export function t(
   key: TranslationKey,
   params?: Record<string, string | number>,
 ): string {
-  const lang = getLanguage()
+  const lang = useLanguageStore.getState().language
   const keys = key.split('.')
-  
+
   let value: any = translations[lang]
-  
+
   for (const k of keys) {
     if (value && typeof value === 'object' && k in value) {
       value = value[k]
@@ -309,4 +289,48 @@ export function t(
   }
 
   return typeof value === 'string' ? value : key
+}
+
+/**
+ * Reactive translation hook that subscribes to language changes
+ * Use this in components to ensure they re-render when language changes
+ */
+export function useTranslation() {
+  const language = useLanguageStore((state) => state.language)
+
+  return {
+    t: (key: TranslationKey, params?: Record<string, string | number>) => {
+      const keys = key.split('.')
+
+      let value: any = translations[language]
+
+      for (const k of keys) {
+        if (value && typeof value === 'object' && k in value) {
+          value = value[k]
+        } else {
+          // Fallback to English if key not found
+          value = translations.en
+          for (const fallbackKey of keys) {
+            if (value && typeof value === 'object' && fallbackKey in value) {
+              value = value[fallbackKey]
+            } else {
+              return key // Return key if not found at all
+            }
+          }
+          break
+        }
+      }
+
+      if (typeof value === 'string' && params) {
+        return Object.entries(params).reduce(
+          (acc, [paramKey, paramValue]) =>
+            acc.replace(`{${paramKey}}`, String(paramValue)),
+          value,
+        )
+      }
+
+      return typeof value === 'string' ? value : key
+    },
+    language,
+  }
 }

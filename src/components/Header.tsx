@@ -6,9 +6,10 @@ import { LanguageToggle } from './LanguageToggle'
 import { UserMenu } from './UserMenu'
 import { NavDrawer } from './NavDrawer'
 import type { User } from '@/server/auth'
-import { t } from '@/lib/i18n'
+import { useTranslation } from '@/lib/i18n'
 
 export default function Header() {
+  const { t } = useTranslation()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   // Get user from router context (root route provides it for public + protected pages)
