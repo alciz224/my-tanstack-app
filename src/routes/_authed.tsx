@@ -1,12 +1,11 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
-import { getCurrentUserFn } from '@/server/auth'
 import { buildFromParameter } from '@/auth/redirects'
-
-
+import Header from '@/components/Header'
+import { Sidebar } from '@/components/Sidebar'
 
 export const Route = createFileRoute('/_authed')({
   beforeLoad: async ({ location, context }) => {
-    const user = context.user ?? (await getCurrentUserFn())
+    const user = context.user
     if (!user) {
       // Build a safe internal path (not full href) for post-login redirect
       const from = buildFromParameter(location)
@@ -18,9 +17,17 @@ export const Route = createFileRoute('/_authed')({
 })
 
 function AuthedLayout() {
+  const { user } = Route.useRouteContext()
+
   return (
-    <div className="min-h-15">
-      <Outlet />
+    <div className="min-h-screen bg-background">
+      <Sidebar user={user} />
+      <div className="flex flex-col min-h-screen lg:ml-64">
+        <Header />
+        <main className="flex-1 p-6">
+          <Outlet />
+        </main>
+      </div>
     </div>
   )
 }

@@ -10,13 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
-import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LogoutRouteImport } from './routes/logout'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthedRouteImport } from './routes/_authed'
+import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
-import { Route as AuthedAdminRouteImport } from './routes/_authed/admin'
+import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
+import { Route as AuthLoginRouteImport } from './routes/_auth/login'
+import { Route as AuthedTeacherRouteRouteImport } from './routes/_authed/teacher.route'
+import { Route as AuthedStudentRouteRouteImport } from './routes/_authed/student.route'
+import { Route as AuthedAdminRouteRouteImport } from './routes/_authed/admin.route'
+import { Route as AuthedTeacherIndexRouteImport } from './routes/_authed/teacher/index'
+import { Route as AuthedStudentIndexRouteImport } from './routes/_authed/student/index'
+import { Route as AuthedAdminIndexRouteImport } from './routes/_authed/admin/index'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
 import { Route as DemoApiNamesRouteImport } from './routes/demo/api.names'
@@ -30,23 +36,17 @@ const UnauthorizedRoute = UnauthorizedRouteImport.update({
   path: '/unauthorized',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RegisterRoute = RegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LogoutRoute = LogoutRouteImport.update({
   id: '/logout',
   path: '/logout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthedRoute = AuthedRouteImport.update({
   id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -59,10 +59,45 @@ const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedAdminRoute = AuthedAdminRouteImport.update({
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthedTeacherRouteRoute = AuthedTeacherRouteRouteImport.update({
+  id: '/teacher',
+  path: '/teacher',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedStudentRouteRoute = AuthedStudentRouteRouteImport.update({
+  id: '/student',
+  path: '/student',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedAdminRouteRoute = AuthedAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedTeacherIndexRoute = AuthedTeacherIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthedTeacherRouteRoute,
+} as any)
+const AuthedStudentIndexRoute = AuthedStudentIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthedStudentRouteRoute,
+} as any)
+const AuthedAdminIndexRoute = AuthedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthedAdminRouteRoute,
 } as any)
 const DemoStartServerFuncsRoute = DemoStartServerFuncsRouteImport.update({
   id: '/demo/start/server-funcs',
@@ -102,15 +137,20 @@ const DemoStartSsrDataOnlyRoute = DemoStartSsrDataOnlyRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
-  '/register': typeof RegisterRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin': typeof AuthedAdminRoute
+  '/admin': typeof AuthedAdminRouteRouteWithChildren
+  '/student': typeof AuthedStudentRouteRouteWithChildren
+  '/teacher': typeof AuthedTeacherRouteRouteWithChildren
+  '/login': typeof AuthLoginRoute
+  '/register': typeof AuthRegisterRoute
   '/dashboard': typeof AuthedDashboardRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/admin/': typeof AuthedAdminIndexRoute
+  '/student/': typeof AuthedStudentIndexRoute
+  '/teacher/': typeof AuthedTeacherIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -118,15 +158,17 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
-  '/register': typeof RegisterRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin': typeof AuthedAdminRoute
+  '/login': typeof AuthLoginRoute
+  '/register': typeof AuthRegisterRoute
   '/dashboard': typeof AuthedDashboardRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/admin': typeof AuthedAdminIndexRoute
+  '/student': typeof AuthedStudentIndexRoute
+  '/teacher': typeof AuthedTeacherIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -135,16 +177,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_auth': typeof AuthRouteWithChildren
   '/_authed': typeof AuthedRouteWithChildren
-  '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
-  '/register': typeof RegisterRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/_authed/admin': typeof AuthedAdminRoute
+  '/_authed/admin': typeof AuthedAdminRouteRouteWithChildren
+  '/_authed/student': typeof AuthedStudentRouteRouteWithChildren
+  '/_authed/teacher': typeof AuthedTeacherRouteRouteWithChildren
+  '/_auth/login': typeof AuthLoginRoute
+  '/_auth/register': typeof AuthRegisterRoute
   '/_authed/dashboard': typeof AuthedDashboardRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/_authed/admin/': typeof AuthedAdminIndexRoute
+  '/_authed/student/': typeof AuthedStudentIndexRoute
+  '/_authed/teacher/': typeof AuthedTeacherIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -154,15 +202,20 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/login'
     | '/logout'
-    | '/register'
     | '/unauthorized'
     | '/admin'
+    | '/student'
+    | '/teacher'
+    | '/login'
+    | '/register'
     | '/dashboard'
     | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/admin/'
+    | '/student/'
+    | '/teacher/'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -170,15 +223,17 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/login'
     | '/logout'
-    | '/register'
     | '/unauthorized'
-    | '/admin'
+    | '/login'
+    | '/register'
     | '/dashboard'
     | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/admin'
+    | '/student'
+    | '/teacher'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -186,16 +241,22 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_auth'
     | '/_authed'
-    | '/login'
     | '/logout'
-    | '/register'
     | '/unauthorized'
     | '/_authed/admin'
+    | '/_authed/student'
+    | '/_authed/teacher'
+    | '/_auth/login'
+    | '/_auth/register'
     | '/_authed/dashboard'
     | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/_authed/admin/'
+    | '/_authed/student/'
+    | '/_authed/teacher/'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -204,10 +265,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRouteWithChildren
   AuthedRoute: typeof AuthedRouteWithChildren
-  LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
-  RegisterRoute: typeof RegisterRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoStartApiRequestRoute: typeof DemoStartApiRequestRoute
@@ -227,13 +287,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnauthorizedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/logout': {
       id: '/logout'
       path: '/logout'
@@ -241,18 +294,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LogoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authed': {
       id: '/_authed'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -269,12 +322,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedDashboardRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_auth/register': {
+      id: '/_auth/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/login': {
+      id: '/_auth/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_authed/teacher': {
+      id: '/_authed/teacher'
+      path: '/teacher'
+      fullPath: '/teacher'
+      preLoaderRoute: typeof AuthedTeacherRouteRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/student': {
+      id: '/_authed/student'
+      path: '/student'
+      fullPath: '/student'
+      preLoaderRoute: typeof AuthedStudentRouteRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/admin': {
       id: '/_authed/admin'
       path: '/admin'
       fullPath: '/admin'
-      preLoaderRoute: typeof AuthedAdminRouteImport
+      preLoaderRoute: typeof AuthedAdminRouteRouteImport
       parentRoute: typeof AuthedRoute
+    }
+    '/_authed/teacher/': {
+      id: '/_authed/teacher/'
+      path: '/'
+      fullPath: '/teacher/'
+      preLoaderRoute: typeof AuthedTeacherIndexRouteImport
+      parentRoute: typeof AuthedTeacherRouteRoute
+    }
+    '/_authed/student/': {
+      id: '/_authed/student/'
+      path: '/'
+      fullPath: '/student/'
+      preLoaderRoute: typeof AuthedStudentIndexRouteImport
+      parentRoute: typeof AuthedStudentRouteRoute
+    }
+    '/_authed/admin/': {
+      id: '/_authed/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthedAdminIndexRouteImport
+      parentRoute: typeof AuthedAdminRouteRoute
     }
     '/demo/start/server-funcs': {
       id: '/demo/start/server-funcs'
@@ -328,13 +430,62 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthRouteChildren {
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegisterRoute: typeof AuthRegisterRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface AuthedAdminRouteRouteChildren {
+  AuthedAdminIndexRoute: typeof AuthedAdminIndexRoute
+}
+
+const AuthedAdminRouteRouteChildren: AuthedAdminRouteRouteChildren = {
+  AuthedAdminIndexRoute: AuthedAdminIndexRoute,
+}
+
+const AuthedAdminRouteRouteWithChildren =
+  AuthedAdminRouteRoute._addFileChildren(AuthedAdminRouteRouteChildren)
+
+interface AuthedStudentRouteRouteChildren {
+  AuthedStudentIndexRoute: typeof AuthedStudentIndexRoute
+}
+
+const AuthedStudentRouteRouteChildren: AuthedStudentRouteRouteChildren = {
+  AuthedStudentIndexRoute: AuthedStudentIndexRoute,
+}
+
+const AuthedStudentRouteRouteWithChildren =
+  AuthedStudentRouteRoute._addFileChildren(AuthedStudentRouteRouteChildren)
+
+interface AuthedTeacherRouteRouteChildren {
+  AuthedTeacherIndexRoute: typeof AuthedTeacherIndexRoute
+}
+
+const AuthedTeacherRouteRouteChildren: AuthedTeacherRouteRouteChildren = {
+  AuthedTeacherIndexRoute: AuthedTeacherIndexRoute,
+}
+
+const AuthedTeacherRouteRouteWithChildren =
+  AuthedTeacherRouteRoute._addFileChildren(AuthedTeacherRouteRouteChildren)
+
 interface AuthedRouteChildren {
-  AuthedAdminRoute: typeof AuthedAdminRoute
+  AuthedAdminRouteRoute: typeof AuthedAdminRouteRouteWithChildren
+  AuthedStudentRouteRoute: typeof AuthedStudentRouteRouteWithChildren
+  AuthedTeacherRouteRoute: typeof AuthedTeacherRouteRouteWithChildren
   AuthedDashboardRoute: typeof AuthedDashboardRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
-  AuthedAdminRoute: AuthedAdminRoute,
+  AuthedAdminRouteRoute: AuthedAdminRouteRouteWithChildren,
+  AuthedStudentRouteRoute: AuthedStudentRouteRouteWithChildren,
+  AuthedTeacherRouteRoute: AuthedTeacherRouteRouteWithChildren,
   AuthedDashboardRoute: AuthedDashboardRoute,
 }
 
@@ -343,10 +494,9 @@ const AuthedRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRouteWithChildren,
   AuthedRoute: AuthedRouteWithChildren,
-  LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
-  RegisterRoute: RegisterRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoStartApiRequestRoute: DemoStartApiRequestRoute,

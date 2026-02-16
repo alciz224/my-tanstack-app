@@ -14,7 +14,7 @@ export interface User {
   full_name: string
   is_verified: boolean
   is_active: boolean
-  role?: string  // For role-based authorization
+  role: string  // For role-based authorization
   security: {
     score: number
     level: 'low' | 'medium' | 'high'

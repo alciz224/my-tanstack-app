@@ -45,12 +45,14 @@ export function Sidebar({ user }: SidebarProps) {
           <div className="space-y-2">
             <Link
               to="/login"
+              search={{ from: undefined }}
               className="block px-4 py-2 text-sm bg-primary text-primary-foreground text-center rounded-lg hover:bg-primary/90 transition-colors font-semibold"
             >
               {t('nav.signIn')}
             </Link>
             <Link
               to="/register"
+              search={{ from: undefined }}
               className="block px-4 py-2 text-sm bg-muted text-foreground text-center rounded-lg hover:bg-muted/80 transition-colors"
             >
               {t('nav.signUp')}

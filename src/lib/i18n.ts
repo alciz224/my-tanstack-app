@@ -24,6 +24,10 @@ const translations = {
       signUp: 'Sign up',
       openMenu: 'Open navigation menu',
       closeMenu: 'Close navigation',
+      teacher: 'Teacher',
+      student: 'Student',
+      parent: 'Parent',
+      systemLogs: 'System Logs',
     },
 
     // Auth
@@ -81,16 +85,81 @@ const translations = {
 
     // Home page
     home: {
+      heroTitle: 'The #1 School Management Solution in Guinea',
+      heroSubtitle: 'Simplify administration, secure payments (Orange/MTN), and engage parents. A reliable platform designed for our schools.',
       getStarted: 'Get Started',
       signUpFree: 'Sign Up Free',
-      features: 'Key Features',
-      featuresSubtitle: 'Everything you need for modern academic management.',
+      features: 'Why Choose EduVault?',
+      featuresSubtitle: 'Everything needed for modern education in Guinea.',
+
+      // Feature 1: Mobile Money
+      payments: 'Mobile Payments',
+      paymentsDesc: 'Automated tuition collection via Orange Money & MTN MoMo with instant receipts.',
+
+      // Feature 2: SMS/WhatsApp
+      communication: 'Parent Tracking',
+      communicationDesc: 'Automatic SMS & WhatsApp alerts for grades, absences, and school announcements.',
+
+      // Feature 3: Academic
+      academic: 'Smart Reporting',
+      academicDesc: 'Generate report cards and transcripts compliant with Ministry standards in one click.',
+
+      // Feature 4: Finance
+      finance: 'Financial Control',
+      financeDesc: 'Real-time cash flow tracking, expense management, and digital receipts.',
+
+      // Feature 5: Offline/Reliable
+      reliability: 'Fast & Reliable',
+      reliabilityDesc: 'Works smoothly even with slow connection speeds.',
+
+      // Feature 6: Support
+      support: 'Local Support',
+      supportDesc: 'Dedicated support team based in Conakry available 7/7.',
       userManagement: 'User Management',
-      userManagementDesc: 'Secure authentication with role-based access control and multi-factor verification.',
-      enterpriseSecurity: 'Enterprise Security',
-      enterpriseSecurityDesc: 'Industry-standard encryption, session management, and comprehensive audit trails.',
-      dataPrivacy: 'Data Privacy',
-      dataPrivacyDesc: 'GDPR-compliant data handling with secure storage and granular permissions.',
+
+      // Stats
+      stats: {
+        schools: 'Partner Schools',
+        students: 'Students Managed',
+        efficiency: 'Efficiency Gain',
+        schoolsValue: '50+',
+        studentsValue: '12,000+',
+        efficiencyValue: '40%',
+      },
+
+      // How It Works
+      howItWorks: 'How It Works',
+      steps: {
+        step1: 'Create Account',
+        step1Desc: 'Sign up in 2 minutes. No credit card required.',
+        step2: 'Import Data',
+        step2Desc: 'Easily upload your students, classes, and teachers via Excel.',
+        step3: 'Go Live',
+        step3Desc: 'Start managing grades, payments, and communication immediately.',
+      },
+
+      // Testimonials
+      testimonials: 'What Principals Say',
+      testimonial1: '"EduVault has completely transformed how we manage tuition payments. Parents love the Mobile Money integration!"',
+      testimonial1Author: 'Mamadou Diallo',
+      testimonial1Role: 'Principal, Lycée de Kipé',
+
+      // FAQ
+      faq: 'Frequently Asked Questions',
+      faq1: 'Is my data secure?',
+      faq1Ans: 'Yes, we use bank-level encryption and daily backups.',
+      faq2: 'Can I try it for free?',
+      faq2Ans: 'Absolutely! You have a 30-day free trial.',
+
+      // Footer
+      footer: {
+        about: 'About',
+        contact: 'Contact',
+        legal: 'Legal',
+        privacy: 'Privacy',
+        terms: 'Terms',
+        rights: 'All rights reserved.',
+      },
     },
 
     // User menu
@@ -141,6 +210,10 @@ const translations = {
       signUp: "S'inscrire",
       openMenu: 'Ouvrir le menu de navigation',
       closeMenu: 'Fermer la navigation',
+      teacher: 'Enseignant',
+      student: 'Étudiant',
+      parent: 'Parent',
+      systemLogs: 'Journaux Système',
     },
 
     // Auth
@@ -198,16 +271,81 @@ const translations = {
 
     // Home page
     home: {
+      heroTitle: 'La Solution de Gestion Scolaire N°1 en Guinée',
+      heroSubtitle: 'Simplifiez la gestion administrative, sécurisez les paiements (Orange/MTN) et impliquez les parents. Une plateforme fiable, conçue pour nos écoles.',
       getStarted: 'Commencer',
-      signUpFree: 'Inscription Gratuite',
-      features: 'Fonctionnalités Clés',
-      featuresSubtitle: 'Tout ce dont vous avez besoin pour la gestion académique moderne.',
-      userManagement: 'Gestion des Utilisateurs',
-      userManagementDesc: "Authentification sécurisée avec contrôle d'accès basé sur les rôles et vérification multi-facteurs.",
-      enterpriseSecurity: 'Sécurité Entreprise',
-      enterpriseSecurityDesc: "Chiffrement standard, gestion de session et pistes d'audit complètes.",
-      dataPrivacy: 'Confidentialité des Données',
-      dataPrivacyDesc: 'Traitement conforme RGPD avec stockage sécurisé et permissions granulaires.',
+      signUpFree: 'Essai Gratuit',
+      features: 'Pourquoi Choisir EduVault ?',
+      featuresSubtitle: 'Tout ce dont vous avez besoin pour moderniser votre école.',
+
+      // Feature 1: Mobile Money
+      payments: 'Paiements Mobiles',
+      paymentsDesc: 'Encaissement automatique des frais via Orange Money & MTN MoMo avec reçus instantanés.',
+
+      // Feature 2: SMS/WhatsApp
+      communication: 'Suivi Parentale',
+      communicationDesc: 'Alertes SMS & WhatsApp automatiques pour les notes, absences et annonces.',
+
+      // Feature 3: Academic
+      academic: 'Bulletins Automatisés',
+      academicDesc: 'Génération de bulletins et relevés conformes aux normes du Ministère en un clic.',
+
+      // Feature 4: Finance
+      finance: 'Contrôle Financier',
+      financeDesc: 'Suivi de trésorerie en temps réel, gestion des dépenses et reçus numériques.',
+
+      // Feature 5: Offline/Reliable
+      reliability: 'Connexion Optimisée',
+      reliabilityDesc: 'Fonctionne de manière fluide même avec une connexion internet lente.',
+
+      // Feature 6: Support
+      support: 'Support Local 7/7',
+      supportDesc: 'Une équipe de support dédiée basée à Conakry pour vous accompagner.',
+      userManagement: 'Gestion Utilisateurs',
+
+      // Stats
+      stats: {
+        schools: 'Écoles Partenaires',
+        students: 'Élèves Gérés',
+        efficiency: 'Gain de Temps',
+        schoolsValue: '50+',
+        studentsValue: '12 000+',
+        efficiencyValue: '40%',
+      },
+
+      // How It Works
+      howItWorks: 'Comment ça marche ?',
+      steps: {
+        step1: 'Créer un compte',
+        step1Desc: 'Inscrivez-vous en 2 minutes. Pas de carte bancaire requise.',
+        step2: 'Importer vos données',
+        step2Desc: 'Importez facilement vos élèves, classes et enseignants via Excel.',
+        step3: 'Commencer',
+        step3Desc: 'Gérez vos notes, paiements et communications immédiatement.',
+      },
+
+      // Testimonials
+      testimonials: 'Ce que disent les Directeurs',
+      testimonial1: '"EduVault a complètement transformé notre gestion des scolarités. Les parents adorent le paiement Mobile Money !"',
+      testimonial1Author: 'Mamadou Diallo',
+      testimonial1Role: 'Directeur, Lycée de Kipé',
+
+      // FAQ
+      faq: 'Questions Fréquentes',
+      faq1: 'Mes données sont-elles sécurisées ?',
+      faq1Ans: 'Oui, nous utilisons un cryptage bancaire et des sauvegardes quotidiennes.',
+      faq2: 'Puis-je essayer gratuitement ?',
+      faq2Ans: 'Absolument ! Vous bénéficiez de 30 jours d\'essai gratuit.',
+
+      // Footer
+      footer: {
+        about: 'À propos',
+        contact: 'Contact',
+        legal: 'Légal',
+        privacy: 'Confidentialité',
+        terms: 'Conditions',
+        rights: 'Tous droits réservés.',
+      },
     },
 
     // User menu

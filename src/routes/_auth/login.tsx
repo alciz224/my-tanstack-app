@@ -2,13 +2,13 @@ import { Link, createFileRoute, redirect, useRouter } from '@tanstack/react-rout
 import * as React from 'react'
 import { emitAuthEvent } from '@/auth/authEvents'
 import { safeRedirectPath } from '@/auth/redirects'
-import { getCurrentUserFn, loginFn } from '@/server/auth'
+import { loginFn } from '@/server/auth'
 import { AuthCard } from '@/components/auth/AuthCard'
 import { FormField } from '@/components/auth/FormField'
 import { PasswordInput } from '@/components/auth/PasswordInput'
 import { useTranslation } from '@/lib/i18n'
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute('/_auth/login')({
   validateSearch: (search: Record<string, unknown>) => {
     return {
       from: (search.from as string) || undefined,
@@ -16,7 +16,7 @@ export const Route = createFileRoute('/login')({
   },
   beforeLoad: async ({ search, context }) => {
     // If already authenticated, redirect away from login page
-    const user = context.user ?? (await getCurrentUserFn())
+    const user = context.user
     if (user) {
       const destination = safeRedirectPath(search.from, '/dashboard')
       throw redirect({ to: destination, replace: true })
@@ -232,8 +232,8 @@ function LoginPage() {
         {globalError && (
           <div
             className={`p-3 rounded-lg text-sm ${isLocked
-                ? 'bg-warning/10 border border-warning/20 text-warning'
-                : 'bg-destructive/10 border border-destructive/20 text-destructive'
+              ? 'bg-warning/10 border border-warning/20 text-warning'
+              : 'bg-destructive/10 border border-destructive/20 text-destructive'
               }`}
             role="alert"
           >

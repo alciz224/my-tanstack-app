@@ -17,7 +17,7 @@ export const getRouter = () => {
     routeTree,
     context: {
       getCurrentUser: getCurrentUserFn,
-    } satisfies RouterContext,
+    },
 
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,

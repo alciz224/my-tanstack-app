@@ -1,21 +1,22 @@
-import { HeadContent, Scripts, createRootRoute, useRouter } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRouteWithContext, useRouter } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import * as React from 'react'
 
-import Header from '../components/Header'
-import { Sidebar } from '../components/Sidebar'
+
 
 import appCss from '../styles.css?url'
 
-import { initLanguage } from '@/lib/i18n'
+
 
 import { subscribeAuthEvents } from '@/auth/authEvents'
 import { safeRedirectPath } from '@/auth/redirects'
 import { isCurrentRouteProtected } from '@/auth/routeProtection'
 import { getCurrentUserFn } from '@/server/auth'
 
-export const Route = createRootRoute({
+import type { RouterContext } from '@/router'
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async () => {
     // Provide auth state to all routes (public + protected) so shared UI (Header)
     // stays in sync across navigation.
@@ -74,16 +75,7 @@ export const Route = createRootRoute({
 function RootDocument({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
-  // Get user from router state to pass to Sidebar
-  const user = (() => {
-    for (const match of router.state.matches.slice().reverse()) {
-      const ctx = match.context as unknown
-      if (ctx && typeof ctx === 'object' && 'user' in ctx) {
-        return (ctx as { user?: any }).user ?? null
-      }
-    }
-    return null
-  })()
+
 
   // Subscribe to cross-tab auth events
   React.useEffect(() => {
@@ -95,7 +87,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
           // Redirect to login only if currently on a protected route
           if (isCurrentRouteProtected(router)) {
-            router.navigate({ to: '/login', replace: true })
+            router.navigate({ to: '/login', search: { from: undefined }, replace: true })
           }
           break
         }
@@ -146,14 +138,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {/* Desktop: fixed sidebar + main content with left margin */}
-        {/* Mobile/Tablet: single column, sidebar is drawer */}
-        <div className="min-h-screen">
-          <Sidebar user={user} />
-          <div className="flex flex-col min-h-screen lg:ml-64">
-            <Header />
-            <main className="flex-1">{children}</main>
-          </div>
+        <div className="min-h-screen bg-background text-foreground">
+          {children}
         </div>
         <Scripts />
         <TanStackDevtools
