@@ -2,21 +2,17 @@ import { createRouter } from '@tanstack/react-router'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
-import { getCurrentUserFn } from './server/auth'
-import type { User } from './server/auth'
+import type { RouteContext } from './types/router'
 
-
-export type RouterContext = {
-  getCurrentUser: typeof getCurrentUserFn
-  user?: User | null
-}
+export type RouterContext = RouteContext
 
 // Create a new router instance
 export const getRouter = () => {
   const router = createRouter({
     routeTree,
     context: {
-      getCurrentUser: getCurrentUserFn,
+      // Initial context - will be populated by root route beforeLoad
+      user: null,
     },
 
     scrollRestoration: true,

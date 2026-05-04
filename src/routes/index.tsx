@@ -84,40 +84,68 @@ function HomePage() {
       <main className="flex-1">
         {/* Hero */}
         <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 px-6 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
+          {/* Animated gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 animate-gradient" />
+          
+          {/* Floating orbs for depth */}
+          <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse-glow" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse-glow delay-300" />
 
           <div className="relative max-w-5xl mx-auto text-center">
-            <div className="inline-flex items-center justify-center p-2 mb-8 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/10 shadow-sm animate-fade-in-up">
+            {/* Badge */}
+            <div className="inline-flex items-center justify-center p-2 mb-8 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/10 shadow-sm animate-fade-in-up hover-scale">
               <span className="text-sm font-semibold text-primary px-2">
                 🇬🇳 {t('home.heroTitle')}
               </span>
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-black text-foreground tracking-tight mb-6 animate-fade-in-up delay-100">
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            {/* Main heading with enhanced gradient */}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-foreground tracking-tight mb-6 animate-fade-in-up delay-100">
+              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient inline-block">
                 EduVault
               </span>
             </h1>
 
+            {/* Subtitle */}
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed animate-fade-in-up delay-200">
               {t('home.heroSubtitle')}
             </p>
 
+            {/* CTA Buttons with enhanced effects */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up delay-300">
               <Link
                 to="/login"
                 search={{ from: undefined }}
-                className="w-full sm:w-auto px-8 py-4 bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-xl transition-all shadow-lg hover:shadow-primary/25 text-lg"
+                className="group w-full sm:w-auto px-8 py-4 bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-xl transition-all shadow-lg hover:shadow-xl hover:shadow-primary/30 text-lg btn-shine hover-lift"
               >
-                {t('home.getStarted')}
+                <span className="flex items-center justify-center gap-2">
+                  {t('home.getStarted')}
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
               </Link>
               <Link
                 to="/register"
                 search={{ from: undefined }}
-                className="w-full sm:w-auto px-8 py-4 bg-card text-foreground border border-border hover:bg-muted font-bold rounded-xl transition-colors text-lg"
+                className="w-full sm:w-auto px-8 py-4 bg-card text-foreground border-2 border-border hover:border-primary/50 hover:bg-muted font-bold rounded-xl transition-all text-lg hover-lift"
               >
                 {t('home.signUpFree')}
               </Link>
+            </div>
+
+            {/* Trust indicators */}
+            <div className="mt-12 flex items-center justify-center gap-8 text-sm text-muted-foreground animate-fade-in delay-400">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span>Sécurisé & Fiable</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span>Support 7/7</span>
+              </div>
+              <div className="hidden sm:flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span>Gratuit 30 jours</span>
+              </div>
             </div>
           </div>
         </section>
@@ -127,11 +155,15 @@ function HomePage() {
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {stats.map((stat, idx) => (
-                <div key={idx} className="flex flex-col items-center justify-center p-6 text-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <div 
+                  key={idx} 
+                  className="flex flex-col items-center justify-center p-6 text-center group animate-fade-in-up"
+                  style={{ animationDelay: `${idx * 0.1}s` }}
+                >
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
                     {stat.icon}
                   </div>
-                  <span className="text-4xl font-black text-foreground mb-2">{stat.value}</span>
+                  <span className="text-4xl font-black text-foreground mb-2 group-hover:text-primary transition-colors">{stat.value}</span>
                   <span className="text-muted-foreground font-medium">{stat.label}</span>
                 </div>
               ))}
@@ -141,7 +173,7 @@ function HomePage() {
 
         {/* Features Grid */}
         <section id="features" className="py-24 px-6 max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 animate-fade-in-up">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               {t('home.features')}
             </h2>
@@ -154,17 +186,24 @@ function HomePage() {
             {features.map((item, idx) => (
               <div
                 key={idx}
-                className="group bg-card hover:bg-muted/50 border border-border rounded-2xl p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
+                className="group bg-card hover:bg-muted/50 border border-border rounded-2xl p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 hover-lift animate-fade-in-up cursor-pointer"
+                style={{ animationDelay: `${idx * 0.1}s` }}
               >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                   {item.icon}
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">
+                <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
                   {item.title}
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
                   {item.description}
                 </p>
+                <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <span className="text-sm font-semibold text-primary flex items-center gap-1">
+                    En savoir plus
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                </div>
               </div>
             ))}
           </div>
@@ -173,7 +212,7 @@ function HomePage() {
         {/* How It Works */}
         <section className="py-24 px-6 bg-muted/30 border-t border-border">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-16 animate-fade-in-up">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 {t('home.howItWorks')}
               </h2>
@@ -181,14 +220,18 @@ function HomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
               {/* Connector Line (Desktop) */}
-              <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-border -z-0" />
+              <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent -z-0" />
 
               {steps.map((step, idx) => (
-                <div key={idx} className="relative z-10 flex flex-col items-center text-center">
-                  <div className="w-24 h-24 rounded-2xl bg-card border border-border shadow-sm flex items-center justify-center mb-6 text-2xl font-bold text-primary">
+                <div 
+                  key={idx} 
+                  className="relative z-10 flex flex-col items-center text-center group animate-fade-in-up"
+                  style={{ animationDelay: `${idx * 0.15}s` }}
+                >
+                  <div className="w-24 h-24 rounded-2xl bg-card border-2 border-border shadow-sm flex items-center justify-center mb-6 text-2xl font-bold text-primary group-hover:border-primary/50 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
                     {idx + 1}
                   </div>
-                  <h3 className="text-xl font-bold mb-3">{step.title}</h3>
+                  <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">{step.title}</h3>
                   <p className="text-muted-foreground max-w-xs">{step.desc}</p>
                 </div>
               ))}
@@ -198,9 +241,15 @@ function HomePage() {
 
         {/* Testimonial */}
         <section className="py-24 px-6">
-          <div className="max-w-4xl mx-auto bg-gradient-to-br from-primary/5 to-secondary/5 rounded-3xl p-10 md:p-16 border border-primary/10 text-center">
-            <div className="mb-8 flex justify-center text-primary">
-              {[1, 2, 3, 4, 5].map(i => <Zap key={i} className="w-5 h-5 fill-current" />)}
+          <div className="max-w-4xl mx-auto bg-gradient-to-br from-primary/5 to-secondary/5 rounded-3xl p-10 md:p-16 border border-primary/10 text-center animate-fade-in-up hover-lift">
+            <div className="mb-8 flex justify-center text-primary gap-1">
+              {[1, 2, 3, 4, 5].map(i => (
+                <Zap 
+                  key={i} 
+                  className="w-5 h-5 fill-current animate-fade-in" 
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                />
+              ))}
             </div>
             <blockquote className="text-2xl md:text-3xl font-medium text-foreground mb-8 leading-relaxed">
               {t('home.testimonial1')}
@@ -214,15 +263,19 @@ function HomePage() {
 
         {/* FAQ Preview */}
         <section className="py-24 px-6 max-w-3xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 animate-fade-in-up">
             <h2 className="text-3xl font-bold mb-4">{t('home.faq')}</h2>
           </div>
 
           <div className="space-y-6">
             {[1, 2].map(i => (
-              <div key={i} className="bg-card border border-border rounded-xl p-6 hover:shadow-md transition-shadow">
+              <div 
+                key={i} 
+                className="bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-primary/30 transition-all duration-300 hover-lift animate-fade-in-up cursor-pointer"
+                style={{ animationDelay: `${i * 0.1}s` }}
+              >
                 <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                   {t(`home.faq${i}` as any)}
                 </h3>
                 <p className="text-muted-foreground ml-4">
@@ -234,20 +287,25 @@ function HomePage() {
         </section>
 
         {/* CTA */}
-        <section className="py-20 px-6 bg-primary text-primary-foreground">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-5xl font-black mb-8 tracking-tight">
+        <section className="relative py-20 px-6 bg-gradient-to-br from-primary via-primary to-secondary overflow-hidden">
+          {/* Animated background orbs */}
+          <div className="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse-glow" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse-glow delay-300" />
+          
+          <div className="relative max-w-4xl mx-auto text-center text-primary-foreground">
+            <h2 className="text-3xl md:text-5xl font-black mb-8 tracking-tight animate-fade-in-up">
               Prêt à transformer votre établissement ?
             </h2>
-            <p className="text-xl text-primary-foreground/90 mb-10 max-w-2xl mx-auto">
+            <p className="text-xl text-primary-foreground/90 mb-10 max-w-2xl mx-auto animate-fade-in-up delay-100">
               Rejoignez les 50+ écoles qui nous font confiance en Guinée.
             </p>
             <Link
               to="/register"
               search={{ from: undefined }}
-              className="inline-flex items-center gap-2 bg-background text-foreground px-8 py-4 rounded-xl font-bold hover:bg-background/90 transition-colors text-lg shadow-xl"
+              className="group inline-flex items-center gap-2 bg-background text-foreground px-8 py-4 rounded-xl font-bold hover:bg-background/90 transition-all text-lg shadow-2xl hover:shadow-3xl btn-shine hover-lift animate-fade-in-up delay-200"
             >
-              Créer un compte maintenant <ArrowRight className="w-5 h-5" />
+              Créer un compte maintenant 
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </section>

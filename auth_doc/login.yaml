@@ -18,25 +18,43 @@ Response Success (200):
           {
             "id": "uuid",
             "email": "user@example.com",
+            "email_masked": "u***@example.com",
             "phone": "+224620123456",
+            "phone_masked": "+224 6XX-XXX-456",
             "first_name": "Mamadou",
             "last_name": "Diallo",
             "full_name": "Mamadou Diallo",
-            "is_verified": true,
-            "verified_at": "2024-01-15T10:30:00Z",
+            "backup_phone": "+224621000000",
+            "backup_phone_owner": "Papa",
+
+            "verification":
+              {
+                "is_verified": true,
+                "email_verified": true,
+                "email_verified_at": "2024-01-15T10:30:00Z",
+                "phone_verified": false,
+                "phone_verified_at": null,
+              },
+
             "security":
               {
                 "score": 75,
                 "level": "high",
                 "has_security_questions": true,
+                "security_questions_count": 3,
                 "has_backup_phone": true,
+                "suggestions": [],
               },
+
             "profiles":
               {
                 "has_student": true,
                 "has_teacher": false,
                 "has_school_admin": false,
               },
+
+            "date_joined": "2024-01-10T08:00:00Z",
+            "last_login": "2024-01-20T14:30:00Z",
           },
         "tokens": { "access": "eyJ...", "refresh": "eyJ..." },
         "requires_verification": false,
@@ -50,8 +68,54 @@ Response Error - Non vérifié (200):
     "message": "Vérification requise",
     "data":
       {
-        "user": { ... },
-        "tokens": { ... },
+        "user":
+          {
+            "id": "uuid",
+            "email": "user@example.com",
+            "email_masked": "u***@example.com",
+            "phone": "+224620123456",
+            "phone_masked": "+224 6XX-XXX-456",
+            "first_name": "Mamadou",
+            "last_name": "Diallo",
+            "full_name": "Mamadou Diallo",
+            "backup_phone": null,
+            "backup_phone_owner": null,
+
+            "verification":
+              {
+                "is_verified": false,
+                "email_verified": false,
+                "email_verified_at": null,
+                "phone_verified": false,
+                "phone_verified_at": null,
+              },
+
+            "security":
+              {
+                "score": 25,
+                "level": "low",
+                "has_security_questions": false,
+                "security_questions_count": 0,
+                "has_backup_phone": false,
+                "suggestions":
+                  [
+                    "Vérifiez votre email ou téléphone",
+                    "Configurez des questions de sécurité",
+                    "Ajoutez un numéro de secours",
+                  ],
+              },
+
+            "profiles":
+              {
+                "has_student": true,
+                "has_teacher": false,
+                "has_school_admin": false,
+              },
+
+            "date_joined": "2024-01-20T14:30:00Z",
+            "last_login": "2024-01-20T14:30:00Z",
+          },
+        "tokens": { "access": "eyJ...", "refresh": "eyJ..." },
         "requires_verification": true,
         "verification_options": ["email", "phone"],
       },

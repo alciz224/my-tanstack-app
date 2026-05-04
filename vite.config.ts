@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 
 import tailwindcss from '@tailwindcss/vite'
-import { devtools } from '@tanstack/devtools-vite'
+// import { devtools } from '@tanstack/devtools-vite' // Temporarily disabled
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import viteTsConfigPaths from 'vite-tsconfig-paths'
@@ -14,7 +14,7 @@ const config = defineConfig({
     },
   },
   plugins: [
-    devtools(),
+    // devtools(), // Temporarily disabled to fix port conflict
     // this is the plugin that enables path aliases
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
@@ -30,7 +30,7 @@ const config = defineConfig({
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {
-          proxy.on('proxyRes', (proxyRes, req, res) => {
+          proxy.on('proxyRes', (proxyRes, _req, _res) => {
             // Rewrite Set-Cookie headers to work with localhost:3000
             const cookies = proxyRes.headers['set-cookie']
             if (cookies) {

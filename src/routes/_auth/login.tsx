@@ -6,7 +6,10 @@ import { loginFn } from '@/server/auth'
 import { AuthCard } from '@/components/auth/AuthCard'
 import { FormField } from '@/components/auth/FormField'
 import { PasswordInput } from '@/components/auth/PasswordInput'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { toast } from '@/stores/toastStore'
 import { useTranslation } from '@/lib/i18n'
+import { PORTAL_ROUTES, isValidRole } from '@/types/roles'
 
 export const Route = createFileRoute('/_auth/login')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -139,12 +142,34 @@ function LoginPage() {
         return
       }
 
-      // Success: emit event and navigate
+      // Success: emit event, show toast, and navigate
       if (typeof window !== 'undefined') {
         emitAuthEvent('login')
       }
 
-      const destination = safeRedirectPath(search.from, '/dashboard')
+      toast.success(
+        t('auth.loginSuccess') || 'Welcome back!',
+        t('auth.loginSuccessMessage') || 'You have successfully logged in.'
+      )
+
+      // Determine redirect destination based on user role
+      let destination = '/dashboard'
+      
+      if (result.user) {
+        if (result.user.role === null) {
+          // User hasn't selected a role yet - go to role selection
+          destination = '/select-portal'
+        } else if (isValidRole(result.user.role)) {
+          // User has a valid role - go to their portal
+          destination = PORTAL_ROUTES[result.user.role]
+        }
+      }
+
+      // If there's a 'from' param, use it (unless going to select-portal)
+      if (destination !== '/select-portal') {
+        destination = safeRedirectPath(search.from, destination)
+      }
+
       router.navigate({ to: destination, replace: true })
     } catch (err: any) {
       setGlobalError(err?.message || 'Network error. Please try again.')
@@ -231,7 +256,7 @@ function LoginPage() {
         {/* Global error/alert area */}
         {globalError && (
           <div
-            className={`p-3 rounded-lg text-sm ${isLocked
+            className={`p-3 rounded-lg text-sm animate-fade-in-up ${isLocked
               ? 'bg-warning/10 border border-warning/20 text-warning'
               : 'bg-destructive/10 border border-destructive/20 text-destructive'
               }`}
@@ -276,8 +301,9 @@ function LoginPage() {
         <button
           type="submit"
           disabled={isSubmitDisabled}
-          className="w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
         >
+          {loading && <LoadingSpinner size="sm" />}
           {loading
             ? t('auth.signingIn')
             : rateLimitSeconds

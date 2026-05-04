@@ -1,4 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { Shield, ArrowLeft } from 'lucide-react'
 
 export const Route = createFileRoute('/unauthorized')({
   component: Unauthorized,
@@ -15,11 +16,35 @@ function Unauthorized() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
-            <h2 className="text-foreground text-2xl font-bold">Unauthorized</h2>
+            <h2 className="text-foreground text-2xl font-bold">Accès Non Autorisé</h2>
           </div>
-          <p className="text-muted-foreground">
-            You do not have permission to view this page. Please contact your administrator if you believe this is an error.
+          <p className="text-muted-foreground mb-6">
+            Vous n'avez pas la permission d'accéder à cette page. Le portail demandé nécessite un rôle différent de celui actuellement sélectionné.
           </p>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link
+              to="/select-portal"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-semibold"
+            >
+              <Shield className="w-4 h-4" />
+              Retour à la sélection de portail
+            </Link>
+            <Link
+              to="/"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors font-medium"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Page d'accueil
+            </Link>
+          </div>
+
+          <div className="mt-6 pt-6 border-t border-border">
+            <p className="text-sm text-muted-foreground text-center">
+              Si vous pensez qu'il s'agit d'une erreur, veuillez contacter votre administrateur.
+            </p>
+          </div>
         </div>
       </div>
     </div>

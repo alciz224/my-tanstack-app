@@ -19,7 +19,7 @@
   --color-popover-foreground: oklch(0.17 0.02 264);
   
   --color-muted: oklch(0.96 0.01 264);            /* Slate-100 */
-  --color-muted-foreground: oklch(0.52 0.02 264); /* Slate-500 */
+  --color-muted-foreground: oklch(0.45 0.02 264); /* Slate-600 (more contrast) */
   
   --color-border: oklch(0.92 0.01 264);           /* Slate-200 */
   --color-input: oklch(0.92 0.01 264);            /* Slate-200 */
@@ -57,7 +57,7 @@
   --color-popover-foreground: oklch(0.98 0.01 264);
   
   --color-muted: oklch(0.32 0.02 264);            /* Slate-700 */
-  --color-muted-foreground: oklch(0.64 0.02 264); /* Slate-400 */
+  --color-muted-foreground: oklch(0.72 0.02 264); /* Slate-300 (more contrast) */
   
   --color-border: oklch(0.32 0.02 264);           /* Slate-700 */
   --color-input: oklch(0.32 0.02 264);

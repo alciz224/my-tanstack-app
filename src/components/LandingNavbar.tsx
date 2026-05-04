@@ -1,13 +1,29 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useRouterState } from '@tanstack/react-router'
+import type { UserRole } from '@/types/roles'
+import { PORTAL_ROUTES } from '@/types/roles'
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { ThemeToggle } from './ThemeToggle'
 import { LanguageToggle } from './LanguageToggle'
+import { UserMenu } from './UserMenu'
 import { useTranslation } from '@/lib/i18n'
+import type { User } from '@/server/auth'
 
 export function LandingNavbar() {
     const { t } = useTranslation()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+    // Get user from router context (same as Header component)
+    const routerState = useRouterState()
+    const user: User | null = (() => {
+        for (const match of routerState.matches.slice().reverse()) {
+            const ctx = match.context as unknown
+            if (ctx && typeof ctx === 'object' && 'user' in ctx) {
+                return (ctx as { user?: User | null }).user ?? null
+            }
+        }
+        return null
+    })()
 
     const navLinks = [
         { label: t('home.features'), href: '#features' },
@@ -51,20 +67,41 @@ export function LandingNavbar() {
                         <LanguageToggle />
                         <ThemeToggle />
                     </div>
-                    <Link
-                        to="/login"
-                        search={{ from: undefined }}
-                        className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                        {t('nav.signIn')}
-                    </Link>
-                    <Link
-                        to="/register"
-                        search={{ from: undefined }}
-                        className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors text-sm shadow-sm hover:shadow-md"
-                    >
-                        {t('nav.signUp')}
-                    </Link>
+                    {user ? (
+                        <>
+                            {/* Quick access to current portal or selector */}
+                            <Link
+                                to={user.role ? (PORTAL_ROUTES[user.role as UserRole] as any) : '/select-portal'}
+                                className="px-3 py-2 rounded-lg border border-border text-sm font-medium hover:bg-muted transition-colors"
+                            >
+                                {user.role ? t('nav.portal') : t('nav.selectPortal')}
+                            </Link>
+                            <Link
+                                to="/select-portal"
+                                className="px-3 py-2 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/90 text-sm font-semibold transition-colors"
+                            >
+                                {t('nav.changePortal')}
+                            </Link>
+                            <UserMenu user={user} isAuthRefreshing={false} />
+                        </>
+                    ) : (
+                        <>
+                            <Link
+                                to="/login"
+                                search={{ from: undefined }}
+                                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                {t('nav.signIn')}
+                            </Link>
+                            <Link
+                                to="/register"
+                                search={{ from: undefined }}
+                                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors text-sm shadow-sm hover:shadow-md"
+                            >
+                                {t('nav.signUp')}
+                            </Link>
+                        </>
+                    )}
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -116,22 +153,55 @@ export function LandingNavbar() {
                             <div className="h-px bg-border" />
 
                             <div className="flex flex-col gap-3">
-                                <Link
-                                    to="/login"
-                                    search={{ from: undefined }}
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="w-full px-4 py-3 rounded-lg border border-border text-center font-medium hover:bg-muted transition-colors"
-                                >
-                                    {t('nav.signIn')}
-                                </Link>
-                                <Link
-                                    to="/register"
-                                    search={{ from: undefined }}
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="w-full px-4 py-3 rounded-lg bg-primary text-primary-foreground text-center font-bold hover:bg-primary/90 transition-colors shadow-sm"
-                                >
-                                    {t('nav.signUp')}
-                                </Link>
+                                {user ? (
+                                    <>
+                                        <div className="px-4 py-3 bg-muted rounded-lg">
+                                            <div className="text-sm text-muted-foreground">{t('user.signedInAs')}</div>
+                                            <div className="font-semibold text-foreground">{user.full_name}</div>
+                                            <div className="text-xs text-muted-foreground">{user.email || user.phone}</div>
+                                        </div>
+                                        <Link
+                                            to={user.role ? (PORTAL_ROUTES[user.role as UserRole] as any) : '/select-portal'}
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className="w-full px-4 py-3 rounded-lg bg-primary text-primary-foreground text-center font-bold hover:bg-primary/90 transition-colors shadow-sm"
+                                        >
+                                            {user.role ? t('nav.portal') : t('nav.selectPortal')}
+                                        </Link>
+                                        <Link
+                                            to="/select-portal"
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className="w-full px-4 py-3 rounded-lg border border-border text-center font-medium hover:bg-muted transition-colors"
+                                        >
+                                            {t('nav.changePortal')}
+                                        </Link>
+                                        <Link
+                                            to="/logout"
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className="w-full px-4 py-3 rounded-lg border border-border text-center font-medium hover:bg-muted transition-colors"
+                                        >
+                                            {t('nav.signOut')}
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link
+                                            to="/login"
+                                            search={{ from: undefined }}
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className="w-full px-4 py-3 rounded-lg border border-border text-center font-medium hover:bg-muted transition-colors"
+                                        >
+                                            {t('nav.signIn')}
+                                        </Link>
+                                        <Link
+                                            to="/register"
+                                            search={{ from: undefined }}
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className="w-full px-4 py-3 rounded-lg bg-primary text-primary-foreground text-center font-bold hover:bg-primary/90 transition-colors shadow-sm"
+                                        >
+                                            {t('nav.signUp')}
+                                        </Link>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

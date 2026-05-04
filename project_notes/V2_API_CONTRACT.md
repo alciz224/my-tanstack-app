@@ -1,5 +1,51 @@
 # API Contract: Auth V2 - Session-Based Authentication
 
+## Backend Implementation Notes (Must-Match Contract)
+
+These notes describe how the backend (Django/DRF or equivalent) must shape responses so the TanStack frontend can rely on a stable `data.user` schema.
+
+### Principles
+
+- **Session-based auth:** Do **not** return `access` / `refresh` tokens in V2 responses. Auth is via `sessionid` cookie.
+- **Consistent user shape:** `register`, `login`, `status`, `select-role` MUST return the same `data.user` object schema.
+- **Role guard compatibility:** Frontend role routing/guards use `user.role` (string or `null`).
+
+### User Object Mapping
+
+Backend should return:
+
+- `id`: user UUID/string
+- `email`, `phone`: nullable
+- `email_masked`, `phone_masked`: nullable masked forms (match V1 `/me` masking patterns)
+- `first_name`, `last_name`, `full_name`
+- `backup_phone`, `backup_phone_owner`: nullable
+- `role`: nullable current active role (selected portal)
+- `available_roles`: array of all roles the user can select (used for portal switching)
+- `verification`:
+  - `is_verified`: overall account verification status
+  - `email_verified`, `email_verified_at`
+  - `phone_verified`, `phone_verified_at`
+- `security`:
+  - `score`, `level`
+  - `has_security_questions`, `security_questions_count`
+  - `has_backup_phone`
+  - `suggestions`: array of UX strings (can be empty)
+- `profiles`: derived flags for portal/profile presence (V1-compatible)
+  - `has_student`, `has_teacher`, `has_school_admin`
+- `date_joined`, `last_login`
+- `is_active`
+
+### Suggested Backend Implementation Approach
+
+- Implement a single serializer / mapper function, e.g. `serialize_user_v2(user, request)` and reuse it across all endpoints.
+- Ensure `status` endpoint returns the same user payload as `login`/`register`.
+- `select-role` endpoint should:
+  - validate requested role is in `available_roles`
+  - persist selected role (session or user profile)
+  - return updated `user` with `role` set
+
+---
+
 **Version:** 2.0  
 **Base URL:** `/api/v2/auth/`  
 **Authentication Type:** Session-based (Django sessions with CSRF protection)  
@@ -147,16 +193,43 @@ Cookie: sessionid=<session_id>; csrftoken=<csrf_token>
     "user": {
       "id": "550e8400-e29b-41d4-a716-446655440000",
       "email": "user@example.com",
+      "email_masked": "u***@example.com",
       "phone": "+224620123456",
+      "phone_masked": "+224 6XX-XXX-456",
       "first_name": "Mamadou",
       "last_name": "Diallo",
       "full_name": "Mamadou Diallo",
-      "is_verified": false,
-      "is_active": true,
+      "backup_phone": null,
+      "backup_phone_owner": null,
+      "role": null,
+      "available_roles": [],
+      "verification": {
+        "is_verified": false,
+        "email_verified": false,
+        "email_verified_at": null,
+        "phone_verified": false,
+        "phone_verified_at": null
+      },
       "security": {
         "score": 25,
-        "level": "low"
-      }
+        "level": "low",
+        "has_security_questions": false,
+        "security_questions_count": 0,
+        "has_backup_phone": false,
+        "suggestions": [
+          "Verify your email or phone",
+          "Add security questions",
+          "Add a backup phone number"
+        ]
+      },
+      "profiles": {
+        "has_student": false,
+        "has_teacher": false,
+        "has_school_admin": false
+      },
+      "date_joined": "2026-02-19T21:30:00Z",
+      "last_login": null,
+      "is_active": true
     },
     "csrf_token": "new_csrf_token_after_session_change",
     "requires_verification": true,
@@ -246,16 +319,39 @@ Cookie: sessionid=<session_id>; csrftoken=<csrf_token>
     "user": {
       "id": "550e8400-e29b-41d4-a716-446655440000",
       "email": "user@example.com",
+      "email_masked": "u***@example.com",
       "phone": "+224620123456",
+      "phone_masked": "+224 6XX-XXX-456",
       "first_name": "Mamadou",
       "last_name": "Diallo",
       "full_name": "Mamadou Diallo",
-      "is_verified": true,
-      "is_active": true,
+      "backup_phone": "+224621000000",
+      "backup_phone_owner": "Papa",
+      "role": null,
+      "available_roles": ["student", "teacher"],
+      "verification": {
+        "is_verified": true,
+        "email_verified": true,
+        "email_verified_at": "2024-01-15T10:30:00Z",
+        "phone_verified": false,
+        "phone_verified_at": null
+      },
       "security": {
         "score": 75,
-        "level": "high"
-      }
+        "level": "high",
+        "has_security_questions": true,
+        "security_questions_count": 3,
+        "has_backup_phone": true,
+        "suggestions": []
+      },
+      "profiles": {
+        "has_student": true,
+        "has_teacher": true,
+        "has_school_admin": false
+      },
+      "date_joined": "2024-01-10T08:00:00Z",
+      "last_login": "2026-02-19T21:30:00Z",
+      "is_active": true
     },
     "csrf_token": "new_csrf_token_after_login",
     "requires_verification": false
@@ -300,13 +396,18 @@ Set-Cookie: csrftoken=<new_csrf_token>; Path=/
 
 ---
 
-### 4. Get Session Status
+### 4. Get Session Status (V2 "Me" Endpoint)
 
 **Endpoint:** `GET /api/v2/auth/status/`  
 **Auth Required:** Yes  
 **Rate Limit:** None  
 
-**Purpose:** Check if session is valid and get current user data.
+**Purpose:**
+
+- Check if the session is valid.
+- Return the **current authenticated user's full profile**, i.e. this is the **V2 replacement for V1 `GET /me/`**.
+
+**Contract requirement:** The returned `data.user` MUST include **all user properties present in the V1 `GET /me/` response** (masking fields, backup phone fields, `verification`, expanded `security`, `profiles`, timestamps), plus the V2 role switching fields (`role`, `available_roles`).
 
 #### Request
 
@@ -325,16 +426,39 @@ Cookie: sessionid=<session_id>; csrftoken=<csrf_token>
     "user": {
       "id": "550e8400-e29b-41d4-a716-446655440000",
       "email": "user@example.com",
+      "email_masked": "u***@example.com",
       "phone": "+224620123456",
+      "phone_masked": "+224 6XX-XXX-456",
       "first_name": "Mamadou",
       "last_name": "Diallo",
       "full_name": "Mamadou Diallo",
-      "is_verified": true,
-      "is_active": true,
+      "backup_phone": "+224621000000",
+      "backup_phone_owner": "Papa",
+      "role": "student",
+      "available_roles": ["student", "teacher"],
+      "verification": {
+        "is_verified": true,
+        "email_verified": true,
+        "email_verified_at": "2024-01-15T10:30:00Z",
+        "phone_verified": false,
+        "phone_verified_at": null
+      },
       "security": {
         "score": 75,
-        "level": "high"
-      }
+        "level": "high",
+        "has_security_questions": true,
+        "security_questions_count": 3,
+        "has_backup_phone": true,
+        "suggestions": []
+      },
+      "profiles": {
+        "has_student": true,
+        "has_teacher": true,
+        "has_school_admin": false
+      },
+      "date_joined": "2024-01-10T08:00:00Z",
+      "last_login": "2026-02-19T21:30:00Z",
+      "is_active": true
     },
     "authenticated": true
   }

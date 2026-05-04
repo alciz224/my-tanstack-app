@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { calculatePasswordStrength } from '@/lib/validation'
 
 export interface PasswordStrengthProps {

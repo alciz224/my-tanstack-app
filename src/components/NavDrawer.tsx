@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useRef, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { NavLinks } from './NavLinks'
 import type { User } from '@/server/auth'
@@ -16,10 +16,10 @@ interface NavDrawerProps {
  */
 export function NavDrawer({ isOpen, onClose, user }: NavDrawerProps) {
   const { t } = useTranslation()
-  const drawerRef = React.useRef<HTMLDivElement>(null)
+  const drawerRef = useRef<HTMLDivElement>(null)
 
   // Focus trap: focus first link when opened
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen && drawerRef.current) {
       const firstLink = drawerRef.current.querySelector('a')
       firstLink?.focus()
@@ -27,7 +27,7 @@ export function NavDrawer({ isOpen, onClose, user }: NavDrawerProps) {
   }, [isOpen])
 
   // Keyboard: Escape to close
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isOpen) return
 
     const handleEscape = (e: KeyboardEvent) => {
@@ -43,7 +43,7 @@ export function NavDrawer({ isOpen, onClose, user }: NavDrawerProps) {
   }, [isOpen, onClose])
 
   // Prevent body scroll when drawer is open
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
     } else {

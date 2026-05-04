@@ -1,28 +1,57 @@
 import { HeadContent, Scripts, createRootRouteWithContext, useRouter } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
 import * as React from 'react'
-
-
+import { QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import appCss from '../styles.css?url'
-
-
 
 import { subscribeAuthEvents } from '@/auth/authEvents'
 import { safeRedirectPath } from '@/auth/redirects'
 import { isCurrentRouteProtected } from '@/auth/routeProtection'
 import { getCurrentUserFn } from '@/server/auth'
+import { makeQueryClient } from '@/lib/query-client'
 
 import type { RouterContext } from '@/router'
+import type { RouteContext } from '@/types/router'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { ToastContainer } from '@/components/Toast'
 
+/**
+ * Root route - provides auth context to all child routes
+ * Runs on every navigation to keep user state fresh
+ */
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async () => {
-    // Provide auth state to all routes (public + protected) so shared UI (Header)
-    // stays in sync across navigation.
+  beforeLoad: async (): Promise<RouteContext> => {
+    // If a user is already present in the router context (e.g., just set after
+    // a successful role selection), use it to avoid racing a stale server fetch.
+    // Always fetch fresh user from the API (client-side, cookies auto-included by browser)
     const user = await getCurrentUserFn()
+    if (import.meta.env.DEV) {
+      console.debug('[__root.beforeLoad] Fetched user.role:', user?.role ?? 'null (unauthenticated)')
+    }
     return { user }
   },
+  errorComponent: () => (
+    <ErrorBoundary fallback={(err, resetFn) => (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="w-full max-w-md">
+          <div className="bg-card border border-border rounded-lg shadow-lg p-8 text-center">
+            <h1 className="text-2xl font-bold text-foreground mb-4">Something went wrong</h1>
+            <p className="text-muted-foreground mb-6">{err.message}</p>
+            <button
+              onClick={resetFn}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-semibold"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    )}>
+      {/* This won't be reached, but satisfies TypeScript */}
+      <div />
+    </ErrorBoundary>
+  ),
   head: () => ({
     meta: [
       {
@@ -75,7 +104,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootDocument({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
-
+  // Create QueryClient instance (memoized to avoid recreation on re-renders)
+  const [queryClient] = React.useState(() => makeQueryClient())
 
   // Subscribe to cross-tab auth events
   React.useEffect(() => {
@@ -84,6 +114,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         case 'logout': {
           // Invalidate router state so routes re-run beforeLoad
           router.invalidate()
+
+          // Clear React Query cache on logout
+          queryClient.clear()
 
           // Redirect to login only if currently on a protected route
           if (isCurrentRouteProtected(router)) {
@@ -97,9 +130,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
           // If currently on login page, redirect away (user is now authenticated)
           if (router.state.location.pathname === '/login') {
-            const fromParam = (router.state.location.search as any).from as
-              | string
-              | undefined
+            const searchParams = router.state.location.search as Record<string, any>
+            const fromParam = searchParams?.from as string | undefined
             const destination = safeRedirectPath(fromParam, '/dashboard')
             router.navigate({ to: destination, replace: true })
           }
@@ -109,7 +141,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     })
 
     return unsubscribe
-  }, [router])
+  }, [router, queryClient])
 
   // Revalidate auth state when tab becomes visible or gains focus
   React.useEffect(() => {
@@ -133,27 +165,21 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   }, [router])
 
   return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <div className="min-h-screen bg-background text-foreground">
-          {children}
-        </div>
-        <Scripts />
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
-      </body>
-    </html>
+    <QueryClientProvider client={queryClient}>
+      <html lang="en">
+        <head>
+          <HeadContent />
+        </head>
+        <body>
+          <div className="min-h-screen bg-background text-foreground">
+            {children}
+          </div>
+          <ToastContainer />
+          <Scripts />
+          {/* React Query Devtools - only in development */}
+          {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+        </body>
+      </html>
+    </QueryClientProvider>
   )
 }

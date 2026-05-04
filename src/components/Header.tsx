@@ -93,6 +93,7 @@ export default function Header() {
             ) : (
               <Link
                 to="/login"
+                search={{ from: undefined }}
                 className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors text-sm"
               >
                 {t('nav.signIn')}

@@ -4,7 +4,7 @@
  * This approach is more maintainable and less error-prone than maintaining a list of paths.
  */
 
-import type { AnyRoute, Router } from '@tanstack/react-router'
+import type { Router } from '@tanstack/react-router'
 
 /**
  * Check if the current route requires authentication by examining the route tree.
@@ -15,7 +15,7 @@ import type { AnyRoute, Router } from '@tanstack/react-router'
  * @param router - The router instance
  * @returns true if the current route requires authentication
  */
-export function isCurrentRouteProtected(router: Router): boolean {
+export function isCurrentRouteProtected(router: Router<any, any>): boolean {
   const currentPath = router.state.location.pathname
 
   // Explicitly public routes

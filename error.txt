@@ -1,0 +1,2 @@
+Unauthorized: /api/v1/academic/academic-years/2/set_current/
+[25/Feb/2026 17:08:01] "POST /api/v1/academic/academic-years/2/set_current/ HTTP/1.1" 40 the backend is showing this. frontend toast shows: Request failed (401)

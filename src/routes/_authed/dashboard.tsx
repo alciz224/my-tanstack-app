@@ -5,6 +5,7 @@ export const Route = createFileRoute('/_authed/dashboard')({
 })
 
 function AuthedHome() {
+
   // Access user from parent loader via useLoaderData
   // In TanStack Router v1, we can use useMatch to get parent loader data
   // But here we keep it simple and just render a message

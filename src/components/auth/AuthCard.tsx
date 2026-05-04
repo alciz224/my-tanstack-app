@@ -14,7 +14,7 @@ export function AuthCard({ title, description, children, footer }: AuthCardProps
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="w-full max-w-md">
-        <div className="bg-card border border-border rounded-lg shadow-lg p-8">
+        <div className="bg-card border border-border rounded-lg shadow-lg p-8 animate-scale-in">
           <div className="mb-6">
             <h2 className="text-foreground text-2xl font-bold">{title}</h2>
             {description && (

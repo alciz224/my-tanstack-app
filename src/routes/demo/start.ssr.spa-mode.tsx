@@ -8,9 +8,8 @@ export const Route = createFileRoute('/demo/start/ssr/spa-mode')({
 })
 
 function RouteComponent() {
-  const [punkSongs, setPunkSongs] = useState<
-    Awaited<ReturnType<typeof getPunkSongs>>
-  >([])
+  type Song = { id: number; name: string; artist: string }
+  const [punkSongs, setPunkSongs] = useState<Song[]>([])
 
   useEffect(() => {
     getPunkSongs().then(setPunkSongs)

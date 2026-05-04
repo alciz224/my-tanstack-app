@@ -6,7 +6,10 @@ import { registerFn } from '@/server/auth'
 import { AuthCard } from '@/components/auth/AuthCard'
 import { FormField } from '@/components/auth/FormField'
 import { PasswordInput } from '@/components/auth/PasswordInput'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { toast } from '@/stores/toastStore'
 import { useTranslation } from '@/lib/i18n'
+import { PORTAL_ROUTES, isValidRole } from '@/types/roles'
 
 export const Route = createFileRoute('/_auth/register')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -124,7 +127,29 @@ function RegisterPage() {
         emitAuthEvent('login') // Assuming auto-login after register, or distinct event
       }
 
-      const destination = safeRedirectPath(search.from, '/dashboard')
+      toast.success(
+        t('auth.registerSuccess') || 'Account created!',
+        t('auth.registerSuccessMessage') || 'Welcome to EduVault! Your account has been created successfully.'
+      )
+
+      // Determine redirect destination based on user role
+      let destination = '/dashboard'
+      
+      if (result.user) {
+        if (result.user.role === null) {
+          // User hasn't selected a role yet - go to role selection
+          destination = '/select-portal'
+        } else if (isValidRole(result.user.role)) {
+          // User has a valid role - go to their portal
+          destination = PORTAL_ROUTES[result.user.role]
+        }
+      }
+
+      // If there's a 'from' param, use it (unless going to select-portal)
+      if (destination !== '/select-portal') {
+        destination = safeRedirectPath(search.from, destination)
+      }
+
       router.navigate({ to: destination, replace: true })
 
     } catch (err: any) {
@@ -310,7 +335,7 @@ function RegisterPage() {
 
         {/* Global Error */}
         {globalError && (
-          <div className="p-3 rounded-lg text-sm bg-destructive/10 border border-destructive/20 text-destructive flex gap-2">
+          <div className="p-3 rounded-lg text-sm bg-destructive/10 border border-destructive/20 text-destructive flex gap-2 animate-fade-in-up">
             <svg
               className="w-5 h-5 flex-shrink-0"
               fill="none"
@@ -326,8 +351,9 @@ function RegisterPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+          className="w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center justify-center gap-2"
         >
+          {loading && <LoadingSpinner size="sm" />}
           {loading ? t('auth.creatingAccount') : t('auth.signUpButton')}
         </button>
       </form>

@@ -1,6 +1,4 @@
-import * as React from 'react'
 import { useLanguageStore } from '@/stores/languageStore'
-import type { Language } from '@/lib/i18n'
 
 export function LanguageToggle() {
   const { language, setLanguage } = useLanguageStore()

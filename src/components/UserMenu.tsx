@@ -1,8 +1,10 @@
-import * as React from 'react'
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { LogOut, User as UserIcon } from 'lucide-react'
+import { LogOut, User as UserIcon, Shield } from 'lucide-react'
 import type { User } from '@/server/auth'
 import { useTranslation } from '@/lib/i18n'
+import { PORTAL_LABELS } from '@/types/roles'
+import type { UserRole } from '@/types/roles'
 
 interface UserMenuProps {
   user: User
@@ -15,7 +17,7 @@ interface UserMenuProps {
  */
 export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
   const { t } = useTranslation()
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className="relative">
@@ -69,27 +71,42 @@ export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
                   </div>
                 </div>
               </div>
-              <div className="mt-3 flex items-center gap-2">
-                {user.is_verified && (
-                  <span className="text-xs px-2 py-1 bg-success/10 text-success border border-success/20 rounded-full">
-                    {t('user.verified')}
-                  </span>
-                )}
-                <span
-                  className={`text-xs px-2 py-1 rounded-full ${user.security.level === 'high'
-                      ? 'bg-success/10 text-success border border-success/20'
-                      : user.security.level === 'medium'
-                        ? 'bg-warning/10 text-warning border border-warning/20'
-                        : 'bg-destructive/10 text-destructive border border-destructive/20'
-                    }`}
-                >
-                  {t('user.security')}: {user.security.level}
-                </span>
-              </div>
+              {/* Only show verification and security badges if data is available */}
+              {(user.verification || user.security) && (
+                <div className="mt-3 flex items-center gap-2">
+                  {user.verification?.is_verified && (
+                    <span className="text-xs px-2 py-1 bg-success/10 text-success border border-success/20 rounded-full">
+                      {t('user.verified')}
+                    </span>
+                  )}
+                  {user.security?.level && (
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${user.security.level === 'high'
+                          ? 'bg-success/10 text-success border border-success/20'
+                          : user.security.level === 'medium'
+                            ? 'bg-warning/10 text-warning border border-warning/20'
+                            : 'bg-destructive/10 text-destructive border border-destructive/20'
+                        }`}
+                    >
+                      {t('user.security')}: {user.security.level}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Menu items */}
             <div className="p-2">
+              {/* Show current role and available roles count */}
+              {user.role && user.available_roles && user.available_roles.length > 1 && (
+                <div className="px-3 py-2 mb-2">
+                  <div className="text-xs text-muted-foreground mb-1">Portail actuel:</div>
+                  <div className="text-sm font-semibold text-foreground">
+                    {PORTAL_LABELS[user.role as UserRole]?.title || user.role}
+                  </div>
+                </div>
+              )}
+
               <Link
                 to="/dashboard"
                 onClick={() => setIsOpen(false)}
@@ -98,6 +115,19 @@ export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
                 <UserIcon className="w-4 h-4" />
                 <span>{t('nav.profile')}</span>
               </Link>
+
+              {/* Switch Portal Button - only show if user has multiple roles */}
+              {user.available_roles && user.available_roles.length > 1 && (
+                <Link
+                  to="/select-portal"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors text-foreground"
+                >
+                  <Shield className="w-4 h-4" />
+                  <span>Changer de portail</span>
+                </Link>
+              )}
+
               <Link
                 to="/logout"
                 onClick={() => setIsOpen(false)}
