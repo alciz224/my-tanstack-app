@@ -43,6 +43,8 @@ export interface StudentAssessment {
   remark?: string
   // UI helpers
   student_name?: string
+  student_last_name?: string
+  student_first_name?: string
   student_matricule?: string
 }
 
@@ -50,6 +52,18 @@ export interface AssessmentsFilter {
   school_year_cycle_id?: string
   school_year_cycle_term_id?: string
   status?: Assessment['status']
+}
+
+export interface GradeEntryData {
+  assessmentSubject: AssessmentSubject
+  students: Array<StudentAssessment>
+  stats: {
+    total: number
+    present: number
+    absent: number
+    excused: number
+    avgScore: number
+  }
 }
 
 export interface AssessmentsDataAdapter {
@@ -64,6 +78,9 @@ export interface AssessmentsDataAdapter {
   getAssessmentSubjects: (
     assessmentId: string,
   ) => Promise<Array<AssessmentSubject>>
+  getAssessmentSubjectById: (
+    id: string,
+  ) => Promise<AssessmentSubject | undefined>
   createAssessmentSubject: (
     data: Omit<AssessmentSubject, 'id'>,
   ) => Promise<AssessmentSubject>
@@ -75,8 +92,12 @@ export interface AssessmentsDataAdapter {
   getStudentAssessments: (
     assessmentSubjectId: string,
   ) => Promise<Array<StudentAssessment>>
+  getGradeEntryData: (assessmentSubjectId: string) => Promise<GradeEntryData>
   updateStudentAssessment: (
     id: string,
     updates: Partial<StudentAssessment>,
   ) => Promise<StudentAssessment>
+  bulkUpdateStudentAssessments: (
+    updates: Array<{ id: string; updates: Partial<StudentAssessment> }>,
+  ) => Promise<Array<StudentAssessment>>
 }

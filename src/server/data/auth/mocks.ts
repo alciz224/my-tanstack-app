@@ -49,9 +49,10 @@ export const mockUser: User = {
   },
   profiles: {
     has_student: false,
-    has_teacher: false,
+    has_teacher: true,
     has_school_admin: true,
   },
+  teacher_id: 't-1', // Links to teacher profile for local dev
   date_joined: '2020-09-01T08:00:00Z',
   last_login: new Date().toISOString(),
   is_active: true,

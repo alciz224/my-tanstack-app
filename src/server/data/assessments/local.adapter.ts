@@ -2,12 +2,14 @@ import {
   mockAssessmentSubjects,
   mockAssessments,
   mockStudentAssessments,
+  getStudentAssessmentsBySubject,
 } from './mocks'
 import type {
   Assessment,
   AssessmentSubject,
   AssessmentsDataAdapter,
   AssessmentsFilter,
+  GradeEntryData,
   StudentAssessment,
 } from './types'
 
@@ -62,6 +64,12 @@ export class LocalAssessmentsAdapter implements AssessmentsDataAdapter {
     return this.subjects.filter((s) => s.assessment_id === assessmentId)
   }
 
+  async getAssessmentSubjectById(
+    id: string,
+  ): Promise<AssessmentSubject | undefined> {
+    return this.subjects.find((s) => s.id === id)
+  }
+
   async createAssessmentSubject(
     data: Omit<AssessmentSubject, 'id'>,
   ): Promise<AssessmentSubject> {
@@ -83,9 +91,43 @@ export class LocalAssessmentsAdapter implements AssessmentsDataAdapter {
   async getStudentAssessments(
     assessmentSubjectId: string,
   ): Promise<Array<StudentAssessment>> {
-    return this.grades.filter(
-      (g) => g.assessment_subject_id === assessmentSubjectId,
+    return getStudentAssessmentsBySubject(assessmentSubjectId)
+  }
+
+  async getGradeEntryData(
+    assessmentSubjectId: string,
+  ): Promise<GradeEntryData> {
+    const assessmentSubject = this.subjects.find(
+      (s) => s.id === assessmentSubjectId,
     )
+    if (!assessmentSubject) {
+      throw new Error('Assessment subject not found')
+    }
+
+    const students = getStudentAssessmentsBySubject(assessmentSubjectId)
+    const present = students.filter((s) => !s.is_absent)
+    const absent = students.filter((s) => s.is_absent && !s.is_excused)
+    const excused = students.filter((s) => s.is_excused)
+    const scored = present.filter((s) => s.raw_score !== undefined)
+
+    const avgScore =
+      scored.length > 0
+        ? scored.reduce((sum, s) => sum + (s.raw_score || 0), 0) / scored.length
+        : 0
+
+    return {
+      assessmentSubject,
+      students: students.sort((a, b) =>
+        (a.student_last_name || '').localeCompare(b.student_last_name || ''),
+      ),
+      stats: {
+        total: students.length,
+        present: present.length,
+        absent: absent.length,
+        excused: excused.length,
+        avgScore: Math.round(avgScore * 100) / 100,
+      },
+    }
   }
 
   async updateStudentAssessment(
@@ -96,5 +138,19 @@ export class LocalAssessmentsAdapter implements AssessmentsDataAdapter {
     if (idx === -1) throw new Error('Student assessment not found')
     this.grades[idx] = { ...this.grades[idx], ...updates }
     return this.grades[idx]
+  }
+
+  async bulkUpdateStudentAssessments(
+    updates: Array<{ id: string; updates: Partial<StudentAssessment> }>,
+  ): Promise<Array<StudentAssessment>> {
+    const results: Array<StudentAssessment> = []
+    for (const { id, updates: updateData } of updates) {
+      const idx = this.grades.findIndex((g) => g.id === id)
+      if (idx !== -1) {
+        this.grades[idx] = { ...this.grades[idx], ...updateData }
+        results.push(this.grades[idx])
+      }
+    }
+    return results
   }
 }

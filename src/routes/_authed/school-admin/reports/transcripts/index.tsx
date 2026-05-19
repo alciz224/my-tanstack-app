@@ -89,7 +89,7 @@ function TranscriptsPage() {
           </p>
         </div>
 
-        <button 
+        <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors btn-shine hover-scale"
         >
@@ -215,7 +215,7 @@ function TranscriptsPage() {
         </div>
       </div>
 
-      <GenerateTranscriptsModal 
+      <GenerateTranscriptsModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />

@@ -1,16 +1,22 @@
 import {
+  mockAssessmentTypes,
+  mockAcademicYears,
   mockCycles,
   mockLevels,
-  mockPeriods,
   mockSubjects,
+  mockTermTypes,
+  mockTerms,
   mockTracks,
 } from './mocks'
 import type {
   AcademicDataAdapter,
+  AcademicYear,
+  AssessmentType,
   Cycle,
   Level,
-  Period,
   Subject,
+  Term,
+  TermType,
   Track,
 } from './types'
 
@@ -19,10 +25,18 @@ export class LocalAcademicAdapter implements AcademicDataAdapter {
   private levels = [...mockLevels]
   private tracks = [...mockTracks]
   private subjects = [...mockSubjects]
-  private periods = [...mockPeriods]
+  private termTypes = [...mockTermTypes]
+  private terms = [...mockTerms]
+  private assessmentTypes = [...mockAssessmentTypes]
+  private academicYears = [...mockAcademicYears]
 
   private async delay(ms = 300) {
     return new Promise((resolve) => setTimeout(resolve, ms))
+  }
+
+  async getAcademicYears(): Promise<Array<AcademicYear>> {
+    await this.delay()
+    return this.academicYears.map((y) => ({ ...y }))
   }
 
   async getCycles(): Promise<Array<Cycle>> {
@@ -45,8 +59,18 @@ export class LocalAcademicAdapter implements AcademicDataAdapter {
     return this.subjects.map((s) => ({ ...s }))
   }
 
-  async getPeriods(): Promise<Array<Period>> {
+  async getTermTypes(): Promise<Array<TermType>> {
     await this.delay()
-    return this.periods.map((p) => ({ ...p }))
+    return this.termTypes.map((t) => ({ ...t }))
+  }
+
+  async getTerms(): Promise<Array<Term>> {
+    await this.delay()
+    return this.terms.map((t) => ({ ...t }))
+  }
+
+  async getAssessmentTypes(): Promise<Array<AssessmentType>> {
+    await this.delay()
+    return this.assessmentTypes.map((a) => ({ ...a }))
   }
 }

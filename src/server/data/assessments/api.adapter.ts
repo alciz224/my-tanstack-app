@@ -4,6 +4,7 @@ import type {
   AssessmentSubject,
   AssessmentsDataAdapter,
   AssessmentsFilter,
+  GradeEntryData,
   StudentAssessment,
 } from './types'
 
@@ -89,6 +90,18 @@ export class ApiAssessmentsAdapter implements AssessmentsDataAdapter {
     )
   }
 
+  async getAssessmentSubjectById(
+    id: string,
+  ): Promise<AssessmentSubject | undefined> {
+    try {
+      return await this.fetchApi<AssessmentSubject>(
+        `/assessment-subjects/${id}/`,
+      )
+    } catch {
+      return undefined
+    }
+  }
+
   async createAssessmentSubject(
     data: Omit<AssessmentSubject, 'id'>,
   ): Promise<AssessmentSubject> {
@@ -116,6 +129,43 @@ export class ApiAssessmentsAdapter implements AssessmentsDataAdapter {
     )
   }
 
+  async getGradeEntryData(
+    assessmentSubjectId: string,
+  ): Promise<GradeEntryData> {
+    const [subject, students] = await Promise.all([
+      this.getAssessmentSubjectById(assessmentSubjectId),
+      this.getStudentAssessments(assessmentSubjectId),
+    ])
+
+    if (!subject) {
+      throw new Error('Assessment subject not found')
+    }
+
+    const present = students.filter((s) => !s.is_absent)
+    const absent = students.filter((s) => s.is_absent && !s.is_excused)
+    const excused = students.filter((s) => s.is_excused)
+    const scored = present.filter((s) => s.raw_score !== undefined)
+
+    const avgScore =
+      scored.length > 0
+        ? scored.reduce((sum, s) => sum + (s.raw_score || 0), 0) / scored.length
+        : 0
+
+    return {
+      assessmentSubject: subject,
+      students: students.sort((a, b) =>
+        (a.student_last_name || '').localeCompare(b.student_last_name || ''),
+      ),
+      stats: {
+        total: students.length,
+        present: present.length,
+        absent: absent.length,
+        excused: excused.length,
+        avgScore: Math.round(avgScore * 100) / 100,
+      },
+    }
+  }
+
   async updateStudentAssessment(
     id: string,
     updates: Partial<StudentAssessment>,
@@ -124,5 +174,17 @@ export class ApiAssessmentsAdapter implements AssessmentsDataAdapter {
       method: 'PATCH',
       body: JSON.stringify(updates),
     })
+  }
+
+  async bulkUpdateStudentAssessments(
+    updates: Array<{ id: string; updates: Partial<StudentAssessment> }>,
+  ): Promise<Array<StudentAssessment>> {
+    return this.fetchApi<Array<StudentAssessment>>(
+      '/student-assessments/bulk-update/',
+      {
+        method: 'POST',
+        body: JSON.stringify({ updates }),
+      },
+    )
   }
 }

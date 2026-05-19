@@ -152,6 +152,8 @@ export const mockTeacherAssignments: Array<TeacherAssignment> = [
     start_date: '2024-09-15',
     classroom_name: '6ème A',
     subject_name: 'Mathématiques',
+    level_name: '6ème année',
+    track_name: undefined,
   },
   {
     id: 'ta-2',
@@ -162,6 +164,8 @@ export const mockTeacherAssignments: Array<TeacherAssignment> = [
     start_date: '2024-09-15',
     classroom_name: '5ème A',
     subject_name: 'Mathématiques',
+    level_name: '5ème année',
+    track_name: undefined,
   },
   {
     id: 'ta-3',
@@ -172,6 +176,8 @@ export const mockTeacherAssignments: Array<TeacherAssignment> = [
     start_date: '2024-09-15',
     classroom_name: '6ème A',
     subject_name: 'Français',
+    level_name: '6ème année',
+    track_name: undefined,
   },
   {
     id: 'ta-4',
@@ -182,6 +188,8 @@ export const mockTeacherAssignments: Array<TeacherAssignment> = [
     start_date: '2024-09-15',
     classroom_name: '3ème A',
     subject_name: 'Physique',
+    level_name: '3ème année',
+    track_name: undefined,
   },
   {
     id: 'ta-5',
@@ -192,6 +200,8 @@ export const mockTeacherAssignments: Array<TeacherAssignment> = [
     start_date: '2024-09-15',
     classroom_name: '2nde A',
     subject_name: 'Histoire-Géo',
+    level_name: '2nde',
+    track_name: 'Sciences Sociales',
   },
   {
     id: 'ta-6',
@@ -202,6 +212,8 @@ export const mockTeacherAssignments: Array<TeacherAssignment> = [
     start_date: '2024-09-15',
     classroom_name: '1ère A',
     subject_name: 'Anglais',
+    level_name: '1ère',
+    track_name: 'Sciences Expérimentales',
   },
   {
     id: 'ta-7',
@@ -212,7 +224,40 @@ export const mockTeacherAssignments: Array<TeacherAssignment> = [
     start_date: '2024-09-15',
     classroom_name: 'Terminale A',
     subject_name: 'Philosophie',
+    level_name: 'Terminale',
+    track_name: 'Sciences Mathématiques',
   },
 ]
+
+const CLASS_COLORS = [
+  'bg-blue-500',
+  'bg-indigo-500',
+  'bg-purple-500',
+  'bg-pink-500',
+  'bg-rose-500',
+  'bg-orange-500',
+  'bg-amber-500',
+  'bg-emerald-500',
+  'bg-teal-500',
+  'bg-cyan-500',
+]
+
+export function getTeacherClassesFromAssignments(
+  assignments: Array<TeacherAssignment>,
+): Array<import('./types').TeacherClass> {
+  return assignments
+    .filter((a) => a.assignment_status === 'ACTIVE')
+    .map((a, index) => ({
+      id: a.classroom_id,
+      name: a.classroom_name || 'Unknown Class',
+      subject: a.subject_name || 'Unknown Subject',
+      level: a.track_name
+        ? `${a.level_name} - ${a.track_name}`
+        : a.level_name || 'Unknown Level',
+      students: 25 + Math.floor(Math.random() * 20),
+      color: CLASS_COLORS[index % CLASS_COLORS.length],
+      assignment_id: a.id,
+    }))
+}
 
 export type { Teacher, SchoolYearTeacher, TeacherAssignment } from './types'

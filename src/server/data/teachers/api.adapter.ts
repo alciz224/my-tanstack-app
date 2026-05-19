@@ -3,6 +3,7 @@ import type {
   SchoolYearTeacher,
   Teacher,
   TeacherAssignment,
+  TeacherClass,
   TeachersDataAdapter,
 } from './types'
 
@@ -54,6 +55,17 @@ export class ApiTeachersAdapter implements TeachersDataAdapter {
   ): Promise<Array<TeacherAssignment>> {
     return this.fetchApi<Array<TeacherAssignment>>(
       `/school-year-teachers/${schoolYearTeacherId}/assignments/`,
+    )
+  }
+
+  async getTeacherClasses(
+    teacherId: string,
+    schoolYearId?: string,
+  ): Promise<Array<TeacherClass>> {
+    const params = new URLSearchParams({ teacher_id: teacherId })
+    if (schoolYearId) params.append('school_year_id', schoolYearId)
+    return this.fetchApi<Array<TeacherClass>>(
+      `/teachers/${teacherId}/classes/?${params}`,
     )
   }
 

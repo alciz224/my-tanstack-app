@@ -2,9 +2,19 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { useState } from 'react'
-import { Edit, Filter, Globe, Map, MapPin, Plus, Search } from 'lucide-react'
+import {
+  Edit,
+  Filter,
+  Globe,
+  Map,
+  MapPin,
+  Plus,
+  Search,
+  Trash2,
+} from 'lucide-react'
 import {
   getAdministrativeUnitsFn,
+  getCountriesFn,
   getLocalitiesFn,
   getRegionsFn,
 } from '@/server/api/geography'
@@ -14,15 +24,20 @@ export const Route = createFileRoute('/_authed/super-admin/geography')({
   component: GeographyPage,
 })
 
-function GeographyPage() {
-  const [activeTab, setActiveTab] = useState<
-    'regions' | 'adminUnits' | 'localities'
-  >('regions')
+type TabType = 'countries' | 'regions' | 'adminUnits' | 'localities'
 
+function GeographyPage() {
+  const [activeTab, setActiveTab] = useState<TabType>('countries')
+
+  const getCountries = useServerFn(getCountriesFn)
   const getRegions = useServerFn(getRegionsFn)
   const getAdminUnits = useServerFn(getAdministrativeUnitsFn)
   const getLocalities = useServerFn(getLocalitiesFn)
 
+  const { data: countries, isLoading: loadingCountries } = useQuery({
+    queryKey: geographyKeys.countriesList(),
+    queryFn: () => getCountries(),
+  })
   const { data: regions, isLoading: loadingRegions } = useQuery({
     queryKey: geographyKeys.regionsList(),
     queryFn: () => getRegions(),
@@ -57,6 +72,12 @@ function GeographyPage() {
 
       {/* Tabs */}
       <div className="flex w-fit bg-muted p-1 rounded-lg">
+        <button
+          onClick={() => setActiveTab('countries')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'countries' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          <Globe className="w-4 h-4" /> Pays
+        </button>
         <button
           onClick={() => setActiveTab('regions')}
           className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'regions' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
@@ -117,6 +138,42 @@ function GeographyPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
+            {activeTab === 'countries' && loadingCountries && <SkeletonRow />}
+            {activeTab === 'countries' &&
+              countries?.map((c) => (
+                <tr
+                  key={c.id}
+                  className="hover:bg-muted/40 transition-colors group"
+                >
+                  <td className="px-6 py-4 font-mono text-xs text-muted-foreground">
+                    {c.code}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-600 group-hover:bg-green-500 group-hover:text-white transition-colors">
+                        <Globe className="w-4 h-4" />
+                      </div>
+                      <span className="font-semibold text-foreground">
+                        {c.name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-muted-foreground">
+                    {c.description || 'Pays'}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <button className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors hover-scale">
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors hover-scale">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+
             {activeTab === 'regions' && loadingRegions && <SkeletonRow />}
             {activeTab === 'regions' &&
               regions?.map((r) => (

@@ -96,16 +96,24 @@ function ReportCardDetailPage() {
               {reportCard.line_items?.map((item) => (
                 <tr key={item.id}>
                   <td className="py-2">
-                    <div className="font-medium text-gray-900">{item.subject_name}</div>
-                    <div className="text-xs text-gray-500">{item.teacher_name}</div>
+                    <div className="font-medium text-gray-900">
+                      {item.subject_name}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {item.teacher_name}
+                    </div>
                   </td>
                   <td className="py-2 text-center">{item.coefficient}</td>
                   <td className="py-2 text-center">
-                    <span className={`font-medium ${item.score < 10 ? 'text-red-600' : 'text-gray-900'}`}>
+                    <span
+                      className={`font-medium ${item.score < 10 ? 'text-red-600' : 'text-gray-900'}`}
+                    >
                       {item.score.toFixed(1)}
                     </span>
                   </td>
-                  <td className="py-2 text-right font-medium">{item.weighted_score.toFixed(1)}</td>
+                  <td className="py-2 text-right font-medium">
+                    {item.weighted_score.toFixed(1)}
+                  </td>
                 </tr>
               ))}
               {!reportCard.line_items?.length && (
@@ -118,18 +126,24 @@ function ReportCardDetailPage() {
             </tbody>
           </table>
         </div>
-        
+
         {reportCard.line_items && reportCard.line_items.length > 0 && (
           <div className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
-             <h3 className="text-sm font-bold text-gray-700 mb-3">Appréciations des professeurs</h3>
-             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-               {reportCard.line_items.map((item) => (
-                 <div key={`app-${item.id}`} className="text-sm">
-                   <span className="font-semibold text-gray-800">{item.subject_name} : </span>
-                   <span className="text-gray-600 italic">{item.appreciation || 'Aucune appréciation.'}</span>
-                 </div>
-               ))}
-             </div>
+            <h3 className="text-sm font-bold text-gray-700 mb-3">
+              Appréciations des professeurs
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {reportCard.line_items.map((item) => (
+                <div key={`app-${item.id}`} className="text-sm">
+                  <span className="font-semibold text-gray-800">
+                    {item.subject_name} :{' '}
+                  </span>
+                  <span className="text-gray-600 italic">
+                    {item.appreciation || 'Aucune appréciation.'}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

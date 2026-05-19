@@ -1,6 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import { AlertCircle, ArrowLeft, CheckCircle, Clock, Plus, ToggleLeft, ToggleRight, Trash2, X } from 'lucide-react'
+import {
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle,
+  Clock,
+  Plus,
+  ToggleLeft,
+  ToggleRight,
+  Trash2,
+  X,
+} from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import {
   deleteTimeSlotFn,
@@ -27,7 +37,8 @@ const CYCLES = [
 
 function TimeSlotsPage() {
   const { timeSlots: initialTimeSlots } = Route.useLoaderData()
-  const [timeSlots, setTimeSlots] = useState<SchoolYearCycleTimeSlot[]>(initialTimeSlots)
+  const [timeSlots, setTimeSlots] =
+    useState<SchoolYearCycleTimeSlot[]>(initialTimeSlots)
   const [activeCycleId, setActiveCycleId] = useState('syc-1')
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -44,7 +55,9 @@ function TimeSlotsPage() {
     setLoadingId(slot.id)
     const newStatus = slot.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'
     try {
-      const updated = await updateTimeSlotFn({ data: { id: slot.id, updates: { status: newStatus } } })
+      const updated = await updateTimeSlotFn({
+        data: { id: slot.id, updates: { status: newStatus } },
+      })
       setTimeSlots((prev) => prev.map((s) => (s.id === slot.id ? updated : s)))
     } catch (err) {
       setActionError(err instanceof Error ? err.message : 'Erreur')
@@ -60,7 +73,9 @@ function TimeSlotsPage() {
       await deleteTimeSlotFn({ data: slot.id })
       setTimeSlots((prev) => prev.filter((s) => s.id !== slot.id))
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : 'Erreur lors de la suppression')
+      setActionError(
+        err instanceof Error ? err.message : 'Erreur lors de la suppression',
+      )
     } finally {
       setLoadingId(null)
     }
@@ -78,8 +93,12 @@ function TimeSlotsPage() {
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Créneaux Horaires</h1>
-            <p className="text-muted-foreground text-sm">Gérez le découpage de la journée par cycle.</p>
+            <h1 className="text-2xl font-bold text-foreground">
+              Créneaux Horaires
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Gérez le découpage de la journée par cycle.
+            </p>
           </div>
         </div>
 
@@ -109,7 +128,9 @@ function TimeSlotsPage() {
         <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3 text-sm text-red-600 dark:text-red-400">
           <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
           <div className="flex-1">{actionError}</div>
-          <button onClick={() => setActionError(null)}><X className="w-4 h-4" /></button>
+          <button onClick={() => setActionError(null)}>
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
@@ -117,11 +138,22 @@ function TimeSlotsPage() {
       <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl flex items-start gap-3 text-sm">
         <AlertCircle className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
         <div>
-          <p className="font-semibold text-foreground mb-0.5">Règles importantes</p>
+          <p className="font-semibold text-foreground mb-0.5">
+            Règles importantes
+          </p>
           <ul className="text-muted-foreground space-y-0.5 list-disc list-inside">
-            <li>Les créneaux ne peuvent pas se <strong>chevaucher</strong> au sein d'un même cycle.</li>
-            <li>Un créneau utilisé par des cours existants ne peut pas être <strong>supprimé</strong> — désactivez-le.</li>
-            <li>Les horaires d'un créneau utilisé sont <strong>immuables</strong> (seul le nom est modifiable).</li>
+            <li>
+              Les créneaux ne peuvent pas se <strong>chevaucher</strong> au sein
+              d'un même cycle.
+            </li>
+            <li>
+              Un créneau utilisé par des cours existants ne peut pas être{' '}
+              <strong>supprimé</strong> — désactivez-le.
+            </li>
+            <li>
+              Les horaires d'un créneau utilisé sont <strong>immuables</strong>{' '}
+              (seul le nom est modifiable).
+            </li>
           </ul>
         </div>
       </div>
@@ -137,36 +169,50 @@ function TimeSlotsPage() {
                 <th className="px-5 py-3.5 font-semibold">Début</th>
                 <th className="px-5 py-3.5 font-semibold">Fin</th>
                 <th className="px-5 py-3.5 font-semibold">Durée</th>
-                <th className="px-5 py-3.5 font-semibold text-center">Statut</th>
-                <th className="px-5 py-3.5 font-semibold text-right">Actions</th>
+                <th className="px-5 py-3.5 font-semibold text-center">
+                  Statut
+                </th>
+                <th className="px-5 py-3.5 font-semibold text-right">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {timeSlots.map((slot) => {
-                const isBreak = slot.name.toLowerCase().includes('réc') || slot.name.toLowerCase().includes('pause')
+                const isBreak =
+                  slot.name.toLowerCase().includes('réc') ||
+                  slot.name.toLowerCase().includes('pause')
                 const isLoading = loadingId === slot.id
                 return (
                   <tr
                     key={slot.id}
                     className={`hover:bg-muted/20 transition-colors group ${slot.status === 'INACTIVE' ? 'opacity-60' : ''}`}
                   >
-                    <td className="px-5 py-4 font-mono font-bold text-muted-foreground">#{slot.order}</td>
+                    <td className="px-5 py-4 font-mono font-bold text-muted-foreground">
+                      #{slot.order}
+                    </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
-                        {isBreak && <span className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />}
-                        <span className={`font-semibold ${isBreak ? 'text-amber-700 dark:text-amber-400' : 'text-foreground'}`}>
+                        {isBreak && (
+                          <span className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
+                        )}
+                        <span
+                          className={`font-semibold ${isBreak ? 'text-amber-700 dark:text-amber-400' : 'text-foreground'}`}
+                        >
                           {slot.name}
                         </span>
                       </div>
                     </td>
                     <td className="px-5 py-4">
                       <span className="flex items-center gap-2 text-foreground font-mono">
-                        <Clock className="w-3.5 h-3.5 text-muted-foreground" /> {slot.start_time}
+                        <Clock className="w-3.5 h-3.5 text-muted-foreground" />{' '}
+                        {slot.start_time}
                       </span>
                     </td>
                     <td className="px-5 py-4">
                       <span className="flex items-center gap-2 text-foreground font-mono">
-                        <Clock className="w-3.5 h-3.5 text-muted-foreground" /> {slot.end_time}
+                        <Clock className="w-3.5 h-3.5 text-muted-foreground" />{' '}
+                        {slot.end_time}
                       </span>
                     </td>
                     <td className="px-5 py-4 text-muted-foreground">
@@ -175,8 +221,16 @@ function TimeSlotsPage() {
                       </span>
                     </td>
                     <td className="px-5 py-4 text-center">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${slot.status === 'ACTIVE' ? 'bg-green-500/15 text-green-700 dark:text-green-400' : 'bg-muted text-muted-foreground'}`}>
-                        {slot.status === 'ACTIVE' ? <><CheckCircle className="w-3 h-3" /> Actif</> : 'Inactif'}
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${slot.status === 'ACTIVE' ? 'bg-green-500/15 text-green-700 dark:text-green-400' : 'bg-muted text-muted-foreground'}`}
+                      >
+                        {slot.status === 'ACTIVE' ? (
+                          <>
+                            <CheckCircle className="w-3 h-3" /> Actif
+                          </>
+                        ) : (
+                          'Inactif'
+                        )}
                       </span>
                     </td>
                     <td className="px-5 py-4">
@@ -185,10 +239,18 @@ function TimeSlotsPage() {
                         <button
                           onClick={() => handleToggleStatus(slot)}
                           disabled={isLoading}
-                          title={slot.status === 'ACTIVE' ? 'Désactiver ce créneau' : 'Activer ce créneau'}
+                          title={
+                            slot.status === 'ACTIVE'
+                              ? 'Désactiver ce créneau'
+                              : 'Activer ce créneau'
+                          }
                           className={`p-2 rounded-md transition-colors ${slot.status === 'ACTIVE' ? 'text-muted-foreground hover:text-amber-600 hover:bg-amber-500/10' : 'text-muted-foreground hover:text-green-600 hover:bg-green-500/10'} disabled:opacity-40`}
                         >
-                          {slot.status === 'ACTIVE' ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
+                          {slot.status === 'ACTIVE' ? (
+                            <ToggleRight className="w-4 h-4" />
+                          ) : (
+                            <ToggleLeft className="w-4 h-4" />
+                          )}
                         </button>
                         {/* Delete */}
                         <button
@@ -206,7 +268,10 @@ function TimeSlotsPage() {
               })}
               {timeSlots.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-5 py-12 text-center text-muted-foreground">
+                  <td
+                    colSpan={7}
+                    className="px-5 py-12 text-center text-muted-foreground"
+                  >
                     <Clock className="w-8 h-8 mx-auto mb-2 opacity-40" />
                     Aucun créneau configuré pour ce cycle.
                   </td>

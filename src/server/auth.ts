@@ -68,6 +68,7 @@ export interface User {
     has_teacher: boolean
     has_school_admin: boolean
   }
+  teacher_id?: string // Link to teacher profile if user has teacher role
   date_joined: string
   last_login: string | null
   is_active: boolean

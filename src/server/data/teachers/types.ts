@@ -29,6 +29,18 @@ export interface TeacherAssignment {
   // Related data for display
   classroom_name?: string
   subject_name?: string
+  level_name?: string
+  track_name?: string
+}
+
+export interface TeacherClass {
+  id: string
+  name: string
+  subject: string
+  level: string
+  students: number
+  color: string
+  assignment_id: string
 }
 
 export interface TeachersDataAdapter {
@@ -39,6 +51,10 @@ export interface TeachersDataAdapter {
   getTeacherAssignments: (
     schoolYearTeacherId: string,
   ) => Promise<Array<TeacherAssignment>>
+  getTeacherClasses: (
+    teacherId: string,
+    schoolYearId?: string,
+  ) => Promise<Array<TeacherClass>>
   assignTeacherToSchoolYear: (
     data: Omit<SchoolYearTeacher, 'id'>,
   ) => Promise<SchoolYearTeacher>

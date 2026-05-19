@@ -62,7 +62,9 @@ export function GenerateTranscriptsModal({
         <div className="bg-primary px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <History className="w-5 h-5 text-primary-foreground" />
-            <h2 className="text-white font-bold text-lg">Générer les Relevés Annuels</h2>
+            <h2 className="text-white font-bold text-lg">
+              Générer les Relevés Annuels
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -74,11 +76,16 @@ export function GenerateTranscriptsModal({
 
         {success ? (
           <div className="p-8 text-center flex flex-col items-center justify-center space-y-4">
-             <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full text-green-600 dark:text-green-400">
-               <CheckCircle2 className="w-12 h-12" />
-             </div>
-             <h3 className="text-xl font-bold text-foreground">Génération Réussie</h3>
-             <p className="text-muted-foreground">Les relevés annuels ont été générés avec succès pour la classe sélectionnée.</p>
+            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full text-green-600 dark:text-green-400">
+              <CheckCircle2 className="w-12 h-12" />
+            </div>
+            <h3 className="text-xl font-bold text-foreground">
+              Génération Réussie
+            </h3>
+            <p className="text-muted-foreground">
+              Les relevés annuels ont été générés avec succès pour la classe
+              sélectionnée.
+            </p>
           </div>
         ) : (
           <form onSubmit={handleGenerate} className="p-6 space-y-5">
@@ -92,7 +99,9 @@ export function GenerateTranscriptsModal({
             <div className="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg flex gap-3 text-sm">
               <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
               <p className="text-blue-900 dark:text-blue-200">
-                La génération des relevés annuels nécessite que tous les trimestres de l'année scolaire soient au statut <strong>FINAL</strong>.
+                La génération des relevés annuels nécessite que tous les
+                trimestres de l'année scolaire soient au statut{' '}
+                <strong>FINAL</strong>.
               </p>
             </div>
 
@@ -102,13 +111,19 @@ export function GenerateTranscriptsModal({
               </label>
               <select
                 value={formData.schoolYearId}
-                onChange={(e) => setFormData({ ...formData, schoolYearId: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, schoolYearId: e.target.value })
+                }
                 className="w-full bg-input border-none rounded-lg py-2.5 px-4 text-foreground focus:ring-2 focus:ring-primary/50 focus:outline-none"
                 required
               >
-                <option value="" disabled>Sélectionner l'année scolaire</option>
+                <option value="" disabled>
+                  Sélectionner l'année scolaire
+                </option>
                 {schoolYears.map((sy) => (
-                  <option key={sy.id} value={sy.id}>{sy.name}</option>
+                  <option key={sy.id} value={sy.id}>
+                    {sy.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -119,14 +134,20 @@ export function GenerateTranscriptsModal({
               </label>
               <select
                 value={formData.classroomId}
-                onChange={(e) => setFormData({ ...formData, classroomId: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, classroomId: e.target.value })
+                }
                 className="w-full bg-input border-none rounded-lg py-2.5 px-4 text-foreground focus:ring-2 focus:ring-primary/50 focus:outline-none"
                 required
               >
-                <option value="" disabled>Sélectionner une classe</option>
+                <option value="" disabled>
+                  Sélectionner une classe
+                </option>
                 <option value="ALL">Toutes les classes</option>
                 {classrooms.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
                 ))}
               </select>
             </div>

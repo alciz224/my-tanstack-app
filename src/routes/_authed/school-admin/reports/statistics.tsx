@@ -164,12 +164,8 @@ function StatisticsPage() {
                   <th className="text-left py-3 px-4 font-medium rounded-tl-lg">
                     Classe
                   </th>
-                  <th className="text-center py-3 px-4 font-medium">
-                    Élèves
-                  </th>
-                  <th className="text-center py-3 px-4 font-medium">
-                    Moyenne
-                  </th>
+                  <th className="text-center py-3 px-4 font-medium">Élèves</th>
+                  <th className="text-center py-3 px-4 font-medium">Moyenne</th>
                   <th className="text-center py-3 px-4 font-medium rounded-tr-lg">
                     Réussite
                   </th>
@@ -177,7 +173,10 @@ function StatisticsPage() {
               </thead>
               <tbody className="divide-y divide-border">
                 {classStats.map((c) => (
-                  <tr key={c.name} className="hover:bg-muted/30 transition-colors">
+                  <tr
+                    key={c.name}
+                    className="hover:bg-muted/30 transition-colors"
+                  >
                     <td className="py-3 px-4 font-medium text-foreground">
                       {c.name}
                     </td>

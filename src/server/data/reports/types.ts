@@ -91,7 +91,5 @@ export interface ReportsDataAdapter {
     updates: Partial<Transcript>,
   ) => Promise<Transcript>
 
-  getReportStats: (filter?: {
-    school_year_id?: string
-  }) => Promise<ReportStats>
+  getReportStats: (filter?: { school_year_id?: string }) => Promise<ReportStats>
 }

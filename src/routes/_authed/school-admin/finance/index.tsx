@@ -343,7 +343,7 @@ function OverviewTab({
                   <td className="px-4 py-3">{getStatusBadge(s.status)}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
-                      <button 
+                      <button
                         onClick={() => onEncaisser(s.student_id)}
                         className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${s.balance > 0 ? 'bg-primary/10 text-primary hover:bg-primary/20' : 'bg-muted text-muted-foreground opacity-50 cursor-not-allowed'}`}
                         disabled={s.balance <= 0}
@@ -351,7 +351,7 @@ function OverviewTab({
                         Encaisser
                       </button>
                       {s.status === 'OVERDUE' && (
-                        <button 
+                        <button
                           className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 transition-colors"
                           title="Envoyer un rappel de paiement"
                         >
@@ -418,14 +418,22 @@ function TransactionsTab({
                 </td>
                 <td className="px-4 py-3 font-medium">
                   <div>
-                    <div className="text-foreground">{t.student_name || 'Élève inconnu'}</div>
-                    <div className="text-xs text-muted-foreground font-normal">{t.student_enrollment_id}</div>
+                    <div className="text-foreground">
+                      {t.student_name || 'Élève inconnu'}
+                    </div>
+                    <div className="text-xs text-muted-foreground font-normal">
+                      {t.student_enrollment_id}
+                    </div>
                   </div>
                 </td>
                 <td className="px-4 py-3 text-sm">
                   <div>
-                    <div className="font-medium text-foreground">{t.fee_name || 'Frais inconnu'}</div>
-                    <div className="text-xs text-muted-foreground">{t.school_fee_id}</div>
+                    <div className="font-medium text-foreground">
+                      {t.fee_name || 'Frais inconnu'}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {t.school_fee_id}
+                    </div>
                   </div>
                 </td>
                 <td className="px-4 py-3 text-sm">
@@ -438,7 +446,10 @@ function TransactionsTab({
                   {formatCurrency(t.amount_paid)}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded transition-colors inline-flex" title="Télécharger le reçu">
+                  <button
+                    className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded transition-colors inline-flex"
+                    title="Télécharger le reçu"
+                  >
                     <Download className="w-4 h-4" />
                   </button>
                 </td>
@@ -525,7 +536,9 @@ function FeesTab({
                       <div className="font-medium text-foreground">
                         {f.fee_name || f.fee_type_id}
                       </div>
-                      <div className="text-xs text-muted-foreground">{f.id}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {f.id}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary text-secondary-foreground">

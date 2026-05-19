@@ -3,6 +3,7 @@ import type {
   Assessment,
   AssessmentSubject,
   AssessmentsFilter,
+  GradeEntryData,
   StudentAssessment,
 } from '@/server/data/assessments/types'
 import { getAssessmentsService } from '@/server/data/assessments/factory'
@@ -39,6 +40,12 @@ export const getAssessmentSubjectsFn = createServerFn({ method: 'GET' })
     },
   )
 
+export const getAssessmentSubjectByIdFn = createServerFn({ method: 'GET' })
+  .inputValidator((id: string) => id)
+  .handler(async ({ data: id }): Promise<AssessmentSubject | undefined> => {
+    return getAssessmentsService().getAssessmentSubjectById(id)
+  })
+
 export const createAssessmentSubjectFn = createServerFn({ method: 'POST' })
   .inputValidator((data: Omit<AssessmentSubject, 'id'>) => data)
   .handler(async ({ data }): Promise<AssessmentSubject> => {
@@ -63,10 +70,24 @@ export const getStudentAssessmentsFn = createServerFn({ method: 'GET' })
     },
   )
 
+export const getGradeEntryDataFn = createServerFn({ method: 'GET' })
+  .inputValidator((assessmentSubjectId: string) => assessmentSubjectId)
+  .handler(async ({ data: assessmentSubjectId }): Promise<GradeEntryData> => {
+    return getAssessmentsService().getGradeEntryData(assessmentSubjectId)
+  })
+
 export const updateStudentAssessmentFn = createServerFn({ method: 'POST' })
   .inputValidator(
     (data: { id: string; updates: Partial<StudentAssessment> }) => data,
   )
   .handler(async ({ data: { id, updates } }): Promise<StudentAssessment> => {
     return getAssessmentsService().updateStudentAssessment(id, updates)
+  })
+
+export const bulkUpdateStudentAssessmentsFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    (data: Array<{ id: string; updates: Partial<StudentAssessment> }>) => data,
+  )
+  .handler(async ({ data: updates }): Promise<Array<StudentAssessment>> => {
+    return getAssessmentsService().bulkUpdateStudentAssessments(updates)
   })

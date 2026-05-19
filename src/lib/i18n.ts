@@ -71,6 +71,7 @@ const translations = {
       status: 'Status',
       actions: 'Actions',
       comingSoon: 'Coming soon',
+      geography: 'Geography',
     },
 
     // Auth
@@ -325,6 +326,7 @@ const translations = {
       status: 'Statut',
       actions: 'Actions',
       comingSoon: 'Bientôt',
+      geography: 'Géographie',
     },
 
     // Auth

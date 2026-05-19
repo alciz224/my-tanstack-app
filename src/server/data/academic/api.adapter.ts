@@ -1,10 +1,13 @@
 import { getCookies } from '@tanstack/react-start/server'
 import type {
   AcademicDataAdapter,
+  AcademicYear,
+  AssessmentType,
   Cycle,
   Level,
-  Period,
   Subject,
+  Term,
+  TermType,
   Track,
 } from './types'
 
@@ -32,6 +35,10 @@ export class ApiAcademicAdapter implements AcademicDataAdapter {
     return (Array.isArray(json) ? json : (json.results ?? [])) as T
   }
 
+  async getAcademicYears(): Promise<Array<AcademicYear>> {
+    return this.fetchApi<Array<AcademicYear>>('/academic/academic-years/')
+  }
+
   async getCycles(): Promise<Array<Cycle>> {
     return this.fetchApi<Array<Cycle>>('/academic/cycles/')
   }
@@ -48,7 +55,15 @@ export class ApiAcademicAdapter implements AcademicDataAdapter {
     return this.fetchApi<Array<Subject>>('/academic/subjects/')
   }
 
-  async getPeriods(): Promise<Array<Period>> {
-    return this.fetchApi<Array<Period>>('/academic/periods/')
+  async getTermTypes(): Promise<Array<TermType>> {
+    return this.fetchApi<Array<TermType>>('/academic/term-types/')
+  }
+
+  async getTerms(): Promise<Array<Term>> {
+    return this.fetchApi<Array<Term>>('/academic/terms/')
+  }
+
+  async getAssessmentTypes(): Promise<Array<AssessmentType>> {
+    return this.fetchApi<Array<AssessmentType>>('/academic/assessment-types/')
   }
 }

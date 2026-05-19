@@ -2,7 +2,7 @@
  * Academic API Server Functions
  *
  * Server functions for Academic reference data endpoints.
- * These run on the server during SSR and forward cookies to Django.
+ * Uses the Data Adapter pattern to toggle between local mock and real API.
  *
  * Pattern:
  * - GET requests: createServerFn with serverFetch (cookie forwarding for SSR)
@@ -11,9 +11,6 @@
  */
 
 import { createServerFn } from '@tanstack/react-start'
-import type { AcademicYear, PaginatedResponse } from '@/types/academic'
-import { serverFetch } from '@/lib/api-client'
-import { ACADEMIC_ENDPOINTS } from '@/lib/api-endpoints'
 import { getAcademicService } from '@/server/data/academic/factory'
 
 // ============================================================================
@@ -21,19 +18,11 @@ import { getAcademicService } from '@/server/data/academic/factory'
 // ============================================================================
 
 /**
- * Get list of academic years with optional filters
- * GET /api/v1/academic/academic-years/
+ * Get list of academic years
  */
 export const getAcademicYearsFn = createServerFn({ method: 'GET' }).handler(
-  async (ctx) => {
-    // Build query string from filters (if needed, add validator)
-    // For now, fetch all
-    const data = await serverFetch<PaginatedResponse<AcademicYear>>(
-      ACADEMIC_ENDPOINTS.ACADEMIC_YEARS,
-      ctx,
-    )
-
-    return data
+  async () => {
+    return getAcademicService().getAcademicYears()
   },
 )
 
@@ -97,7 +86,25 @@ export const getSubjectsFn = createServerFn({ method: 'GET' }).handler(
 
 export const getPeriodsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getAcademicService().getPeriods()
+    return getAcademicService().getTermTypes()
+  },
+)
+
+export const getTermTypesFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    return getAcademicService().getTermTypes()
+  },
+)
+
+export const getTermsFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    return getAcademicService().getTerms()
+  },
+)
+
+export const getAssessmentTypesFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    return getAcademicService().getAssessmentTypes()
   },
 )
 

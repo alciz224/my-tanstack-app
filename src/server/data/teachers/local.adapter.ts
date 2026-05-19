@@ -2,11 +2,13 @@ import {
   mockSchoolYearTeachers,
   mockTeacherAssignments,
   mockTeachers,
+  getTeacherClassesFromAssignments,
 } from './mocks'
 import type {
   SchoolYearTeacher,
   Teacher,
   TeacherAssignment,
+  TeacherClass,
   TeachersDataAdapter,
 } from './types'
 
@@ -33,6 +35,21 @@ export class LocalTeachersAdapter implements TeachersDataAdapter {
     return this.teacherAssignments.filter(
       (a) => a.school_year_teacher_id === schoolYearTeacherId,
     )
+  }
+
+  async getTeacherClasses(
+    teacherId: string,
+    _schoolYearId?: string,
+  ): Promise<Array<TeacherClass>> {
+    const syt = this.schoolYearTeachers.find((s) => s.teacher_id === teacherId)
+    if (!syt) return []
+
+    const assignments = this.teacherAssignments.filter(
+      (a) =>
+        a.school_year_teacher_id === syt.id && a.assignment_status === 'ACTIVE',
+    )
+
+    return getTeacherClassesFromAssignments(assignments)
   }
 
   async assignTeacherToSchoolYear(

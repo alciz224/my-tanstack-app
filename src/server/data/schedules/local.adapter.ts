@@ -39,12 +39,8 @@ export class LocalSchedulesAdapter implements SchedulesDataAdapter {
     data: Omit<SchoolYearCycleTimeSlot, 'id'>,
   ): Promise<SchoolYearCycleTimeSlot> {
     // Validate start < end
-    if (
-      timesToMinutes(data.start_time) >= timesToMinutes(data.end_time)
-    ) {
-      throw new Error(
-        "L'heure de début doit être antérieure à l'heure de fin.",
-      )
+    if (timesToMinutes(data.start_time) >= timesToMinutes(data.end_time)) {
+      throw new Error("L'heure de début doit être antérieure à l'heure de fin.")
     }
 
     // Overlap check within same cycle
@@ -55,7 +51,12 @@ export class LocalSchedulesAdapter implements SchedulesDataAdapter {
           t.status === 'ACTIVE',
       )
       .find((t) =>
-        hasTimeOverlap(data.start_time, data.end_time, t.start_time, t.end_time),
+        hasTimeOverlap(
+          data.start_time,
+          data.end_time,
+          t.start_time,
+          t.end_time,
+        ),
       )
 
     if (overlap) {
