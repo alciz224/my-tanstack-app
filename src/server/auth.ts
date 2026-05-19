@@ -1,7 +1,7 @@
 /**
  * Authentication Module
  *
- * This module handles all authentication operations for the EduVault application.
+ * This module handles all authentication operations for the GuiSchool application.
  * It contains both SERVER FUNCTIONS (SSR) and CLIENT FUNCTIONS (browser-only).
  *
  * CRITICAL DISTINCTION:

@@ -18,7 +18,7 @@ export function LandingFooter() {
                 </span>
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-                EduVault
+                GuiSchool
               </span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -78,7 +78,7 @@ export function LandingFooter() {
 
         <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <p>
-            © {currentYear} EduVault. {t('home.footer.rights')}
+            © {currentYear} GuiSchool. {t('home.footer.rights')}
           </p>
           <div className="flex items-center gap-6">
             {/* Social icons could go here */}

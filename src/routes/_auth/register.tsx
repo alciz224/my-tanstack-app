@@ -135,7 +135,7 @@ function RegisterPage() {
       toast.success(
         t('auth.registerSuccess') || 'Account created!',
         t('auth.registerSuccessMessage') ||
-          'Welcome to EduVault! Your account has been created successfully.',
+          'Welcome to GuiSchool! Your account has been created successfully.',
       )
 
       // Determine redirect destination based on user role

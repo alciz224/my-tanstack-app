@@ -83,7 +83,7 @@ export function NavDrawer({ isOpen, onClose, user }: NavDrawerProps) {
               </span>
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-              EduVault
+              GuiSchool
             </span>
           </div>
           <button

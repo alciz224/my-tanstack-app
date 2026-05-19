@@ -98,7 +98,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'EduVault - Academic Management Platform',
+        title: 'GuiSchool - Academic Management Platform',
       },
     ],
     links: [

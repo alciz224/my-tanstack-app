@@ -24,7 +24,7 @@ export function Sidebar({ user }: SidebarProps) {
             </span>
           </div>
           <span className="text-xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-            EduVault
+            GuiSchool
           </span>
         </Link>
       </div>

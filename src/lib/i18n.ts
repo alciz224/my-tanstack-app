@@ -9,7 +9,7 @@ import { useLanguageStore } from '@/stores/languageStore'
 const translations = {
   en: {
     // Brand
-    brandName: 'EduVault',
+    brandName: 'GuiSchool',
     brandTagline: 'Academic Management Platform',
     brandDescription: 'Modern Academic Management Platform',
 
@@ -76,8 +76,8 @@ const translations = {
 
     // Auth
     auth: {
-      welcomeBack: 'Welcome back to EduVault.',
-      joinToday: 'Join EduVault today.',
+      welcomeBack: 'Welcome back to GuiSchool.',
+      joinToday: 'Join GuiSchool today.',
       signInTitle: 'Sign in',
       signUpTitle: 'Create account',
       identifier: 'Identifier',
@@ -108,7 +108,7 @@ const translations = {
       loginSuccessMessage: 'You have successfully logged in.',
       registerSuccess: 'Account created!',
       registerSuccessMessage:
-        'Welcome to EduVault! Your account has been created successfully.',
+        'Welcome to GuiSchool! Your account has been created successfully.',
       logoutSuccess: 'Logged out',
       logoutSuccessMessage: 'You have been logged out successfully.',
     },
@@ -143,35 +143,35 @@ const translations = {
     home: {
       heroTitle: 'The #1 School Management Solution in Guinea',
       heroSubtitle:
-        'Simplify administration, secure payments (Orange/MTN), and engage parents. A reliable platform designed for our schools.',
+        'Simplify administration, manage complex academic cycles, and generate official transcripts. A reliable platform built for Guinean schools.',
       getStarted: 'Get Started',
       signUpFree: 'Sign Up Free',
-      features: 'Why Choose EduVault?',
+      features: 'Why Choose GuiSchool?',
       featuresSubtitle: 'Everything needed for modern education in Guinea.',
 
-      // Feature 1: Mobile Money
-      payments: 'Mobile Payments',
+      // Feature 1: Academic Structure
+      payments: 'Academic Structure',
       paymentsDesc:
-        'Automated tuition collection via Orange Money & MTN MoMo with instant receipts.',
+        'Support for Maternelle, Primaire, Collège, and Lycée with complete tracking of tracks (SM, SE, SS).',
 
-      // Feature 2: SMS/WhatsApp
-      communication: 'Parent Tracking',
+      // Feature 2: Schedule & Classrooms
+      communication: 'Class & Schedule Management',
       communicationDesc:
-        'Automatic SMS & WhatsApp alerts for grades, absences, and school announcements.',
+        'Organize classrooms, assign teachers securely, and manage time slots without overlaps.',
 
       // Feature 3: Academic
-      academic: 'Smart Reporting',
+      academic: 'Ministry-Compliant Reports',
       academicDesc:
-        'Generate report cards and transcripts compliant with Ministry standards in one click.',
+        'Generate report cards and official transcripts that meet the exact standards of the Guinean Ministry of Education.',
 
-      // Feature 4: Finance
-      finance: 'Financial Control',
+      // Feature 4: Pedagogy
+      finance: 'Pedagogy & Assessments',
       financeDesc:
-        'Real-time cash flow tracking, expense management, and digital receipts.',
+        'Rigorous assessment lifecycles (Draft to Validated) ensuring grading integrity across all subjects.',
 
       // Feature 5: Offline/Reliable
       reliability: 'Fast & Reliable',
-      reliabilityDesc: 'Works smoothly even with slow connection speeds.',
+      reliabilityDesc: 'Designed to work smoothly even with slow connection speeds or locally.',
 
       // Feature 6: Support
       support: 'Local Support',
@@ -191,20 +191,20 @@ const translations = {
       // How It Works
       howItWorks: 'How It Works',
       steps: {
-        step1: 'Create Account',
-        step1Desc: 'Sign up in 2 minutes. No credit card required.',
-        step2: 'Import Data',
+        step1: 'Configure Academic Structure',
+        step1Desc: 'Set up your cycles, tracks, levels, and subjects.',
+        step2: 'Enroll & Assign',
         step2Desc:
-          'Easily upload your students, classes, and teachers via Excel.',
-        step3: 'Go Live',
+          'Register students to classes and assign teachers to schedules.',
+        step3: 'Manage Pedagogy',
         step3Desc:
-          'Start managing grades, payments, and communication immediately.',
+          'Track assessments and generate official transcripts with ease.',
       },
 
       // Testimonials
       testimonials: 'What Principals Say',
       testimonial1:
-        '"EduVault has completely transformed how we manage tuition payments. Parents love the Mobile Money integration!"',
+        '"GuiSchool has completely transformed how we manage our academic cycles and official transcripts!"',
       testimonial1Author: 'Mamadou Diallo',
       testimonial1Role: 'Principal, Lycée de Kipé',
 
@@ -264,7 +264,7 @@ const translations = {
 
   fr: {
     // Brand
-    brandName: 'EduVault',
+    brandName: 'GuiSchool',
     brandTagline: 'Plateforme de Gestion Académique',
     brandDescription: 'Plateforme Moderne de Gestion Académique',
 
@@ -331,8 +331,8 @@ const translations = {
 
     // Auth
     auth: {
-      welcomeBack: 'Bienvenue sur EduVault.',
-      joinToday: "Rejoignez EduVault aujourd'hui.",
+      welcomeBack: 'Bienvenue sur GuiSchool.',
+      joinToday: "Rejoignez GuiSchool aujourd'hui.",
       signInTitle: 'Connexion',
       signUpTitle: 'Créer un compte',
       identifier: 'Identifiant',
@@ -363,7 +363,7 @@ const translations = {
       loginSuccessMessage: 'Vous vous êtes connecté avec succès.',
       registerSuccess: 'Compte créé!',
       registerSuccessMessage:
-        'Bienvenue sur EduVault! Votre compte a été créé avec succès.',
+        'Bienvenue sur GuiSchool! Votre compte a été créé avec succès.',
       logoutSuccess: 'Déconnecté',
       logoutSuccessMessage: 'Vous avez été déconnecté avec succès.',
     },
@@ -399,37 +399,37 @@ const translations = {
     home: {
       heroTitle: 'La Solution de Gestion Scolaire N°1 en Guinée',
       heroSubtitle:
-        'Simplifiez la gestion administrative, sécurisez les paiements (Orange/MTN) et impliquez les parents. Une plateforme fiable, conçue pour nos écoles.',
+        'Simplifiez la gestion administrative, gérez les cycles académiques complexes et générez des bulletins officiels. Une plateforme fiable, conçue pour nos écoles.',
       getStarted: 'Commencer',
       signUpFree: 'Essai Gratuit',
-      features: 'Pourquoi Choisir EduVault ?',
+      features: 'Pourquoi Choisir GuiSchool ?',
       featuresSubtitle:
         'Tout ce dont vous avez besoin pour moderniser votre école.',
 
-      // Feature 1: Mobile Money
-      payments: 'Paiements Mobiles',
+      // Feature 1: Academic Structure
+      payments: 'Structure Académique',
       paymentsDesc:
-        'Encaissement automatique des frais via Orange Money & MTN MoMo avec reçus instantanés.',
+        'Support complet pour Maternelle, Primaire, Collège et Lycée avec suivi des profils (SM, SE, SS).',
 
-      // Feature 2: SMS/WhatsApp
-      communication: 'Suivi Parentale',
+      // Feature 2: Schedule & Classrooms
+      communication: 'Gestion des Classes et Horaires',
       communicationDesc:
-        'Alertes SMS & WhatsApp automatiques pour les notes, absences et annonces.',
+        'Organisez les salles de classe, assignez les enseignants en toute sécurité et gérez les emplois du temps sans conflits.',
 
       // Feature 3: Academic
-      academic: 'Bulletins Automatisés',
+      academic: 'Rapports Conformes',
       academicDesc:
-        'Génération de bulletins et relevés conformes aux normes du Ministère en un clic.',
+        'Génération de bulletins et relevés de notes conformes aux exigences strictes du Ministère de l\'Éducation guinéen.',
 
-      // Feature 4: Finance
-      finance: 'Contrôle Financier',
+      // Feature 4: Pedagogy
+      finance: 'Pédagogie & Évaluations',
       financeDesc:
-        'Suivi de trésorerie en temps réel, gestion des dépenses et reçus numériques.',
+        'Cycle de vie d\'évaluation rigoureux (Brouillon à Validé) garantissant l\'intégrité des notes.',
 
       // Feature 5: Offline/Reliable
       reliability: 'Connexion Optimisée',
       reliabilityDesc:
-        'Fonctionne de manière fluide même avec une connexion internet lente.',
+        'Conçu pour fonctionner de manière fluide même avec une connexion internet lente ou en local.',
 
       // Feature 6: Support
       support: 'Support Local 7/7',
@@ -450,21 +450,21 @@ const translations = {
       // How It Works
       howItWorks: 'Comment ça marche ?',
       steps: {
-        step1: 'Créer un compte',
+        step1: 'Structure Académique',
         step1Desc:
-          'Inscrivez-vous en 2 minutes. Pas de carte bancaire requise.',
-        step2: 'Importer vos données',
+          'Configurez vos cycles, profils, niveaux et matières.',
+        step2: 'Inscriptions et Affectations',
         step2Desc:
-          'Importez facilement vos élèves, classes et enseignants via Excel.',
-        step3: 'Commencer',
+          'Inscrivez les élèves et assignez les enseignants à leurs emplois du temps.',
+        step3: 'Gestion Pédagogique',
         step3Desc:
-          'Gérez vos notes, paiements et communications immédiatement.',
+          'Suivez les évaluations et générez des relevés de notes officiels.',
       },
 
       // Testimonials
       testimonials: 'Ce que disent les Directeurs',
       testimonial1:
-        '"EduVault a complètement transformé notre gestion des scolarités. Les parents adorent le paiement Mobile Money !"',
+        '"GuiSchool a complètement transformé notre gestion des cycles académiques et des relevés de notes officiels !"',
       testimonial1Author: 'Mamadou Diallo',
       testimonial1Role: 'Directeur, Lycée de Kipé',
 

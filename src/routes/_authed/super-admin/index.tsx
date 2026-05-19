@@ -34,7 +34,7 @@ function SuperAdminDashboard() {
           </div>
         </div>
         <p className="text-white/80">
-          Gestion complète de la plateforme EduVault - Accès à tous les systèmes
+          Gestion complète de la plateforme GuiSchool - Accès à tous les systèmes
           et données
         </p>
       </div>

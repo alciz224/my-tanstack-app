@@ -2,7 +2,7 @@
  * Centralized Role Type Definitions
  *
  * This module defines all user roles, portal routes, and role metadata
- * used throughout the EduVault application.
+ * used throughout the GuiSchool application.
  */
 
 /**

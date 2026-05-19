@@ -1,12 +1,12 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import {
   ArrowRight,
+  BookOpen,
+  Calendar,
+  Award,
   FileText,
   Headphones,
-  MessageSquare,
-  PieChart,
   School,
-  Smartphone,
   TrendingUp,
   Users,
   Zap,
@@ -22,12 +22,12 @@ function HomePage() {
 
   const features = [
     {
-      icon: <Smartphone className="w-6 h-6 text-primary" />,
+      icon: <BookOpen className="w-6 h-6 text-primary" />,
       title: t('home.payments'),
       description: t('home.paymentsDesc'),
     },
     {
-      icon: <MessageSquare className="w-6 h-6 text-primary" />,
+      icon: <Calendar className="w-6 h-6 text-primary" />,
       title: t('home.communication'),
       description: t('home.communicationDesc'),
     },
@@ -37,7 +37,7 @@ function HomePage() {
       description: t('home.academicDesc'),
     },
     {
-      icon: <PieChart className="w-6 h-6 text-primary" />,
+      icon: <Award className="w-6 h-6 text-primary" />,
       title: t('home.finance'),
       description: t('home.financeDesc'),
     },
@@ -102,7 +102,7 @@ function HomePage() {
             {/* Main heading with enhanced gradient */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-foreground tracking-tight mb-6 animate-fade-in-up delay-100">
               <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient inline-block">
-                EduVault
+                GuiSchool
               </span>
             </h1>
 
