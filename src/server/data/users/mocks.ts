@@ -3,8 +3,8 @@ import type { AdminUser } from './types'
 export const mockAdminUsers: Array<AdminUser> = [
   {
     id: 'usr-001',
-    name: 'Abdoulaye Diallo',
-    email: 'a.diallo@excellence.edu.gn',
+    name: 'Bassekou Sidibé',
+    email: 'b.sidibe@excellence.edu.gn',
     role: 'school_admin',
     status: 'Active',
   },
