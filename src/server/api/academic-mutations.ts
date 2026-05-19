@@ -9,87 +9,17 @@
  */
 
 import { createServerFn } from '@tanstack/react-start'
-import { getCookies } from '@tanstack/react-start/server'
-import type { MutationResult } from '@/server/mutation-helper'
 import type { AcademicYear, AcademicYearInput } from '@/types/academic'
-import { getCsrfTokenServerSide } from '@/server/csrf'
-import { createMutationFn } from '@/server/mutation-helper'
-
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
-
-/** Helper: perform a POST/PATCH/DELETE to a dynamic URL */
-async function serverAction<T>(
-  endpoint: string,
-  method: 'POST' | 'PATCH' | 'DELETE',
-  body?: Record<string, any>,
-): Promise<MutationResult<T>> {
-  try {
-    const cookies = getCookies()
-    const cookieHeader =
-      Object.entries(cookies)
-        .map(([k, v]) => `${k}=${v}`)
-        .join('; ') || undefined
-    const csrfToken = await getCsrfTokenServerSide({
-      headers: {
-        get: (name: string) => (name === 'cookie' ? cookieHeader : undefined),
-      },
-    })
-
-    if (import.meta.env.DEV) {
-      console.log(`[${method}] ${endpoint}`, body ?? '(no body)')
-    }
-
-    const res = await fetch(`${BACKEND_URL}${endpoint}`, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
-        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-      },
-      credentials: 'include',
-      body:
-        method !== 'DELETE' && body != null ? JSON.stringify(body) : undefined,
-    })
-
-    let responseData: any = null
-    const contentType = res.headers.get('content-type') || ''
-    if (contentType.includes('application/json')) {
-      try {
-        responseData = await res.json()
-      } catch {
-        /* ignore */
-      }
-    }
-
-    if (!res.ok) {
-      return {
-        success: false,
-        error:
-          responseData?.message ||
-          responseData?.detail ||
-          `Request failed (${res.status})`,
-        errorCode: responseData?.error?.code,
-      }
-    }
-
-    return { success: true, data: responseData as T }
-  } catch (err: any) {
-    if (import.meta.env.DEV)
-      console.error(`[${method}] ${endpoint} crashed:`, err)
-    return { success: false, error: err?.message || 'Network error' }
-  }
-}
-
-// ── Create ────────────────────────────────────────────────────────────────────
-
-/**
- * POST /api/v1/academic/academic-years/
- * Usage: createAcademicYearFn({ data: { name, start_year, end_year } })
- */
-export const createAcademicYearFn = createMutationFn<
-  AcademicYearInput,
-  AcademicYear
->('/api/v1/academic/academic-years/', 'POST')
+export const createAcademicYearFn = createServerFn({ method: 'POST' })
+  .inputValidator((d: unknown) => d as AcademicYearInput)
+  .handler(async ({ data }) => {
+    const { serverAction } = await import('@/server/mutation-helper.server')
+    return serverAction<AcademicYear>(
+      '/api/v1/academic/academic-years/',
+      'POST',
+      data,
+    )
+  })
 
 // ── Action Mutations ──────────────────────────────────────────────────────────
 
@@ -104,6 +34,7 @@ export const updateAcademicYearFn = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data }) => {
     if (!data.resourceId) throw new Error('Missing resourceId')
+    const { serverAction } = await import('@/server/mutation-helper.server')
     return serverAction<AcademicYear>(
       `/api/v1/academic/academic-years/${data.resourceId}/`,
       'PATCH',
@@ -119,6 +50,7 @@ export const deleteAcademicYearFn = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) => d as { resourceId: string })
   .handler(async ({ data }) => {
     if (!data.resourceId) throw new Error('Missing resourceId')
+    const { serverAction } = await import('@/server/mutation-helper.server')
     return serverAction<void>(
       `/api/v1/academic/academic-years/${data.resourceId}/`,
       'DELETE',
@@ -133,6 +65,7 @@ export const activateAcademicYearFn = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) => d as { resourceId: string })
   .handler(async ({ data }) => {
     if (!data.resourceId) throw new Error('Missing resourceId')
+    const { serverAction } = await import('@/server/mutation-helper.server')
     return serverAction<AcademicYear>(
       `/api/v1/academic/academic-years/${data.resourceId}/activate/`,
       'POST',
@@ -147,6 +80,7 @@ export const archiveAcademicYearFn = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) => d as { resourceId: string })
   .handler(async ({ data }) => {
     if (!data.resourceId) throw new Error('Missing resourceId')
+    const { serverAction } = await import('@/server/mutation-helper.server')
     return serverAction<AcademicYear>(
       `/api/v1/academic/academic-years/${data.resourceId}/archive/`,
       'POST',
@@ -161,6 +95,7 @@ export const setCurrentAcademicYearFn = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) => d as { resourceId: string })
   .handler(async ({ data }) => {
     if (!data.resourceId) throw new Error('Missing resourceId')
+    const { serverAction } = await import('@/server/mutation-helper.server')
     return serverAction<AcademicYear>(
       `/api/v1/academic/academic-years/${data.resourceId}/set_current/`,
       'POST',
