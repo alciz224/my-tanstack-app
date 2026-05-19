@@ -3,6 +3,7 @@ import type {
   SchoolYearTeacher,
   Teacher,
   TeacherAssignment,
+  TeacherClass,
 } from '@/server/data/teachers/types'
 import { getTeachersService } from '@/server/data/teachers/factory'
 
@@ -29,6 +30,15 @@ export const getTeacherAssignmentsFn = createServerFn({ method: 'GET' })
       return getTeachersService().getTeacherAssignments(schoolYearTeacherId)
     },
   )
+
+export const getTeacherClassesFn = createServerFn({ method: 'GET' })
+  .inputValidator((data: { teacherId: string; schoolYearId?: string }) => data)
+  .handler(async ({ data }): Promise<Array<TeacherClass>> => {
+    return getTeachersService().getTeacherClasses(
+      data.teacherId,
+      data.schoolYearId,
+    )
+  })
 
 export const assignTeacherToSchoolYearFn = createServerFn({ method: 'POST' })
   .inputValidator((data: Omit<SchoolYearTeacher, 'id'>) => data)

@@ -33,6 +33,7 @@ import { Route as AuthedAdminIndexRouteImport } from './routes/_authed/admin/ind
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
 import { Route as DemoApiNamesRouteImport } from './routes/demo/api.names'
+import { Route as AuthedTeacherScheduleRouteImport } from './routes/_authed/teacher/schedule'
 import { Route as AuthedSuperAdminUsersRouteImport } from './routes/_authed/super-admin/users'
 import { Route as AuthedSuperAdminTracksRouteImport } from './routes/_authed/super-admin/tracks'
 import { Route as AuthedSuperAdminThemeSettingsRouteImport } from './routes/_authed/super-admin/theme-settings'
@@ -43,9 +44,16 @@ import { Route as AuthedSuperAdminLevelsRouteImport } from './routes/_authed/sup
 import { Route as AuthedSuperAdminGeographyRouteImport } from './routes/_authed/super-admin/geography'
 import { Route as AuthedSuperAdminCyclesRouteImport } from './routes/_authed/super-admin/cycles'
 import { Route as AuthedSuperAdminConfigurationRouteImport } from './routes/_authed/super-admin/configuration'
+import { Route as AuthedSuperAdminAssessmentTypesRouteImport } from './routes/_authed/super-admin/assessment-types'
 import { Route as AuthedSuperAdminAcademicYearsRouteImport } from './routes/_authed/super-admin/academic-years'
+import { Route as AuthedStudentScheduleRouteImport } from './routes/_authed/student/schedule'
+import { Route as AuthedStudentReportCardsRouteImport } from './routes/_authed/student/report-cards'
+import { Route as AuthedStudentGradesRouteImport } from './routes/_authed/student/grades'
+import { Route as AuthedParentChildrenRouteImport } from './routes/_authed/parent/children'
 import { Route as AuthedAdminUsersRouteImport } from './routes/_authed/admin/users'
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
+import { Route as AuthedTeacherGradesIndexRouteImport } from './routes/_authed/teacher/grades/index'
+import { Route as AuthedTeacherClassesIndexRouteImport } from './routes/_authed/teacher/classes/index'
 import { Route as AuthedSuperAdminSchoolsIndexRouteImport } from './routes/_authed/super-admin/schools/index'
 import { Route as AuthedSchoolAdminYearsIndexRouteImport } from './routes/_authed/school-admin/years/index'
 import { Route as AuthedSchoolAdminTeachersIndexRouteImport } from './routes/_authed/school-admin/teachers/index'
@@ -59,6 +67,8 @@ import { Route as AuthedSchoolAdminAssessmentsIndexRouteImport } from './routes/
 import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr.spa-mode'
 import { Route as DemoStartSsrFullSsrRouteImport } from './routes/demo/start.ssr.full-ssr'
 import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ssr.data-only'
+import { Route as AuthedTeacherGradesClassIdRouteImport } from './routes/_authed/teacher/grades/$classId'
+import { Route as AuthedTeacherClassesClassIdRouteImport } from './routes/_authed/teacher/classes/$classId'
 import { Route as AuthedSuperAdminSchoolsSchoolIdRouteImport } from './routes/_authed/super-admin/schools/$schoolId'
 import { Route as AuthedSchoolAdminYearsCreateRouteImport } from './routes/_authed/school-admin/years/create'
 import { Route as AuthedSchoolAdminStudentsPreRegisterRouteImport } from './routes/_authed/school-admin/students/pre-register'
@@ -76,6 +86,9 @@ import { Route as AuthedSchoolAdminReportsTranscriptsTranscriptIdRouteImport } f
 import { Route as AuthedSchoolAdminReportsReportCardsCardIdRouteImport } from './routes/_authed/school-admin/reports/report-cards/$cardId'
 import { Route as AuthedSchoolAdminAssessmentsAssessmentIdValidateRouteImport } from './routes/_authed/school-admin/assessments/$assessmentId/validate'
 import { Route as AuthedSchoolAdminAssessmentsAssessmentIdSubjectsRouteImport } from './routes/_authed/school-admin/assessments/$assessmentId/subjects'
+import { Route as AuthedParentChildrenChildIdScheduleRouteImport } from './routes/_authed/parent/children/$childId/schedule'
+import { Route as AuthedParentChildrenChildIdReportCardsRouteImport } from './routes/_authed/parent/children/$childId/report-cards'
+import { Route as AuthedParentChildrenChildIdGradesRouteImport } from './routes/_authed/parent/children/$childId/grades'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -195,6 +208,11 @@ const DemoApiNamesRoute = DemoApiNamesRouteImport.update({
   path: '/demo/api/names',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedTeacherScheduleRoute = AuthedTeacherScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => AuthedTeacherRouteRoute,
+} as any)
 const AuthedSuperAdminUsersRoute = AuthedSuperAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -249,12 +267,39 @@ const AuthedSuperAdminConfigurationRoute =
     path: '/configuration',
     getParentRoute: () => AuthedSuperAdminRouteRoute,
   } as any)
+const AuthedSuperAdminAssessmentTypesRoute =
+  AuthedSuperAdminAssessmentTypesRouteImport.update({
+    id: '/assessment-types',
+    path: '/assessment-types',
+    getParentRoute: () => AuthedSuperAdminRouteRoute,
+  } as any)
 const AuthedSuperAdminAcademicYearsRoute =
   AuthedSuperAdminAcademicYearsRouteImport.update({
     id: '/academic-years',
     path: '/academic-years',
     getParentRoute: () => AuthedSuperAdminRouteRoute,
   } as any)
+const AuthedStudentScheduleRoute = AuthedStudentScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => AuthedStudentRouteRoute,
+} as any)
+const AuthedStudentReportCardsRoute =
+  AuthedStudentReportCardsRouteImport.update({
+    id: '/report-cards',
+    path: '/report-cards',
+    getParentRoute: () => AuthedStudentRouteRoute,
+  } as any)
+const AuthedStudentGradesRoute = AuthedStudentGradesRouteImport.update({
+  id: '/grades',
+  path: '/grades',
+  getParentRoute: () => AuthedStudentRouteRoute,
+} as any)
+const AuthedParentChildrenRoute = AuthedParentChildrenRouteImport.update({
+  id: '/children',
+  path: '/children',
+  getParentRoute: () => AuthedParentRouteRoute,
+} as any)
 const AuthedAdminUsersRoute = AuthedAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -265,6 +310,18 @@ const DemoStartSsrIndexRoute = DemoStartSsrIndexRouteImport.update({
   path: '/demo/start/ssr/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedTeacherGradesIndexRoute =
+  AuthedTeacherGradesIndexRouteImport.update({
+    id: '/grades/',
+    path: '/grades/',
+    getParentRoute: () => AuthedTeacherRouteRoute,
+  } as any)
+const AuthedTeacherClassesIndexRoute =
+  AuthedTeacherClassesIndexRouteImport.update({
+    id: '/classes/',
+    path: '/classes/',
+    getParentRoute: () => AuthedTeacherRouteRoute,
+  } as any)
 const AuthedSuperAdminSchoolsIndexRoute =
   AuthedSuperAdminSchoolsIndexRouteImport.update({
     id: '/schools/',
@@ -340,6 +397,18 @@ const DemoStartSsrDataOnlyRoute = DemoStartSsrDataOnlyRouteImport.update({
   path: '/demo/start/ssr/data-only',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedTeacherGradesClassIdRoute =
+  AuthedTeacherGradesClassIdRouteImport.update({
+    id: '/grades/$classId',
+    path: '/grades/$classId',
+    getParentRoute: () => AuthedTeacherRouteRoute,
+  } as any)
+const AuthedTeacherClassesClassIdRoute =
+  AuthedTeacherClassesClassIdRouteImport.update({
+    id: '/classes/$classId',
+    path: '/classes/$classId',
+    getParentRoute: () => AuthedTeacherRouteRoute,
+  } as any)
 const AuthedSuperAdminSchoolsSchoolIdRoute =
   AuthedSuperAdminSchoolsSchoolIdRouteImport.update({
     id: '/schools/$schoolId',
@@ -442,6 +511,24 @@ const AuthedSchoolAdminAssessmentsAssessmentIdSubjectsRoute =
     path: '/assessments/$assessmentId/subjects',
     getParentRoute: () => AuthedSchoolAdminRouteRoute,
   } as any)
+const AuthedParentChildrenChildIdScheduleRoute =
+  AuthedParentChildrenChildIdScheduleRouteImport.update({
+    id: '/$childId/schedule',
+    path: '/$childId/schedule',
+    getParentRoute: () => AuthedParentChildrenRoute,
+  } as any)
+const AuthedParentChildrenChildIdReportCardsRoute =
+  AuthedParentChildrenChildIdReportCardsRouteImport.update({
+    id: '/$childId/report-cards',
+    path: '/$childId/report-cards',
+    getParentRoute: () => AuthedParentChildrenRoute,
+  } as any)
+const AuthedParentChildrenChildIdGradesRoute =
+  AuthedParentChildrenChildIdGradesRouteImport.update({
+    id: '/$childId/grades',
+    path: '/$childId/grades',
+    getParentRoute: () => AuthedParentChildrenRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -458,7 +545,12 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthedDashboardRoute
   '/select-portal': typeof AuthedSelectPortalRoute
   '/admin/users': typeof AuthedAdminUsersRoute
+  '/parent/children': typeof AuthedParentChildrenRouteWithChildren
+  '/student/grades': typeof AuthedStudentGradesRoute
+  '/student/report-cards': typeof AuthedStudentReportCardsRoute
+  '/student/schedule': typeof AuthedStudentScheduleRoute
   '/super-admin/academic-years': typeof AuthedSuperAdminAcademicYearsRoute
+  '/super-admin/assessment-types': typeof AuthedSuperAdminAssessmentTypesRoute
   '/super-admin/configuration': typeof AuthedSuperAdminConfigurationRoute
   '/super-admin/cycles': typeof AuthedSuperAdminCyclesRoute
   '/super-admin/geography': typeof AuthedSuperAdminGeographyRoute
@@ -469,6 +561,7 @@ export interface FileRoutesByFullPath {
   '/super-admin/theme-settings': typeof AuthedSuperAdminThemeSettingsRoute
   '/super-admin/tracks': typeof AuthedSuperAdminTracksRoute
   '/super-admin/users': typeof AuthedSuperAdminUsersRoute
+  '/teacher/schedule': typeof AuthedTeacherScheduleRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
@@ -484,6 +577,8 @@ export interface FileRoutesByFullPath {
   '/school-admin/students/pre-register': typeof AuthedSchoolAdminStudentsPreRegisterRoute
   '/school-admin/years/create': typeof AuthedSchoolAdminYearsCreateRoute
   '/super-admin/schools/$schoolId': typeof AuthedSuperAdminSchoolsSchoolIdRoute
+  '/teacher/classes/$classId': typeof AuthedTeacherClassesClassIdRoute
+  '/teacher/grades/$classId': typeof AuthedTeacherGradesClassIdRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -497,7 +592,12 @@ export interface FileRoutesByFullPath {
   '/school-admin/teachers/': typeof AuthedSchoolAdminTeachersIndexRoute
   '/school-admin/years/': typeof AuthedSchoolAdminYearsIndexRoute
   '/super-admin/schools/': typeof AuthedSuperAdminSchoolsIndexRoute
+  '/teacher/classes/': typeof AuthedTeacherClassesIndexRoute
+  '/teacher/grades/': typeof AuthedTeacherGradesIndexRoute
   '/demo/start/ssr/': typeof DemoStartSsrIndexRoute
+  '/parent/children/$childId/grades': typeof AuthedParentChildrenChildIdGradesRoute
+  '/parent/children/$childId/report-cards': typeof AuthedParentChildrenChildIdReportCardsRoute
+  '/parent/children/$childId/schedule': typeof AuthedParentChildrenChildIdScheduleRoute
   '/school-admin/assessments/$assessmentId/subjects': typeof AuthedSchoolAdminAssessmentsAssessmentIdSubjectsRoute
   '/school-admin/assessments/$assessmentId/validate': typeof AuthedSchoolAdminAssessmentsAssessmentIdValidateRoute
   '/school-admin/reports/report-cards/$cardId': typeof AuthedSchoolAdminReportsReportCardsCardIdRoute
@@ -519,7 +619,12 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthedDashboardRoute
   '/select-portal': typeof AuthedSelectPortalRoute
   '/admin/users': typeof AuthedAdminUsersRoute
+  '/parent/children': typeof AuthedParentChildrenRouteWithChildren
+  '/student/grades': typeof AuthedStudentGradesRoute
+  '/student/report-cards': typeof AuthedStudentReportCardsRoute
+  '/student/schedule': typeof AuthedStudentScheduleRoute
   '/super-admin/academic-years': typeof AuthedSuperAdminAcademicYearsRoute
+  '/super-admin/assessment-types': typeof AuthedSuperAdminAssessmentTypesRoute
   '/super-admin/configuration': typeof AuthedSuperAdminConfigurationRoute
   '/super-admin/cycles': typeof AuthedSuperAdminCyclesRoute
   '/super-admin/geography': typeof AuthedSuperAdminGeographyRoute
@@ -530,6 +635,7 @@ export interface FileRoutesByTo {
   '/super-admin/theme-settings': typeof AuthedSuperAdminThemeSettingsRoute
   '/super-admin/tracks': typeof AuthedSuperAdminTracksRoute
   '/super-admin/users': typeof AuthedSuperAdminUsersRoute
+  '/teacher/schedule': typeof AuthedTeacherScheduleRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
@@ -545,6 +651,8 @@ export interface FileRoutesByTo {
   '/school-admin/students/pre-register': typeof AuthedSchoolAdminStudentsPreRegisterRoute
   '/school-admin/years/create': typeof AuthedSchoolAdminYearsCreateRoute
   '/super-admin/schools/$schoolId': typeof AuthedSuperAdminSchoolsSchoolIdRoute
+  '/teacher/classes/$classId': typeof AuthedTeacherClassesClassIdRoute
+  '/teacher/grades/$classId': typeof AuthedTeacherGradesClassIdRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -558,7 +666,12 @@ export interface FileRoutesByTo {
   '/school-admin/teachers': typeof AuthedSchoolAdminTeachersIndexRoute
   '/school-admin/years': typeof AuthedSchoolAdminYearsIndexRoute
   '/super-admin/schools': typeof AuthedSuperAdminSchoolsIndexRoute
+  '/teacher/classes': typeof AuthedTeacherClassesIndexRoute
+  '/teacher/grades': typeof AuthedTeacherGradesIndexRoute
   '/demo/start/ssr': typeof DemoStartSsrIndexRoute
+  '/parent/children/$childId/grades': typeof AuthedParentChildrenChildIdGradesRoute
+  '/parent/children/$childId/report-cards': typeof AuthedParentChildrenChildIdReportCardsRoute
+  '/parent/children/$childId/schedule': typeof AuthedParentChildrenChildIdScheduleRoute
   '/school-admin/assessments/$assessmentId/subjects': typeof AuthedSchoolAdminAssessmentsAssessmentIdSubjectsRoute
   '/school-admin/assessments/$assessmentId/validate': typeof AuthedSchoolAdminAssessmentsAssessmentIdValidateRoute
   '/school-admin/reports/report-cards/$cardId': typeof AuthedSchoolAdminReportsReportCardsCardIdRoute
@@ -589,7 +702,12 @@ export interface FileRoutesById {
   '/_authed/dashboard': typeof AuthedDashboardRoute
   '/_authed/select-portal': typeof AuthedSelectPortalRoute
   '/_authed/admin/users': typeof AuthedAdminUsersRoute
+  '/_authed/parent/children': typeof AuthedParentChildrenRouteWithChildren
+  '/_authed/student/grades': typeof AuthedStudentGradesRoute
+  '/_authed/student/report-cards': typeof AuthedStudentReportCardsRoute
+  '/_authed/student/schedule': typeof AuthedStudentScheduleRoute
   '/_authed/super-admin/academic-years': typeof AuthedSuperAdminAcademicYearsRoute
+  '/_authed/super-admin/assessment-types': typeof AuthedSuperAdminAssessmentTypesRoute
   '/_authed/super-admin/configuration': typeof AuthedSuperAdminConfigurationRoute
   '/_authed/super-admin/cycles': typeof AuthedSuperAdminCyclesRoute
   '/_authed/super-admin/geography': typeof AuthedSuperAdminGeographyRoute
@@ -600,6 +718,7 @@ export interface FileRoutesById {
   '/_authed/super-admin/theme-settings': typeof AuthedSuperAdminThemeSettingsRoute
   '/_authed/super-admin/tracks': typeof AuthedSuperAdminTracksRoute
   '/_authed/super-admin/users': typeof AuthedSuperAdminUsersRoute
+  '/_authed/teacher/schedule': typeof AuthedTeacherScheduleRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
@@ -615,6 +734,8 @@ export interface FileRoutesById {
   '/_authed/school-admin/students/pre-register': typeof AuthedSchoolAdminStudentsPreRegisterRoute
   '/_authed/school-admin/years/create': typeof AuthedSchoolAdminYearsCreateRoute
   '/_authed/super-admin/schools/$schoolId': typeof AuthedSuperAdminSchoolsSchoolIdRoute
+  '/_authed/teacher/classes/$classId': typeof AuthedTeacherClassesClassIdRoute
+  '/_authed/teacher/grades/$classId': typeof AuthedTeacherGradesClassIdRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -628,7 +749,12 @@ export interface FileRoutesById {
   '/_authed/school-admin/teachers/': typeof AuthedSchoolAdminTeachersIndexRoute
   '/_authed/school-admin/years/': typeof AuthedSchoolAdminYearsIndexRoute
   '/_authed/super-admin/schools/': typeof AuthedSuperAdminSchoolsIndexRoute
+  '/_authed/teacher/classes/': typeof AuthedTeacherClassesIndexRoute
+  '/_authed/teacher/grades/': typeof AuthedTeacherGradesIndexRoute
   '/demo/start/ssr/': typeof DemoStartSsrIndexRoute
+  '/_authed/parent/children/$childId/grades': typeof AuthedParentChildrenChildIdGradesRoute
+  '/_authed/parent/children/$childId/report-cards': typeof AuthedParentChildrenChildIdReportCardsRoute
+  '/_authed/parent/children/$childId/schedule': typeof AuthedParentChildrenChildIdScheduleRoute
   '/_authed/school-admin/assessments/$assessmentId/subjects': typeof AuthedSchoolAdminAssessmentsAssessmentIdSubjectsRoute
   '/_authed/school-admin/assessments/$assessmentId/validate': typeof AuthedSchoolAdminAssessmentsAssessmentIdValidateRoute
   '/_authed/school-admin/reports/report-cards/$cardId': typeof AuthedSchoolAdminReportsReportCardsCardIdRoute
@@ -658,7 +784,12 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/select-portal'
     | '/admin/users'
+    | '/parent/children'
+    | '/student/grades'
+    | '/student/report-cards'
+    | '/student/schedule'
     | '/super-admin/academic-years'
+    | '/super-admin/assessment-types'
     | '/super-admin/configuration'
     | '/super-admin/cycles'
     | '/super-admin/geography'
@@ -669,6 +800,7 @@ export interface FileRouteTypes {
     | '/super-admin/theme-settings'
     | '/super-admin/tracks'
     | '/super-admin/users'
+    | '/teacher/schedule'
     | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
@@ -684,6 +816,8 @@ export interface FileRouteTypes {
     | '/school-admin/students/pre-register'
     | '/school-admin/years/create'
     | '/super-admin/schools/$schoolId'
+    | '/teacher/classes/$classId'
+    | '/teacher/grades/$classId'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -697,7 +831,12 @@ export interface FileRouteTypes {
     | '/school-admin/teachers/'
     | '/school-admin/years/'
     | '/super-admin/schools/'
+    | '/teacher/classes/'
+    | '/teacher/grades/'
     | '/demo/start/ssr/'
+    | '/parent/children/$childId/grades'
+    | '/parent/children/$childId/report-cards'
+    | '/parent/children/$childId/schedule'
     | '/school-admin/assessments/$assessmentId/subjects'
     | '/school-admin/assessments/$assessmentId/validate'
     | '/school-admin/reports/report-cards/$cardId'
@@ -719,7 +858,12 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/select-portal'
     | '/admin/users'
+    | '/parent/children'
+    | '/student/grades'
+    | '/student/report-cards'
+    | '/student/schedule'
     | '/super-admin/academic-years'
+    | '/super-admin/assessment-types'
     | '/super-admin/configuration'
     | '/super-admin/cycles'
     | '/super-admin/geography'
@@ -730,6 +874,7 @@ export interface FileRouteTypes {
     | '/super-admin/theme-settings'
     | '/super-admin/tracks'
     | '/super-admin/users'
+    | '/teacher/schedule'
     | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
@@ -745,6 +890,8 @@ export interface FileRouteTypes {
     | '/school-admin/students/pre-register'
     | '/school-admin/years/create'
     | '/super-admin/schools/$schoolId'
+    | '/teacher/classes/$classId'
+    | '/teacher/grades/$classId'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -758,7 +905,12 @@ export interface FileRouteTypes {
     | '/school-admin/teachers'
     | '/school-admin/years'
     | '/super-admin/schools'
+    | '/teacher/classes'
+    | '/teacher/grades'
     | '/demo/start/ssr'
+    | '/parent/children/$childId/grades'
+    | '/parent/children/$childId/report-cards'
+    | '/parent/children/$childId/schedule'
     | '/school-admin/assessments/$assessmentId/subjects'
     | '/school-admin/assessments/$assessmentId/validate'
     | '/school-admin/reports/report-cards/$cardId'
@@ -788,7 +940,12 @@ export interface FileRouteTypes {
     | '/_authed/dashboard'
     | '/_authed/select-portal'
     | '/_authed/admin/users'
+    | '/_authed/parent/children'
+    | '/_authed/student/grades'
+    | '/_authed/student/report-cards'
+    | '/_authed/student/schedule'
     | '/_authed/super-admin/academic-years'
+    | '/_authed/super-admin/assessment-types'
     | '/_authed/super-admin/configuration'
     | '/_authed/super-admin/cycles'
     | '/_authed/super-admin/geography'
@@ -799,6 +956,7 @@ export interface FileRouteTypes {
     | '/_authed/super-admin/theme-settings'
     | '/_authed/super-admin/tracks'
     | '/_authed/super-admin/users'
+    | '/_authed/teacher/schedule'
     | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
@@ -814,6 +972,8 @@ export interface FileRouteTypes {
     | '/_authed/school-admin/students/pre-register'
     | '/_authed/school-admin/years/create'
     | '/_authed/super-admin/schools/$schoolId'
+    | '/_authed/teacher/classes/$classId'
+    | '/_authed/teacher/grades/$classId'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -827,7 +987,12 @@ export interface FileRouteTypes {
     | '/_authed/school-admin/teachers/'
     | '/_authed/school-admin/years/'
     | '/_authed/super-admin/schools/'
+    | '/_authed/teacher/classes/'
+    | '/_authed/teacher/grades/'
     | '/demo/start/ssr/'
+    | '/_authed/parent/children/$childId/grades'
+    | '/_authed/parent/children/$childId/report-cards'
+    | '/_authed/parent/children/$childId/schedule'
     | '/_authed/school-admin/assessments/$assessmentId/subjects'
     | '/_authed/school-admin/assessments/$assessmentId/validate'
     | '/_authed/school-admin/reports/report-cards/$cardId'
@@ -1026,6 +1191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoApiNamesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed/teacher/schedule': {
+      id: '/_authed/teacher/schedule'
+      path: '/schedule'
+      fullPath: '/teacher/schedule'
+      preLoaderRoute: typeof AuthedTeacherScheduleRouteImport
+      parentRoute: typeof AuthedTeacherRouteRoute
+    }
     '/_authed/super-admin/users': {
       id: '/_authed/super-admin/users'
       path: '/users'
@@ -1096,12 +1268,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedSuperAdminConfigurationRouteImport
       parentRoute: typeof AuthedSuperAdminRouteRoute
     }
+    '/_authed/super-admin/assessment-types': {
+      id: '/_authed/super-admin/assessment-types'
+      path: '/assessment-types'
+      fullPath: '/super-admin/assessment-types'
+      preLoaderRoute: typeof AuthedSuperAdminAssessmentTypesRouteImport
+      parentRoute: typeof AuthedSuperAdminRouteRoute
+    }
     '/_authed/super-admin/academic-years': {
       id: '/_authed/super-admin/academic-years'
       path: '/academic-years'
       fullPath: '/super-admin/academic-years'
       preLoaderRoute: typeof AuthedSuperAdminAcademicYearsRouteImport
       parentRoute: typeof AuthedSuperAdminRouteRoute
+    }
+    '/_authed/student/schedule': {
+      id: '/_authed/student/schedule'
+      path: '/schedule'
+      fullPath: '/student/schedule'
+      preLoaderRoute: typeof AuthedStudentScheduleRouteImport
+      parentRoute: typeof AuthedStudentRouteRoute
+    }
+    '/_authed/student/report-cards': {
+      id: '/_authed/student/report-cards'
+      path: '/report-cards'
+      fullPath: '/student/report-cards'
+      preLoaderRoute: typeof AuthedStudentReportCardsRouteImport
+      parentRoute: typeof AuthedStudentRouteRoute
+    }
+    '/_authed/student/grades': {
+      id: '/_authed/student/grades'
+      path: '/grades'
+      fullPath: '/student/grades'
+      preLoaderRoute: typeof AuthedStudentGradesRouteImport
+      parentRoute: typeof AuthedStudentRouteRoute
+    }
+    '/_authed/parent/children': {
+      id: '/_authed/parent/children'
+      path: '/children'
+      fullPath: '/parent/children'
+      preLoaderRoute: typeof AuthedParentChildrenRouteImport
+      parentRoute: typeof AuthedParentRouteRoute
     }
     '/_authed/admin/users': {
       id: '/_authed/admin/users'
@@ -1116,6 +1323,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/demo/start/ssr/'
       preLoaderRoute: typeof DemoStartSsrIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authed/teacher/grades/': {
+      id: '/_authed/teacher/grades/'
+      path: '/grades'
+      fullPath: '/teacher/grades/'
+      preLoaderRoute: typeof AuthedTeacherGradesIndexRouteImport
+      parentRoute: typeof AuthedTeacherRouteRoute
+    }
+    '/_authed/teacher/classes/': {
+      id: '/_authed/teacher/classes/'
+      path: '/classes'
+      fullPath: '/teacher/classes/'
+      preLoaderRoute: typeof AuthedTeacherClassesIndexRouteImport
+      parentRoute: typeof AuthedTeacherRouteRoute
     }
     '/_authed/super-admin/schools/': {
       id: '/_authed/super-admin/schools/'
@@ -1207,6 +1428,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/demo/start/ssr/data-only'
       preLoaderRoute: typeof DemoStartSsrDataOnlyRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authed/teacher/grades/$classId': {
+      id: '/_authed/teacher/grades/$classId'
+      path: '/grades/$classId'
+      fullPath: '/teacher/grades/$classId'
+      preLoaderRoute: typeof AuthedTeacherGradesClassIdRouteImport
+      parentRoute: typeof AuthedTeacherRouteRoute
+    }
+    '/_authed/teacher/classes/$classId': {
+      id: '/_authed/teacher/classes/$classId'
+      path: '/classes/$classId'
+      fullPath: '/teacher/classes/$classId'
+      preLoaderRoute: typeof AuthedTeacherClassesClassIdRouteImport
+      parentRoute: typeof AuthedTeacherRouteRoute
     }
     '/_authed/super-admin/schools/$schoolId': {
       id: '/_authed/super-admin/schools/$schoolId'
@@ -1327,6 +1562,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedSchoolAdminAssessmentsAssessmentIdSubjectsRouteImport
       parentRoute: typeof AuthedSchoolAdminRouteRoute
     }
+    '/_authed/parent/children/$childId/schedule': {
+      id: '/_authed/parent/children/$childId/schedule'
+      path: '/$childId/schedule'
+      fullPath: '/parent/children/$childId/schedule'
+      preLoaderRoute: typeof AuthedParentChildrenChildIdScheduleRouteImport
+      parentRoute: typeof AuthedParentChildrenRoute
+    }
+    '/_authed/parent/children/$childId/report-cards': {
+      id: '/_authed/parent/children/$childId/report-cards'
+      path: '/$childId/report-cards'
+      fullPath: '/parent/children/$childId/report-cards'
+      preLoaderRoute: typeof AuthedParentChildrenChildIdReportCardsRouteImport
+      parentRoute: typeof AuthedParentChildrenRoute
+    }
+    '/_authed/parent/children/$childId/grades': {
+      id: '/_authed/parent/children/$childId/grades'
+      path: '/$childId/grades'
+      fullPath: '/parent/children/$childId/grades'
+      preLoaderRoute: typeof AuthedParentChildrenChildIdGradesRouteImport
+      parentRoute: typeof AuthedParentChildrenRoute
+    }
   }
 }
 
@@ -1355,11 +1611,31 @@ const AuthedAdminRouteRouteChildren: AuthedAdminRouteRouteChildren = {
 const AuthedAdminRouteRouteWithChildren =
   AuthedAdminRouteRoute._addFileChildren(AuthedAdminRouteRouteChildren)
 
+interface AuthedParentChildrenRouteChildren {
+  AuthedParentChildrenChildIdGradesRoute: typeof AuthedParentChildrenChildIdGradesRoute
+  AuthedParentChildrenChildIdReportCardsRoute: typeof AuthedParentChildrenChildIdReportCardsRoute
+  AuthedParentChildrenChildIdScheduleRoute: typeof AuthedParentChildrenChildIdScheduleRoute
+}
+
+const AuthedParentChildrenRouteChildren: AuthedParentChildrenRouteChildren = {
+  AuthedParentChildrenChildIdGradesRoute:
+    AuthedParentChildrenChildIdGradesRoute,
+  AuthedParentChildrenChildIdReportCardsRoute:
+    AuthedParentChildrenChildIdReportCardsRoute,
+  AuthedParentChildrenChildIdScheduleRoute:
+    AuthedParentChildrenChildIdScheduleRoute,
+}
+
+const AuthedParentChildrenRouteWithChildren =
+  AuthedParentChildrenRoute._addFileChildren(AuthedParentChildrenRouteChildren)
+
 interface AuthedParentRouteRouteChildren {
+  AuthedParentChildrenRoute: typeof AuthedParentChildrenRouteWithChildren
   AuthedParentIndexRoute: typeof AuthedParentIndexRoute
 }
 
 const AuthedParentRouteRouteChildren: AuthedParentRouteRouteChildren = {
+  AuthedParentChildrenRoute: AuthedParentChildrenRouteWithChildren,
   AuthedParentIndexRoute: AuthedParentIndexRoute,
 }
 
@@ -1447,10 +1723,16 @@ const AuthedSchoolAdminRouteRouteWithChildren =
   )
 
 interface AuthedStudentRouteRouteChildren {
+  AuthedStudentGradesRoute: typeof AuthedStudentGradesRoute
+  AuthedStudentReportCardsRoute: typeof AuthedStudentReportCardsRoute
+  AuthedStudentScheduleRoute: typeof AuthedStudentScheduleRoute
   AuthedStudentIndexRoute: typeof AuthedStudentIndexRoute
 }
 
 const AuthedStudentRouteRouteChildren: AuthedStudentRouteRouteChildren = {
+  AuthedStudentGradesRoute: AuthedStudentGradesRoute,
+  AuthedStudentReportCardsRoute: AuthedStudentReportCardsRoute,
+  AuthedStudentScheduleRoute: AuthedStudentScheduleRoute,
   AuthedStudentIndexRoute: AuthedStudentIndexRoute,
 }
 
@@ -1459,6 +1741,7 @@ const AuthedStudentRouteRouteWithChildren =
 
 interface AuthedSuperAdminRouteRouteChildren {
   AuthedSuperAdminAcademicYearsRoute: typeof AuthedSuperAdminAcademicYearsRoute
+  AuthedSuperAdminAssessmentTypesRoute: typeof AuthedSuperAdminAssessmentTypesRoute
   AuthedSuperAdminConfigurationRoute: typeof AuthedSuperAdminConfigurationRoute
   AuthedSuperAdminCyclesRoute: typeof AuthedSuperAdminCyclesRoute
   AuthedSuperAdminGeographyRoute: typeof AuthedSuperAdminGeographyRoute
@@ -1476,6 +1759,7 @@ interface AuthedSuperAdminRouteRouteChildren {
 
 const AuthedSuperAdminRouteRouteChildren: AuthedSuperAdminRouteRouteChildren = {
   AuthedSuperAdminAcademicYearsRoute: AuthedSuperAdminAcademicYearsRoute,
+  AuthedSuperAdminAssessmentTypesRoute: AuthedSuperAdminAssessmentTypesRoute,
   AuthedSuperAdminConfigurationRoute: AuthedSuperAdminConfigurationRoute,
   AuthedSuperAdminCyclesRoute: AuthedSuperAdminCyclesRoute,
   AuthedSuperAdminGeographyRoute: AuthedSuperAdminGeographyRoute,
@@ -1497,11 +1781,21 @@ const AuthedSuperAdminRouteRouteWithChildren =
   )
 
 interface AuthedTeacherRouteRouteChildren {
+  AuthedTeacherScheduleRoute: typeof AuthedTeacherScheduleRoute
   AuthedTeacherIndexRoute: typeof AuthedTeacherIndexRoute
+  AuthedTeacherClassesClassIdRoute: typeof AuthedTeacherClassesClassIdRoute
+  AuthedTeacherGradesClassIdRoute: typeof AuthedTeacherGradesClassIdRoute
+  AuthedTeacherClassesIndexRoute: typeof AuthedTeacherClassesIndexRoute
+  AuthedTeacherGradesIndexRoute: typeof AuthedTeacherGradesIndexRoute
 }
 
 const AuthedTeacherRouteRouteChildren: AuthedTeacherRouteRouteChildren = {
+  AuthedTeacherScheduleRoute: AuthedTeacherScheduleRoute,
   AuthedTeacherIndexRoute: AuthedTeacherIndexRoute,
+  AuthedTeacherClassesClassIdRoute: AuthedTeacherClassesClassIdRoute,
+  AuthedTeacherGradesClassIdRoute: AuthedTeacherGradesClassIdRoute,
+  AuthedTeacherClassesIndexRoute: AuthedTeacherClassesIndexRoute,
+  AuthedTeacherGradesIndexRoute: AuthedTeacherGradesIndexRoute,
 }
 
 const AuthedTeacherRouteRouteWithChildren =

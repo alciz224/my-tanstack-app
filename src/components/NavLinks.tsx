@@ -131,6 +131,12 @@ const navSections: Array<NavSection> = [
         icon: <Calendar className="w-5 h-5" />,
         enabled: true,
       },
+      {
+        label: "Types d'Évaluations",
+        to: '/super-admin/assessment-types',
+        icon: <ClipboardCheck className="w-5 h-5" />,
+        enabled: true,
+      },
     ],
   },
   {
@@ -258,21 +264,27 @@ const navSections: Array<NavSection> = [
       {
         label: 'Mes Classes',
         labelKey: 'nav.myClasses',
+        to: '/teacher/classes',
         icon: <Users className="w-5 h-5" />,
-        enabled: false,
+        enabled: true,
+      },
+      {
+        label: 'Mon Emploi du temps',
+        to: '/teacher/schedule',
+        icon: <Calendar className="w-5 h-5" />,
+        enabled: true,
+      },
+      {
+        label: 'Notes & Évaluations',
+        to: '/teacher/grades',
+        icon: <FileText className="w-5 h-5" />,
+        enabled: true,
       },
       {
         label: 'Présences',
         labelKey: 'nav.attendance',
         icon: <ClipboardCheck className="w-5 h-5" />,
         enabled: false,
-      },
-      {
-        label: 'Rapports',
-        labelKey: 'nav.reports',
-        to: '/school-admin/reports',
-        icon: <FileText className="w-5 h-5" />,
-        enabled: true,
       },
       {
         label: 'Devoirs',
@@ -309,14 +321,22 @@ const navSections: Array<NavSection> = [
       {
         label: 'Mon Emploi du temps',
         labelKey: 'nav.timetable',
+        to: '/student/schedule',
         icon: <Calendar className="w-5 h-5" />,
-        enabled: false,
+        enabled: true,
       },
       {
         label: 'Mes Notes',
         labelKey: 'nav.myGrades',
+        to: '/student/grades',
         icon: <FileText className="w-5 h-5" />,
-        enabled: false,
+        enabled: true,
+      },
+      {
+        label: 'Mes Bulletins',
+        to: '/student/report-cards',
+        icon: <FileText className="w-5 h-5" />,
+        enabled: true,
       },
       {
         label: 'Présences',
@@ -359,8 +379,9 @@ const navSections: Array<NavSection> = [
       {
         label: 'Mes Enfants',
         labelKey: 'nav.myChildren',
+        to: '/parent/children',
         icon: <Users className="w-5 h-5" />,
-        enabled: false,
+        enabled: true,
       },
       {
         label: 'Scolarité',
