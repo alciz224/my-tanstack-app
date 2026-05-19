@@ -59,12 +59,12 @@ Auth V2 provides session-based authentication designed for Next.js applications 
 
 ### Key Differences from V1
 
-| Feature | V1 (JWT) | V2 (Session) |
-|---------|----------|--------------|
-| Auth Method | JWT tokens in headers | HTTP-only cookies |
-| Token Management | Client-side | Server-side (automatic) |
-| CSRF Protection | Not required | Required for mutations |
-| Best For | SPAs, mobile apps | Next.js SSR, traditional web |
+| Feature          | V1 (JWT)              | V2 (Session)                 |
+| ---------------- | --------------------- | ---------------------------- |
+| Auth Method      | JWT tokens in headers | HTTP-only cookies            |
+| Token Management | Client-side           | Server-side (automatic)      |
+| CSRF Protection  | Not required          | Required for mutations       |
+| Best For         | SPAs, mobile apps     | Next.js SSR, traditional web |
 
 ---
 
@@ -74,16 +74,16 @@ Auth V2 provides session-based authentication designed for Next.js applications 
 sequenceDiagram
     participant Frontend
     participant Backend
-    
+
     Frontend->>Backend: GET /api/v2/auth/csrf/
     Backend-->>Frontend: csrf_token + Set-Cookie (sessionid)
-    
+
     Frontend->>Backend: POST /api/v2/auth/register/ (with CSRF token)
     Backend-->>Frontend: user data + Set-Cookie (sessionid)
-    
+
     Frontend->>Backend: GET /api/v2/auth/status/ (with cookies)
     Backend-->>Frontend: user data (authenticated)
-    
+
     Frontend->>Backend: POST /api/v2/auth/logout/ (with CSRF + cookies)
     Backend-->>Frontend: success + Clear cookies
 ```
@@ -96,7 +96,7 @@ sequenceDiagram
 
 **Endpoint:** `GET /api/v2/auth/csrf/`  
 **Auth Required:** No  
-**Rate Limit:** None  
+**Rate Limit:** None
 
 **Purpose:** Obtain a CSRF token before making any POST/PUT/PATCH/DELETE requests.
 
@@ -126,16 +126,16 @@ sequenceDiagram
 export async function GET() {
   const response = await fetch(`${BACKEND_URL}/api/v2/auth/csrf/`, {
     credentials: 'include',
-  });
-  
-  const data = await response.json();
-  
+  })
+
+  const data = await response.json()
+
   // Forward cookies to client
   return new Response(JSON.stringify(data), {
     headers: {
       'Set-Cookie': response.headers.get('set-cookie') || '',
     },
-  });
+  })
 }
 ```
 
@@ -145,13 +145,14 @@ export async function GET() {
 
 **Endpoint:** `POST /api/v2/auth/register/`  
 **Auth Required:** No  
-**Rate Limit:** 5 requests per hour per IP  
+**Rate Limit:** 5 requests per hour per IP
 
 **Purpose:** Create a new user account and automatically log them in.
 
 #### Request
 
 **Headers:**
+
 ```
 Content-Type: application/json
 X-CSRFToken: <csrf_token_from_previous_request>
@@ -159,6 +160,7 @@ Cookie: sessionid=<session_id>; csrftoken=<csrf_token>
 ```
 
 **Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -172,14 +174,14 @@ Cookie: sessionid=<session_id>; csrftoken=<csrf_token>
 
 **Field Requirements:**
 
-| Field | Type | Required | Rules |
-|-------|------|----------|-------|
-| `email` | string/null | Conditional* | Valid email format, unique |
-| `phone` | string/null | Conditional* | Format: `+[country][number]`, unique |
-| `password` | string | Yes | Min 8 chars, 1 uppercase, 1 lowercase, 1 digit |
-| `password_confirm` | string | Yes | Must match password |
-| `first_name` | string | Yes | 2-50 characters |
-| `last_name` | string | Yes | 2-50 characters |
+| Field              | Type        | Required      | Rules                                          |
+| ------------------ | ----------- | ------------- | ---------------------------------------------- |
+| `email`            | string/null | Conditional\* | Valid email format, unique                     |
+| `phone`            | string/null | Conditional\* | Format: `+[country][number]`, unique           |
+| `password`         | string      | Yes           | Min 8 chars, 1 uppercase, 1 lowercase, 1 digit |
+| `password_confirm` | string      | Yes           | Must match password                            |
+| `first_name`       | string      | Yes           | 2-50 characters                                |
+| `last_name`        | string      | Yes           | 2-50 characters                                |
 
 \* At least one of `email` or `phone` must be provided.
 
@@ -239,6 +241,7 @@ Cookie: sessionid=<session_id>; csrftoken=<csrf_token>
 ```
 
 **Response Headers:**
+
 ```
 Set-Cookie: sessionid=<new_session_id>; HttpOnly; Secure; SameSite=Lax; Path=/
 Set-Cookie: csrftoken=<new_csrf_token>; Path=/
@@ -281,13 +284,14 @@ Set-Cookie: csrftoken=<new_csrf_token>; Path=/
 
 **Endpoint:** `POST /api/v2/auth/login/`  
 **Auth Required:** No  
-**Rate Limit:** 5 requests per minute per IP  
+**Rate Limit:** 5 requests per minute per IP
 
 **Purpose:** Authenticate a user and create a session.
 
 #### Request
 
 **Headers:**
+
 ```
 Content-Type: application/json
 X-CSRFToken: <csrf_token>
@@ -295,6 +299,7 @@ Cookie: sessionid=<session_id>; csrftoken=<csrf_token>
 ```
 
 **Body:**
+
 ```json
 {
   "identifier": "user@example.com",
@@ -304,10 +309,10 @@ Cookie: sessionid=<session_id>; csrftoken=<csrf_token>
 
 **Field Requirements:**
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `identifier` | string | Yes | Email OR phone number |
-| `password` | string | Yes | User's password |
+| Field        | Type   | Required | Description           |
+| ------------ | ------ | -------- | --------------------- |
+| `identifier` | string | Yes      | Email OR phone number |
+| `password`   | string | Yes      | User's password       |
 
 #### Response Success (200)
 
@@ -360,6 +365,7 @@ Cookie: sessionid=<session_id>; csrftoken=<csrf_token>
 ```
 
 **Response Headers:**
+
 ```
 Set-Cookie: sessionid=<new_session_id>; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=1209600
 Set-Cookie: csrftoken=<new_csrf_token>; Path=/
@@ -400,7 +406,7 @@ Set-Cookie: csrftoken=<new_csrf_token>; Path=/
 
 **Endpoint:** `GET /api/v2/auth/status/`  
 **Auth Required:** Yes  
-**Rate Limit:** None  
+**Rate Limit:** None
 
 **Purpose:**
 
@@ -412,6 +418,7 @@ Set-Cookie: csrftoken=<new_csrf_token>; Path=/
 #### Request
 
 **Headers:**
+
 ```
 Cookie: sessionid=<session_id>; csrftoken=<csrf_token>
 ```
@@ -497,13 +504,14 @@ Cookie: sessionid=<session_id>; csrftoken=<csrf_token>
 
 **Endpoint:** `POST /api/v2/auth/logout/`  
 **Auth Required:** Yes  
-**Rate Limit:** None  
+**Rate Limit:** None
 
 **Purpose:** Destroy the current session and log out the user.
 
 #### Request
 
 **Headers:**
+
 ```
 Content-Type: application/json
 X-CSRFToken: <csrf_token>
@@ -522,6 +530,7 @@ Cookie: sessionid=<session_id>; csrftoken=<csrf_token>
 ```
 
 **Response Headers:**
+
 ```
 Set-Cookie: sessionid=; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/
 ```
@@ -556,7 +565,7 @@ Set-Cookie: sessionid=; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/
 ### CSRF Protection
 
 - **Required For:** All POST, PUT, PATCH, DELETE requests
-- **Token Location:** 
+- **Token Location:**
   - Cookie: `csrftoken`
   - Header: `X-CSRFToken`
 - **Validation:** Server validates token matches session
@@ -564,23 +573,25 @@ Set-Cookie: sessionid=; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/
 
 ### Rate Limiting
 
-| Endpoint | Limit | Window |
-|----------|-------|--------|
-| `/csrf/` | None | - |
-| `/register/` | 5 requests | 1 hour |
-| `/login/` | 5 requests | 1 minute |
-| `/status/` | None | - |
-| `/logout/` | None | - |
+| Endpoint     | Limit      | Window   |
+| ------------ | ---------- | -------- |
+| `/csrf/`     | None       | -        |
+| `/register/` | 5 requests | 1 hour   |
+| `/login/`    | 5 requests | 1 minute |
+| `/status/`   | None       | -        |
+| `/logout/`   | None       | -        |
 
 ### Security Score
 
 User security score (0-100) is calculated based on:
+
 - Email verification: +25 points
 - Phone verification: +25 points
 - Security questions setup: +25 points
 - Backup phone added: +25 points
 
 **Levels:**
+
 - `low`: 0-33
 - `medium`: 34-66
 - `high`: 67-100
@@ -606,17 +617,17 @@ User security score (0-100) is calculated based on:
 
 ### Common Error Codes
 
-| Code | Status | Description |
-|------|--------|-------------|
-| `VALIDATION_ERROR` | 400 | Input validation failed |
-| `NOT_AUTHENTICATED` | 401 | No valid session |
-| `AUTH_INVALID_CREDENTIALS` | 401 | Wrong email/phone/password |
-| `AUTH_ACCOUNT_LOCKED` | 423 | Too many failed attempts |
-| `CSRF_TOKEN_MISSING` | 403 | CSRF token not provided |
-| `CSRF_TOKEN_INVALID` | 403 | CSRF token doesn't match |
-| `SESSION_EXPIRED` | 403 | Session has expired |
-| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
-| `SERVER_ERROR` | 500 | Internal server error |
+| Code                       | Status | Description                |
+| -------------------------- | ------ | -------------------------- |
+| `VALIDATION_ERROR`         | 400    | Input validation failed    |
+| `NOT_AUTHENTICATED`        | 401    | No valid session           |
+| `AUTH_INVALID_CREDENTIALS` | 401    | Wrong email/phone/password |
+| `AUTH_ACCOUNT_LOCKED`      | 423    | Too many failed attempts   |
+| `CSRF_TOKEN_MISSING`       | 403    | CSRF token not provided    |
+| `CSRF_TOKEN_INVALID`       | 403    | CSRF token doesn't match   |
+| `SESSION_EXPIRED`          | 403    | Session has expired        |
+| `RATE_LIMIT_EXCEEDED`      | 429    | Too many requests          |
+| `SERVER_ERROR`             | 500    | Internal server error      |
 
 ---
 
@@ -628,79 +639,79 @@ User security score (0-100) is calculated based on:
 
 ```typescript
 // app/api/auth/[...path]/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server'
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: { path: string[] } },
 ) {
-  const path = params.path.join('/');
-  
+  const path = params.path.join('/')
+
   // Forward cookies from client to backend
-  const cookies = request.headers.get('cookie') || '';
-  
+  const cookies = request.headers.get('cookie') || ''
+
   const response = await fetch(`${BACKEND_URL}/api/v2/auth/${path}/`, {
     method: 'GET',
     headers: {
-      'Cookie': cookies,
+      Cookie: cookies,
     },
     credentials: 'include',
-  });
-  
-  const data = await response.json();
-  
+  })
+
+  const data = await response.json()
+
   // Forward set-cookie headers back to client
-  const setCookie = response.headers.get('set-cookie');
-  const headers = new Headers();
-  
+  const setCookie = response.headers.get('set-cookie')
+  const headers = new Headers()
+
   if (setCookie) {
-    headers.set('set-cookie', setCookie);
+    headers.set('set-cookie', setCookie)
   }
-  
+
   return NextResponse.json(data, {
     status: response.status,
     headers,
-  });
+  })
 }
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: { path: string[] } },
 ) {
-  const path = params.path.join('/');
-  const body = await request.json();
-  
+  const path = params.path.join('/')
+  const body = await request.json()
+
   // Get cookies including CSRF token
-  const cookies = request.headers.get('cookie') || '';
-  const csrfToken = request.cookies.get('csrftoken')?.value || '';
-  
+  const cookies = request.headers.get('cookie') || ''
+  const csrfToken = request.cookies.get('csrftoken')?.value || ''
+
   const response = await fetch(`${BACKEND_URL}/api/v2/auth/${path}/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Cookie': cookies,
+      Cookie: cookies,
       'X-CSRFToken': csrfToken,
     },
     body: JSON.stringify(body),
     credentials: 'include',
-  });
-  
-  const data = await response.json();
-  
+  })
+
+  const data = await response.json()
+
   // Forward set-cookie headers
-  const setCookie = response.headers.get('set-cookie');
-  const headers = new Headers();
-  
+  const setCookie = response.headers.get('set-cookie')
+  const headers = new Headers()
+
   if (setCookie) {
-    headers.set('set-cookie', setCookie);
+    headers.set('set-cookie', setCookie)
   }
-  
+
   return NextResponse.json(data, {
     status: response.status,
     headers,
-  });
+  })
 }
 ```
 
@@ -708,110 +719,110 @@ export async function POST(
 
 ```typescript
 // hooks/useAuth.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 
 interface User {
-  id: string;
-  email: string;
-  phone: string;
-  first_name: string;
-  last_name: string;
-  full_name: string;
-  is_verified: boolean;
-  is_active: boolean;
+  id: string
+  email: string
+  phone: string
+  first_name: string
+  last_name: string
+  full_name: string
+  is_verified: boolean
+  is_active: boolean
   security: {
-    score: number;
-    level: 'low' | 'medium' | 'high';
-  };
+    score: number
+    level: 'low' | 'medium' | 'high'
+  }
 }
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+
   useEffect(() => {
-    checkAuth();
-  }, []);
-  
+    checkAuth()
+  }, [])
+
   async function checkAuth() {
     try {
-      const response = await fetch('/api/auth/status');
-      const data = await response.json();
-      
+      const response = await fetch('/api/auth/status')
+      const data = await response.json()
+
       if (data.success) {
-        setUser(data.data.user);
+        setUser(data.data.user)
       } else {
-        setUser(null);
+        setUser(null)
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
-      setUser(null);
+      console.error('Auth check failed:', error)
+      setUser(null)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
-  
+
   async function register(formData: {
-    email?: string;
-    phone?: string;
-    password: string;
-    password_confirm: string;
-    first_name: string;
-    last_name: string;
+    email?: string
+    phone?: string
+    password: string
+    password_confirm: string
+    first_name: string
+    last_name: string
   }) {
     // Get CSRF token first
-    await fetch('/api/auth/csrf');
-    
+    await fetch('/api/auth/csrf')
+
     const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
-    });
-    
-    const data = await response.json();
-    
+    })
+
+    const data = await response.json()
+
     if (data.success) {
-      setUser(data.data.user);
-      return { success: true, data: data.data };
+      setUser(data.data.user)
+      return { success: true, data: data.data }
     }
-    
-    return { success: false, error: data.error };
+
+    return { success: false, error: data.error }
   }
-  
+
   async function login(identifier: string, password: string) {
     // Get CSRF token first
-    await fetch('/api/auth/csrf');
-    
+    await fetch('/api/auth/csrf')
+
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ identifier, password }),
-    });
-    
-    const data = await response.json();
-    
+    })
+
+    const data = await response.json()
+
     if (data.success) {
-      setUser(data.data.user);
-      return { success: true, data: data.data };
+      setUser(data.data.user)
+      return { success: true, data: data.data }
     }
-    
-    return { success: false, error: data.error };
+
+    return { success: false, error: data.error }
   }
-  
+
   async function logout() {
     const response = await fetch('/api/auth/logout', {
       method: 'POST',
-    });
-    
-    const data = await response.json();
-    
+    })
+
+    const data = await response.json()
+
     if (data.success) {
-      setUser(null);
+      setUser(null)
     }
-    
-    return data;
+
+    return data
   }
-  
+
   return {
     user,
     loading,
@@ -820,7 +831,7 @@ export function useAuth() {
     login,
     logout,
     refreshAuth: checkAuth,
-  };
+  }
 }
 ```
 
@@ -837,21 +848,21 @@ import { useAuth } from '@/hooks/useAuth';
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
-  
+
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       router.push('/login');
     }
   }, [isAuthenticated, loading, router]);
-  
+
   if (loading) {
     return <div>Loading...</div>;
   }
-  
+
   if (!isAuthenticated) {
     return null;
   }
-  
+
   return <>{children}</>;
 }
 ```
@@ -863,6 +874,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 ### cURL Examples
 
 #### Get CSRF Token
+
 ```bash
 curl -X GET http://localhost:8000/api/v2/auth/csrf/ \
   -c cookies.txt \
@@ -870,6 +882,7 @@ curl -X GET http://localhost:8000/api/v2/auth/csrf/ \
 ```
 
 #### Register
+
 ```bash
 curl -X POST http://localhost:8000/api/v2/auth/register/ \
   -H "Content-Type: application/json" \
@@ -886,6 +899,7 @@ curl -X POST http://localhost:8000/api/v2/auth/register/ \
 ```
 
 #### Login
+
 ```bash
 curl -X POST http://localhost:8000/api/v2/auth/login/ \
   -H "Content-Type: application/json" \
@@ -899,6 +913,7 @@ curl -X POST http://localhost:8000/api/v2/auth/login/ \
 ```
 
 #### Check Status
+
 ```bash
 curl -X GET http://localhost:8000/api/v2/auth/status/ \
   -b cookies.txt \
@@ -906,6 +921,7 @@ curl -X GET http://localhost:8000/api/v2/auth/status/ \
 ```
 
 #### Logout
+
 ```bash
 curl -X POST http://localhost:8000/api/v2/auth/logout/ \
   -H "X-CSRFToken: <token>" \
@@ -920,12 +936,14 @@ curl -X POST http://localhost:8000/api/v2/auth/logout/ \
 ### When should I use V2 instead of V1?
 
 Use V2 if:
+
 - Building a Next.js app with server-side rendering
 - Want enhanced security with HTTP-only cookies
 - Frontend doesn't need to manage tokens
 - Building a traditional web app
 
 Use V1 if:
+
 - Building a mobile app
 - Need stateless authentication
 - Building a pure SPA without SSR
@@ -937,16 +955,16 @@ Monitor for 401/403 responses and redirect to login:
 
 ```typescript
 async function apiCall(url: string, options?: RequestInit) {
-  const response = await fetch(url, options);
-  const data = await response.json();
-  
+  const response = await fetch(url, options)
+  const data = await response.json()
+
   if (response.status === 401 || response.status === 403) {
     // Redirect to login
-    window.location.href = '/login';
-    throw new Error('Session expired');
+    window.location.href = '/login'
+    throw new Error('Session expired')
   }
-  
-  return data;
+
+  return data
 }
 ```
 
@@ -983,6 +1001,7 @@ CSRF_TRUSTED_ORIGINS = [
 ## Changelog
 
 ### Version 2.0 (Current)
+
 - Initial release of session-based authentication
 - CSRF protection implementation
 - Next.js integration guide
@@ -993,6 +1012,7 @@ CSRF_TRUSTED_ORIGINS = [
 ## Support
 
 For questions or issues:
+
 1. Check this contract first
 2. Review implementation in `domain/account/api/views/auth_v2.py`
 3. Test with provided cURL examples

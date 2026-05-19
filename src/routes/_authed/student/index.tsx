@@ -1,5 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { GraduationCap, BookOpen, Calendar, ClipboardCheck, TrendingUp, FileText } from 'lucide-react'
+import {
+  BookOpen,
+  Calendar,
+  ClipboardCheck,
+  FileText,
+  GraduationCap,
+  TrendingUp,
+} from 'lucide-react'
 
 /**
  * Student Portal Home Page
@@ -26,7 +33,8 @@ function StudentDashboard() {
           </div>
         </div>
         <p className="text-white/80">
-          Accédez à vos cours, notes et devoirs - Suivez votre progression académique
+          Accédez à vos cours, notes et devoirs - Suivez votre progression
+          académique
         </p>
       </div>
 
@@ -143,7 +151,9 @@ function StatCard({ title, value, icon: Icon, color, trend }: StatCardProps) {
   return (
     <div className="bg-card border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}>
+        <div
+          className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}
+        >
           <Icon className="w-6 h-6 text-white" />
         </div>
         <span className="text-sm text-muted-foreground">{trend}</span>

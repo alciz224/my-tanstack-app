@@ -1,41 +1,51 @@
-import type { GeographyDataAdapter, Country, RegionAdministrative, AdministrativeUnit, Locality } from './types';
-import { getWebRequest } from '@tanstack/react-start/server';
+import { getCookies } from '@tanstack/react-start/server'
+import type {
+  AdministrativeUnit,
+  Country,
+  GeographyDataAdapter,
+  Locality,
+  RegionAdministrative,
+} from './types'
 
 export class ApiGeographyAdapter implements GeographyDataAdapter {
-  private baseUrl = process.env.VITE_API_URL || 'http://localhost:8000/api/v2';
+  private baseUrl = process.env.VITE_API_URL || 'http://localhost:8000/api/v2'
 
   private async fetchApi<T>(endpoint: string): Promise<T> {
-    const request = getWebRequest();
-    const cookie = request?.headers.get('cookie') || '';
-    
+    const cookies = getCookies()
+    const cookie = Object.entries(cookies)
+      .map(([k, v]) => `${k}=${v}`)
+      .join('; ')
+
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': cookie,
+        Cookie: cookie,
       },
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status} on ${endpoint}`);
+      throw new Error(`API Error: ${response.status} on ${endpoint}`)
     }
 
-    const json = await response.json();
-    return Array.isArray(json) ? json : json.results ?? [];
+    const json = await response.json()
+    return (Array.isArray(json) ? json : (json.results ?? [])) as T
   }
 
-  async getCountries(): Promise<Country[]> {
-    return this.fetchApi<Country[]>('/geography/countries/');
+  async getCountries(): Promise<Array<Country>> {
+    return this.fetchApi<Array<Country>>('/geography/countries/')
   }
 
-  async getRegions(): Promise<RegionAdministrative[]> {
-    return this.fetchApi<RegionAdministrative[]>('/geography/regions/');
+  async getRegions(): Promise<Array<RegionAdministrative>> {
+    return this.fetchApi<Array<RegionAdministrative>>('/geography/regions/')
   }
 
-  async getAdministrativeUnits(): Promise<AdministrativeUnit[]> {
-    return this.fetchApi<AdministrativeUnit[]>('/geography/administrative-units/');
+  async getAdministrativeUnits(): Promise<Array<AdministrativeUnit>> {
+    return this.fetchApi<Array<AdministrativeUnit>>(
+      '/geography/administrative-units/',
+    )
   }
 
-  async getLocalities(): Promise<Locality[]> {
-    return this.fetchApi<Locality[]>('/geography/localities/');
+  async getLocalities(): Promise<Array<Locality>> {
+    return this.fetchApi<Array<Locality>>('/geography/localities/')
   }
 }

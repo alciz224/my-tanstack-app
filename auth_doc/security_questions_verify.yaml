@@ -13,22 +13,22 @@ Request:
 
 Response Success (200):
   {
-    "success": true,
-    "message": "Vérification réussie",
-    "data":
+    'success': true,
+    'message': 'Vérification réussie',
+    'data':
       {
-        "reset_token": "temporary-token-for-password-reset",
-        "expires_in": 600,
+        'reset_token': 'temporary-token-for-password-reset',
+        'expires_in': 600,
       },
   }
 
 Response Error (400):
   {
-    "success": false,
-    "message": "Réponses incorrectes",
-    "error":
+    'success': false,
+    'message': 'Réponses incorrectes',
+    'error':
       {
-        "code": "SECURITY_ANSWERS_INVALID",
-        "details": { "attempts_remaining": 2 },
+        'code': 'SECURITY_ANSWERS_INVALID',
+        'details': { 'attempts_remaining': 2 },
       },
   }

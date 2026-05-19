@@ -14,8 +14,8 @@ Request:
 
 Response Success (200):
   {
-    "success": true,
-    "message": "Questions de sécurité configurées",
-    "data":
-      { "configured_count": 3, "security": { "score": 85, "level": "high" } },
+    'success': true,
+    'message': 'Questions de sécurité configurées',
+    'data':
+      { 'configured_count': 3, 'security': { 'score': 85, 'level': 'high' } },
   }

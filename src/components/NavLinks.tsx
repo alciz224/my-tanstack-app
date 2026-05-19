@@ -1,20 +1,20 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import {
-  LayoutDashboard,
-  Building2,
-  Users,
-  Settings,
-  FileText,
+  Bell,
   BookOpen,
-  GraduationCap,
+  Building2,
   Calendar,
   ClipboardCheck,
-  MessageSquare,
-  CreditCard,
-  Bell,
-  Shield,
   Compass,
+  CreditCard,
+  FileText,
+  GraduationCap,
+  LayoutDashboard,
   Map,
+  MessageSquare,
+  Settings,
+  Shield,
+  Users,
 } from 'lucide-react'
 import type { User } from '@/server/auth'
 import type { UserRole } from '@/types/roles'
@@ -31,11 +31,11 @@ export interface NavItem {
 interface NavSection {
   title: string
   titleKey?: string
-  roles: UserRole[]
-  items: NavItem[]
+  roles: Array<UserRole>
+  items: Array<NavItem>
 }
 
-const navSections: NavSection[] = [
+const navSections: Array<NavSection> = [
   {
     title: 'Plateforme',
     titleKey: 'nav.sectionPlatform',
@@ -146,40 +146,67 @@ const navSections: NavSection[] = [
         enabled: true,
       },
       {
-        label: 'Staff',
+        label: 'Années Scolaires',
+        labelKey: 'nav.schoolYears',
+        to: '/school-admin/years',
+        icon: <Building2 className="w-5 h-5" />,
+        enabled: true,
+      },
+      {
+        label: 'Enseignants',
         labelKey: 'nav.staff',
+        to: '/school-admin/teachers',
         icon: <Users className="w-5 h-5" />,
-        enabled: false,
+        enabled: true,
       },
       {
-        label: 'Students',
+        label: 'Élèves',
         labelKey: 'nav.students',
+        to: '/school-admin/students',
         icon: <GraduationCap className="w-5 h-5" />,
-        enabled: false,
+        enabled: true,
       },
       {
-        label: 'Parents/Tutors',
+        label: 'Parents / Tuteurs',
         labelKey: 'nav.parentsTutors',
+        to: '/school-admin/parents',
         icon: <Users className="w-5 h-5" />,
-        enabled: false,
+        enabled: true,
       },
       {
         label: 'Classes',
         labelKey: 'nav.classes',
+        to: '/school-admin/classrooms',
         icon: <Building2 className="w-5 h-5" />,
-        enabled: false,
+        enabled: true,
+      },
+      {
+        label: 'Emplois du temps',
+        labelKey: 'nav.schedule',
+        to: '/school-admin/schedule',
+        icon: <Calendar className="w-5 h-5" />,
+        enabled: true,
+      },
+      {
+        label: 'Évaluations',
+        labelKey: 'nav.assessments',
+        to: '/school-admin/assessments',
+        icon: <FileText className="w-5 h-5" />,
+        enabled: true,
       },
       {
         label: 'Finance',
         labelKey: 'nav.finance',
+        to: '/school-admin/finance',
         icon: <CreditCard className="w-5 h-5" />,
-        enabled: false,
+        enabled: true,
       },
       {
-        label: 'Reports',
+        label: 'Rapports',
         labelKey: 'nav.reports',
+        to: '/school-admin/reports',
         icon: <FileText className="w-5 h-5" />,
-        enabled: false,
+        enabled: true,
       },
     ],
   },
@@ -196,14 +223,14 @@ const navSections: NavSection[] = [
         enabled: true,
       },
       {
-        label: 'Users',
+        label: 'Utilisateurs',
         labelKey: 'nav.users',
         to: '/admin/users',
         icon: <Users className="w-5 h-5" />,
         enabled: true,
       },
       {
-        label: 'Settings',
+        label: 'Paramètres',
         labelKey: 'nav.configuration',
         icon: <Settings className="w-5 h-5" />,
         enabled: false,
@@ -229,25 +256,26 @@ const navSections: NavSection[] = [
         enabled: true,
       },
       {
-        label: 'My Classes',
+        label: 'Mes Classes',
         labelKey: 'nav.myClasses',
         icon: <Users className="w-5 h-5" />,
         enabled: false,
       },
       {
-        label: 'Attendance',
+        label: 'Présences',
         labelKey: 'nav.attendance',
         icon: <ClipboardCheck className="w-5 h-5" />,
         enabled: false,
       },
       {
-        label: 'Grades',
-        labelKey: 'nav.grades',
+        label: 'Rapports',
+        labelKey: 'nav.reports',
+        to: '/school-admin/reports',
         icon: <FileText className="w-5 h-5" />,
-        enabled: false,
+        enabled: true,
       },
       {
-        label: 'Homework',
+        label: 'Devoirs',
         labelKey: 'nav.homework',
         icon: <BookOpen className="w-5 h-5" />,
         enabled: false,
@@ -259,7 +287,7 @@ const navSections: NavSection[] = [
         enabled: false,
       },
       {
-        label: 'Resources',
+        label: 'Ressources',
         labelKey: 'nav.resources',
         icon: <BookOpen className="w-5 h-5" />,
         enabled: false,
@@ -279,25 +307,25 @@ const navSections: NavSection[] = [
         enabled: true,
       },
       {
-        label: 'My Schedule',
+        label: 'Mon Emploi du temps',
         labelKey: 'nav.timetable',
         icon: <Calendar className="w-5 h-5" />,
         enabled: false,
       },
       {
-        label: 'My Grades',
+        label: 'Mes Notes',
         labelKey: 'nav.myGrades',
         icon: <FileText className="w-5 h-5" />,
         enabled: false,
       },
       {
-        label: 'Attendance',
+        label: 'Présences',
         labelKey: 'nav.attendance',
         icon: <ClipboardCheck className="w-5 h-5" />,
         enabled: false,
       },
       {
-        label: 'Homework',
+        label: 'Devoirs',
         labelKey: 'nav.homework',
         icon: <BookOpen className="w-5 h-5" />,
         enabled: false,
@@ -309,7 +337,7 @@ const navSections: NavSection[] = [
         enabled: false,
       },
       {
-        label: 'Resources',
+        label: 'Ressources',
         labelKey: 'nav.resources',
         icon: <BookOpen className="w-5 h-5" />,
         enabled: false,
@@ -329,13 +357,13 @@ const navSections: NavSection[] = [
         enabled: true,
       },
       {
-        label: 'My Children',
+        label: 'Mes Enfants',
         labelKey: 'nav.myChildren',
         icon: <Users className="w-5 h-5" />,
         enabled: false,
       },
       {
-        label: 'Schooling',
+        label: 'Scolarité',
         labelKey: 'nav.schooling',
         icon: <GraduationCap className="w-5 h-5" />,
         enabled: false,
@@ -383,13 +411,17 @@ export function NavLinks({ user, onLinkClick, className = '' }: NavLinksProps) {
       {sections.map((section) => (
         <div key={section.title} className="space-y-1">
           <div className="px-3 text-[11px] font-semibold uppercase tracking-wide text-foreground/80">
-            {section.titleKey ? t(section.titleKey as any) || section.title : section.title}
+            {section.titleKey
+              ? t(section.titleKey as any) || section.title
+              : section.title}
           </div>
           {section.items.map((item) => {
             const isActive = item.to
               ? currentPath === item.to || currentPath.startsWith(`${item.to}/`)
               : false
-            const label = item.labelKey ? t(item.labelKey as any) || item.label : item.label
+            const label = item.labelKey
+              ? t(item.labelKey as any) || item.label
+              : item.label
 
             if (item.enabled && item.to) {
               return (

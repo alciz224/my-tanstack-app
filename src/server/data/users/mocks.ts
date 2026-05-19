@@ -1,9 +1,62 @@
-import type { AdminUser } from './types';
+import type { AdminUser } from './types'
 
-export const mockAdminUsers: AdminUser[] = [
-  { id: 'USR-001', name: 'Jean Dupont', email: 'jean.dupont@example.com', role: 'admin', status: 'Active' },
-  { id: 'USR-002', name: 'Marie Martin', email: 'marie.m@example.com', role: 'teacher', status: 'Active' },
-  { id: 'USR-003', name: 'Paul Bernard', email: 'paul.b@example.com', role: 'student', status: 'Inactive' },
-  { id: 'USR-004', name: 'Sophie Laurent', email: 'sophie.l@example.com', role: 'parent', status: 'Active' },
-  { id: 'USR-005', name: 'Lucas Moreau', email: 'lucas.m@example.com', role: 'teacher', status: 'Pending' },
-];
+export const mockAdminUsers: Array<AdminUser> = [
+  {
+    id: 'usr-001',
+    name: 'Abdoulaye Diallo',
+    email: 'a.diallo@excellence.edu.gn',
+    role: 'school_admin',
+    status: 'Active',
+  },
+  {
+    id: 'usr-002',
+    name: 'Mamadou Diallo',
+    email: 'm.diallo@excellence.edu.gn',
+    role: 'teacher',
+    status: 'Active',
+  },
+  {
+    id: 'usr-003',
+    name: 'Aïssatou Bah',
+    email: 'a.bah@excellence.edu.gn',
+    role: 'teacher',
+    status: 'Active',
+  },
+  {
+    id: 'usr-004',
+    name: 'Mohamed Camara',
+    email: 'm.camara@excellence.edu.gn',
+    role: 'admin',
+    status: 'Active',
+  },
+  {
+    id: 'usr-005',
+    name: 'Fatoumata Touré',
+    email: 'f.toure@excellence.edu.gn',
+    role: 'parent',
+    status: 'Active',
+  },
+  {
+    id: 'usr-006',
+    name: 'Ousmane Sow',
+    email: 'o.sow@excellence.edu.gn',
+    role: 'student',
+    status: 'Active',
+  },
+  {
+    id: 'usr-007',
+    name: 'Mariam Barry',
+    email: 'm.barry@excellence.edu.gn',
+    role: 'teacher',
+    status: 'Inactive',
+  },
+  {
+    id: 'usr-008',
+    name: 'Abdoulaye Konaté',
+    email: 'a.konate@excellence.edu.gn',
+    role: 'super_admin',
+    status: 'Active',
+  },
+]
+
+export type { AdminUser } from './types'

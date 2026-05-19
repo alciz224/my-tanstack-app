@@ -20,7 +20,7 @@ export interface ApiResponse<T = any> {
  */
 export interface ApiError {
   code: string
-  details?: Record<string, string[]> | string
+  details?: Record<string, Array<string>> | string
   message?: string
 }
 
@@ -32,16 +32,21 @@ export interface AuthResult {
   user?: User
   error?: string
   errorCode?: string
-  fieldErrors?: Record<string, string[]>
+  fieldErrors?: Record<string, Array<string>>
   retryAfter?: number // seconds for rate limit
 }
 
 /**
  * Server function result wrapper for type-safe error handling
  */
-export type ServerFnResult<T> = 
+export type ServerFnResult<T> =
   | { success: true; data: T }
-  | { success: false; error: string; errorCode?: string; fieldErrors?: Record<string, string[]> }
+  | {
+      success: false
+      error: string
+      errorCode?: string
+      fieldErrors?: Record<string, Array<string>>
+    }
 
 /**
  * Helper to create success result
@@ -56,7 +61,7 @@ export function createSuccessResult<T>(data: T): ServerFnResult<T> {
 export function createErrorResult(
   error: string,
   errorCode?: string,
-  fieldErrors?: Record<string, string[]>
+  fieldErrors?: Record<string, Array<string>>,
 ): ServerFnResult<never> {
   return { success: false, error, errorCode, fieldErrors }
 }

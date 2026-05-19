@@ -8,4 +8,4 @@ Request:
     refresh: string # Refresh token à blacklister
 
 Response Success (200):
-  { "success": true, "message": "Déconnexion réussie", "data": null }
+  { 'success': true, 'message': 'Déconnexion réussie', 'data': null }

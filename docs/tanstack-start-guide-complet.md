@@ -82,7 +82,7 @@ import { useServerFn } from '@tanstack/react-start'
 
 function Profile() {
   const getUserServer = useServerFn(getUser)
-  
+
   const { data } = useQuery({
     queryKey: ['user'],
     queryFn: () => getUserServer({ data: { id: '123' } }),
@@ -118,11 +118,11 @@ src/utils/
 └── schemas.ts            # Schemas de validation partages (client-safe)
 ```
 
-| Extension | Role | Importable cote client ? |
-|-----------|------|-------------------------|
-| `.functions.ts` | Exporte les `createServerFn` | Oui (wrappers securises) |
-| `.server.ts` | Logique serveur pure | Non (risque d'import accidentel) |
-| `.ts` | Code partage (types, schemas) | Oui |
+| Extension       | Role                          | Importable cote client ?         |
+| --------------- | ----------------------------- | -------------------------------- |
+| `.functions.ts` | Exporte les `createServerFn`  | Oui (wrappers securises)         |
+| `.server.ts`    | Logique serveur pure          | Non (risque d'import accidentel) |
+| `.ts`           | Code partage (types, schemas) | Oui                              |
 
 ---
 
@@ -142,11 +142,11 @@ interface UserDataSource {
 // Implementation Mock
 class MockDataSource implements UserDataSource {
   private users = new Map<string, User>()
-  
+
   async getUser(id: string) {
     return this.users.get(id) || { id, name: 'Mock User' }
   }
-  
+
   async updateUser(id: string, data: Partial<User>) {
     const user = await this.getUser(id)
     const updated = { ...user, ...data }
@@ -160,7 +160,7 @@ class DatabaseDataSource implements UserDataSource {
   async getUser(id: string) {
     return db.user.findUnique({ where: { id } })
   }
-  
+
   async updateUser(id: string, data: Partial<User>) {
     return db.user.update({ where: { id }, data })
   }
@@ -172,7 +172,7 @@ export function createUserAPI(source: UserDataSource) {
     getUser: createServerFn({ method: 'GET' })
       .inputValidator((data: { id: string }) => data)
       .handler(async ({ data }) => source.getUser(data.id)),
-    
+
     updateUser: createServerFn({ method: 'POST' })
       .inputValidator((data: { id: string; updates: Partial<User> }) => data)
       .handler(async ({ data }) => source.updateUser(data.id, data.updates)),
@@ -180,9 +180,10 @@ export function createUserAPI(source: UserDataSource) {
 }
 
 // Selection dynamique
-const dataSource = import.meta.env.VITE_USE_MOCK === 'true'
-  ? new MockDataSource()
-  : new DatabaseDataSource()
+const dataSource =
+  import.meta.env.VITE_USE_MOCK === 'true'
+    ? new MockDataSource()
+    : new DatabaseDataSource()
 
 export const userAPI = createUserAPI(dataSource)
 ```
@@ -190,18 +191,24 @@ export const userAPI = createUserAPI(dataSource)
 ### 3.2 Request/Response Control
 
 ```typescript
-import { getRequest, setResponseHeaders, setResponseStatus } from '@tanstack/react-start/server'
+import {
+  getRequest,
+  setResponseHeaders,
+  setResponseStatus,
+} from '@tanstack/react-start/server'
 
 const getCachedData = createServerFn({ method: 'GET' }).handler(async () => {
   const request = getRequest()
   const authHeader = getRequestHeader('Authorization')
-  
-  setResponseHeaders(new Headers({
-    'Cache-Control': 'public, max-age=300',
-    'CDN-Cache-Control': 'max-age=3600, stale-while-revalidate=600',
-  }))
+
+  setResponseHeaders(
+    new Headers({
+      'Cache-Control': 'public, max-age=300',
+      'CDN-Cache-Control': 'max-age=3600, stale-while-revalidate=600',
+    }),
+  )
   setResponseStatus(200)
-  
+
   return fetchData()
 })
 ```
@@ -212,10 +219,10 @@ const getCachedData = createServerFn({ method: 'GET' }).handler(async () => {
 
 ### 4.1 Types de middleware
 
-| Type | Portee | Usage |
-|------|--------|-------|
-| `type: 'function'` | Par fonction | Validation, logging, auth |
-| Global | Toutes les requetes | CORS, tracing, monitoring |
+| Type               | Portee              | Usage                     |
+| ------------------ | ------------------- | ------------------------- |
+| `type: 'function'` | Par fonction        | Validation, logging, auth |
+| Global             | Toutes les requetes | CORS, tracing, monitoring |
 
 ### 4.2 Creation de middleware
 
@@ -223,24 +230,25 @@ const getCachedData = createServerFn({ method: 'GET' }).handler(async () => {
 import { createMiddleware } from '@tanstack/react-start'
 
 // Middleware basique
-const loggingMiddleware = createMiddleware({ type: 'function' })
-  .server(async ({ next, context }) => {
+const loggingMiddleware = createMiddleware({ type: 'function' }).server(
+  async ({ next, context }) => {
     console.log('Avant handler')
     const result = await next()
     console.log('Apres handler')
     return result
-  })
+  },
+)
 
 // Middleware client + serveur (bidirectionnel)
 const traceMiddleware = createMiddleware({ type: 'function' })
   .client(async ({ next }) => {
     const startTime = Date.now()
     const traceId = crypto.randomUUID()
-    
+
     const result = await next({
-      sendContext: { traceId, startTime }
+      sendContext: { traceId, startTime },
     })
-    
+
     console.log(`Requete duree: ${Date.now() - startTime}ms`)
     return result
   })
@@ -272,9 +280,9 @@ const a = createMiddleware({ type: 'function' }).server(async ({ next }) => {
 })
 
 const b = createMiddleware({ type: 'function' })
-  .middleware([a])  // B depend de A
+  .middleware([a]) // B depend de A
   .server(async ({ next }) => {
-    console.log('b')  // Execute apres a
+    console.log('b') // Execute apres a
     return next()
   })
 
@@ -392,12 +400,12 @@ export const Route = createFileRoute('/dashboard')({
   beforeLoad: async ({ context }) => {
     // Acces au contexte parent
     console.log(context.queryClient)
-    
+
     // Retourne un nouveau contexte (fusionne avec le parent)
     const user = await fetchUser()
     return { user }
   },
-  
+
   loader: async ({ context }) => {
     // context.user disponible ici
     return context.queryClient.fetchQuery({
@@ -414,10 +422,10 @@ export const Route = createFileRoute('/dashboard')({
 function AdminPage() {
   // Contexte de cette route
   const { user, isAdminRoute } = Route.useRouteContext()
-  
+
   // Contexte d'une route parente
   const { user: dashboardUser } = useRouteContext({ from: '/dashboard' })
-  
+
   // Contexte router-level
   const router = useRouter()
   const { queryClient } = router.options.context
@@ -428,17 +436,16 @@ function AdminPage() {
 
 ```typescript
 // middleware/auth-middleware.ts
-export const authMiddleware = createMiddleware()
-  .server(async ({ next }) => {
-    const session = await getSession({ headers: getHeaders() })
-    
-    return next({
-      context: {
-        user: session?.user,
-        sessionId: session?.id,
-      },
-    })
+export const authMiddleware = createMiddleware().server(async ({ next }) => {
+  const session = await getSession({ headers: getHeaders() })
+
+  return next({
+    context: {
+      user: session?.user,
+      sessionId: session?.id,
+    },
   })
+})
 
 // utils/users.functions.ts
 export const getCurrentUser = createServerFn({ method: 'GET' })
@@ -455,20 +462,20 @@ export const getCurrentUser = createServerFn({ method: 'GET' })
 const bidirectionalMiddleware = createMiddleware({ type: 'function' })
   .client(async ({ next }) => {
     const clientData = { timestamp: Date.now() }
-    
+
     const result = await next({
-      sendContext: clientData  // Envoie au serveur
+      sendContext: clientData, // Envoie au serveur
     })
-    
+
     // Recoit du serveur via result.context
     console.log('Serveur a envoye:', result.context.serverData)
     return result
   })
   .server(async ({ next, context }) => {
     // context.timestamp disponible (du client)
-    
+
     return next({
-      sendContext: { serverData: 'reponse' }  // Renvoie au client
+      sendContext: { serverData: 'reponse' }, // Renvoie au client
     })
   })
 ```
@@ -485,27 +492,28 @@ function getTraceId() {
   return store?.traceId
 }
 
-const tracingMiddleware = createMiddleware({ type: 'function' })
-  .server(async ({ next }) => {
+const tracingMiddleware = createMiddleware({ type: 'function' }).server(
+  async ({ next }) => {
     const traceId = getTraceId() ?? crypto.randomUUID()
-    
+
     return asyncLocalStorage.run({ traceId }, async () => {
       return next({ sendContext: { traceId } })
     })
-  })
+  },
+)
 ```
 
 ### 5.8 Tableau recapitulatif du contexte
 
-| Emplacement | Comment acceder | Comment definir |
-|-------------|-----------------|-----------------|
-| **Router** | `router.options.context` | `createRouter({ context: {} })` |
-| **Root Route** | `createRootRouteWithContext<T>()` | Retour de `beforeLoad` |
-| **Route** | `Route.useRouteContext()` | Retour de `beforeLoad` |
-| **Route Parent** | `useRouteContext({ from: '/parent' })` | `beforeLoad` du parent |
-| **Loader** | `({ context })` param | Herite de `beforeLoad` |
-| **Server Function** | `({ context })` param | `next({ context: {} })` du middleware |
-| **Server Fn imbriquee** | `AsyncLocalStorage` | Middleware parent |
+| Emplacement             | Comment acceder                        | Comment definir                       |
+| ----------------------- | -------------------------------------- | ------------------------------------- |
+| **Router**              | `router.options.context`               | `createRouter({ context: {} })`       |
+| **Root Route**          | `createRootRouteWithContext<T>()`      | Retour de `beforeLoad`                |
+| **Route**               | `Route.useRouteContext()`              | Retour de `beforeLoad`                |
+| **Route Parent**        | `useRouteContext({ from: '/parent' })` | `beforeLoad` du parent                |
+| **Loader**              | `({ context })` param                  | Herite de `beforeLoad`                |
+| **Server Function**     | `({ context })` param                  | `next({ context: {} })` du middleware |
+| **Server Fn imbriquee** | `AsyncLocalStorage`                    | Middleware parent                     |
 
 ---
 
@@ -532,14 +540,14 @@ src/routes/
 
 ### 6.2 Types de routes
 
-| Pattern | Fichier | URL | Usage |
-|---------|---------|-----|-------|
-| **Statique** | `about.tsx` | `/about` | Page simple |
-| **Dynamique** | `$postId.tsx` | `/posts/123` | Parametrise |
-| **Index** | `index.tsx` | `/` (parent) | Enfant par defaut |
-| **Layout** | `route.tsx` | Meme que parent | Composant wrapper |
-| **Sans chemin** | `_authenticated.tsx` | Pas de segment URL | Groupe/Guard |
-| **Splat** | `$.tsx` | `/files/...` | Catch-all |
+| Pattern         | Fichier              | URL                | Usage             |
+| --------------- | -------------------- | ------------------ | ----------------- |
+| **Statique**    | `about.tsx`          | `/about`           | Page simple       |
+| **Dynamique**   | `$postId.tsx`        | `/posts/123`       | Parametrise       |
+| **Index**       | `index.tsx`          | `/` (parent)       | Enfant par defaut |
+| **Layout**      | `route.tsx`          | Meme que parent    | Composant wrapper |
+| **Sans chemin** | `_authenticated.tsx` | Pas de segment URL | Groupe/Guard      |
+| **Splat**       | `$.tsx`              | `/files/...`       | Catch-all         |
 
 ### 6.3 Layout de base (routes imbriquees)
 
@@ -624,7 +632,7 @@ Les enfants **n'incluent pas** le prefixe dans leur chemin :
 ```typescript
 // ❌ FAUX - useAuth() est un hook React, il n'existe pas sur le serveur
 beforeLoad: async () => {
-  const auth = useAuth()  // ❌ Crash en SSR!
+  const auth = useAuth() // ❌ Crash en SSR!
   if (!auth.user) throw redirect({ to: '/login' })
 }
 ```
@@ -667,24 +675,25 @@ beforeLoad: ({ context }) => {
 
 ```typescript
 // app/ssr.tsx
-import { createStartHandler, defaultStreamHandler } from '@tanstack/react-start/server'
+import {
+  createStartHandler,
+  defaultStreamHandler,
+} from '@tanstack/react-start/server'
 import { getWebRequest, getCookie } from '@tanstack/react-start/server'
 import { createRouter } from './router'
 import { validateSession } from './utils/auth'
 
 export default createStartHandler(defaultStreamHandler)({
   createRouter,
-  
+
   // Appele pour CHAQUE requete en SSR
   getRouterContext: async () => {
     const request = getWebRequest()
     const sessionToken = getCookie('session_token')
-    
+
     // Validation cote serveur - pas d'appel API!
-    const user = sessionToken 
-      ? await validateSession(sessionToken)
-      : null
-    
+    const user = sessionToken ? await validateSession(sessionToken) : null
+
     return {
       user,
       queryClient: new QueryClient(),
@@ -734,14 +743,14 @@ export const Route = createFileRoute('/_authenticated')({
   beforeLoad: ({ context, location }) => {
     // context.user vient de getRouterContext() en SSR
     // ou de l'etat dehydrate sur le client
-    
+
     if (!context.user) {
       throw redirect({
         to: '/login',
         search: { redirect: location.href },
       })
     }
-    
+
     // Retourne l'utilisateur pour les enfants
     return { user: context.user }
   },
@@ -761,14 +770,14 @@ const loginSearchSchema = z.object({
 
 export const Route = createFileRoute('/login')({
   validateSearch: loginSearchSchema,
-  
+
   // Redirige les utilisateurs deja authentifies
   beforeLoad: ({ context, search }) => {
     if (context.auth.isAuthenticated) {
       throw redirect({ to: search.redirect })
     }
   },
-  
+
   component: LoginPage,
 })
 
@@ -819,11 +828,11 @@ import { hasRole, roles } from '~/utils/auth'
 export const Route = createFileRoute('/_authenticated/_admin')({
   beforeLoad: async ({ context }) => {
     const { user } = context
-    
+
     if (!hasRole(user.role, roles.ADMIN)) {
       throw redirect({ to: '/unauthorized' })
     }
-    
+
     return { isAdmin: true, adminPerms: getAdminPermissions(user) }
   },
   component: AdminLayout,
@@ -845,11 +854,11 @@ interface RoleRequiredProps {
 
 export function RoleRequired({ role, fallback = null, children }: RoleRequiredProps) {
   const { user } = useRouteContext({ from: '__root__' })
-  
+
   if (!user || !hasRole(user.role, role)) {
     return fallback
   }
-  
+
   return children
 }
 
@@ -859,7 +868,7 @@ function Navbar() {
     <nav>
       <Link to="/">Home</Link>
       <Link to="/dashboard">Dashboard</Link>
-      
+
       <RoleRequired role="admin">
         <Link to="/admin">Admin Panel</Link>
       </RoleRequired>
@@ -875,20 +884,20 @@ function Navbar() {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const queryClient = useQueryClient()
-  
+
   // Utilisateur initial depuis le contexte router (SSR-safe)
   const user = router.options.context.user
 
   const login = useMutation({
     mutationFn: async (credentials) => {
       const user = await loginApi(credentials)
-      
+
       // Met a jour le contexte router (pour la prochaine navigation)
       router.options.context.user = user
-      
+
       // Invalide pour re-executer les guards
       router.invalidate()
-      
+
       return user
     },
   })
@@ -912,12 +921,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 ### 7.11 Regles d'or - Contexte Router vs React
 
-| Emplacement | Router Context | React Context |
-|-------------|----------------|---------------|
-| `beforeLoad` | ✅ Oui | ❌ Non (casse SSR) |
-| `loader` | ✅ Oui | ❌ Non (casse SSR) |
-| Composants | ✅ Oui (via `useRouteContext`) | ✅ Oui (via `useAuth()`) |
-| Server Functions | ✅ Via middleware | ❌ N/A |
+| Emplacement      | Router Context                 | React Context            |
+| ---------------- | ------------------------------ | ------------------------ |
+| `beforeLoad`     | ✅ Oui                         | ❌ Non (casse SSR)       |
+| `loader`         | ✅ Oui                         | ❌ Non (casse SSR)       |
+| Composants       | ✅ Oui (via `useRouteContext`) | ✅ Oui (via `useAuth()`) |
+| Server Functions | ✅ Via middleware              | ❌ N/A                   |
 
 ---
 
@@ -928,12 +937,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 ```typescript
 // FAUX
 beforeLoad: async () => {
-  const auth = useAuth()  // ❌ Hook React dans du code isomorphe
+  const auth = useAuth() // ❌ Hook React dans du code isomorphe
 }
 
 // CORRECT
 beforeLoad: ({ context }) => {
-  const { user } = context  // ✅ Router context
+  const { user } = context // ✅ Router context
 }
 ```
 
@@ -942,14 +951,14 @@ beforeLoad: ({ context }) => {
 ```typescript
 // FAUX
 beforeLoad: async () => {
-  const user = await fetchUser()  // ❌ Fetch manuel
+  const user = await fetchUser() // ❌ Fetch manuel
 }
 
 // CORRECT
 beforeLoad: async ({ context }) => {
   const user = await context.queryClient.fetchQuery({
     queryKey: ['auth'],
-    queryFn: () => getCurrentUser(),  // ✅ Server function
+    queryFn: () => getCurrentUser(), // ✅ Server function
   })
 }
 ```
@@ -958,7 +967,7 @@ beforeLoad: async ({ context }) => {
 
 ```typescript
 // FAUX (dans un fichier .functions.ts)
-import { db } from './db.server'  // ❌ db.server.ts est serveur-only
+import { db } from './db.server' // ❌ db.server.ts est serveur-only
 
 // CORRECT
 // .functions.ts : uniquement les wrappers createServerFn
@@ -1069,4 +1078,4 @@ export const Route = createFileRoute('/_authenticated')({
 
 ---
 
-*Document genere le 17 avril 2026 - TanStack Start v1.167+*
+_Document genere le 17 avril 2026 - TanStack Start v1.167+_

@@ -70,7 +70,10 @@ export function validatePassword(value: string): ValidationResult {
   }
 
   if (!/[0-9]/.test(value)) {
-    return { isValid: false, error: 'Password must contain at least one number' }
+    return {
+      isValid: false,
+      error: 'Password must contain at least one number',
+    }
   }
 
   return { isValid: true }
@@ -114,7 +117,10 @@ export function validateAtLeastOneContact(
 /**
  * Required field validation
  */
-export function validateRequired(value: string, fieldName: string): ValidationResult {
+export function validateRequired(
+  value: string,
+  fieldName: string,
+): ValidationResult {
   if (!value || value.trim() === '') {
     return { isValid: false, error: `${fieldName} is required` }
   }

@@ -11,13 +11,10 @@
  */
 
 import { createServerFn } from '@tanstack/react-start'
+import type { AcademicYear, PaginatedResponse } from '@/types/academic'
 import { serverFetch } from '@/lib/api-client'
 import { ACADEMIC_ENDPOINTS } from '@/lib/api-endpoints'
 import { getAcademicService } from '@/server/data/academic/factory'
-import type {
-  AcademicYear,
-  PaginatedResponse,
-} from '@/types/academic'
 
 // ============================================================================
 // Academic Years
@@ -27,17 +24,18 @@ import type {
  * Get list of academic years with optional filters
  * GET /api/v1/academic/academic-years/
  */
-export const getAcademicYearsFn = createServerFn({ method: 'GET' })
-  .handler(async (ctx) => {
+export const getAcademicYearsFn = createServerFn({ method: 'GET' }).handler(
+  async (ctx) => {
     // Build query string from filters (if needed, add validator)
     // For now, fetch all
     const data = await serverFetch<PaginatedResponse<AcademicYear>>(
       ACADEMIC_ENDPOINTS.ACADEMIC_YEARS,
-      ctx
+      ctx,
     )
 
     return data
-  })
+  },
+)
 
 /**
  * Get a single academic year by ID
@@ -48,7 +46,7 @@ export const getAcademicYearFn = createServerFn({ method: 'GET' })
   .handler(async ({ data: id, context }: { data: string; context: any }) => {
     const result = await serverFetch<AcademicYear>(
       ACADEMIC_ENDPOINTS.ACADEMIC_YEAR_DETAIL(id),
-      context
+      context,
     )
 
     return result
@@ -58,39 +56,50 @@ export const getAcademicYearFn = createServerFn({ method: 'GET' })
  * Get the current academic year
  * GET /api/v1/academic/academic-years/current/
  */
-export const getCurrentAcademicYearFn = createServerFn({ method: 'GET' })
-  .handler(async (ctx) => {
-    const data = await serverFetch<AcademicYear>(
-      ACADEMIC_ENDPOINTS.ACADEMIC_YEAR_CURRENT,
-      ctx
-    )
+export const getCurrentAcademicYearFn = createServerFn({
+  method: 'GET',
+}).handler(async (ctx) => {
+  const data = await serverFetch<AcademicYear>(
+    ACADEMIC_ENDPOINTS.ACADEMIC_YEAR_CURRENT,
+    ctx,
+  )
 
-    return data
-  })
+  return data
+})
 
 // ============================================================================
 // Other Academic Entities (Data Adapter Pattern)
 // ============================================================================
 
-export const getCyclesFn = createServerFn({ method: 'GET' }).handler(async () => {
-  return getAcademicService().getCycles();
-});
+export const getCyclesFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    return getAcademicService().getCycles()
+  },
+)
 
-export const getLevelsFn = createServerFn({ method: 'GET' }).handler(async () => {
-  return getAcademicService().getLevels();
-});
+export const getLevelsFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    return getAcademicService().getLevels()
+  },
+)
 
-export const getTracksFn = createServerFn({ method: 'GET' }).handler(async () => {
-  return getAcademicService().getTracks();
-});
+export const getTracksFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    return getAcademicService().getTracks()
+  },
+)
 
-export const getSubjectsFn = createServerFn({ method: 'GET' }).handler(async () => {
-  return getAcademicService().getSubjects();
-});
+export const getSubjectsFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    return getAcademicService().getSubjects()
+  },
+)
 
-export const getPeriodsFn = createServerFn({ method: 'GET' }).handler(async () => {
-  return getAcademicService().getPeriods();
-});
+export const getPeriodsFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    return getAcademicService().getPeriods()
+  },
+)
 
 // ============================================================================
 // Usage Examples (for documentation)

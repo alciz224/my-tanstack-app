@@ -64,22 +64,22 @@ User Browser (stores cookie automatically)
 
 ### ✅ Use Server Functions For:
 
-| Use Case | Why |
-|----------|-----|
-| **Data fetching** in `beforeLoad`/`loader` | Needs SSR, requires cookie forwarding |
-| **Non-auth mutations** (CRUD operations) | Type-safe, works in SSR, unified pattern |
-| **Background tasks** triggered by user | Can run without browser context |
-| **Sensitive operations** | Code hidden from browser, better security |
+| Use Case                                   | Why                                       |
+| ------------------------------------------ | ----------------------------------------- |
+| **Data fetching** in `beforeLoad`/`loader` | Needs SSR, requires cookie forwarding     |
+| **Non-auth mutations** (CRUD operations)   | Type-safe, works in SSR, unified pattern  |
+| **Background tasks** triggered by user     | Can run without browser context           |
+| **Sensitive operations**                   | Code hidden from browser, better security |
 
 ### ❌ Use Client Functions For:
 
-| Use Case | Why |
-|----------|-----|
-| **Login** | Django must set session cookie in browser |
-| **Logout** | Django must clear session cookie in browser |
-| **Register** | Django must set session cookie in browser |
-| **Role selection** | Modifies session state |
-| **Any session-modifying operation** | Requires browser cookie storage |
+| Use Case                            | Why                                         |
+| ----------------------------------- | ------------------------------------------- |
+| **Login**                           | Django must set session cookie in browser   |
+| **Logout**                          | Django must clear session cookie in browser |
+| **Register**                        | Django must set session cookie in browser   |
+| **Role selection**                  | Modifies session state                      |
+| **Any session-modifying operation** | Requires browser cookie storage             |
 
 ### Why Auth Must Be Client-Side
 
@@ -92,9 +92,9 @@ export const loginServerFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const res = await fetch(`${BACKEND_URL}/api/v2/auth/login/`, {
       method: 'POST',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     })
-    
+
     // Django sends: Set-Cookie: sessionid=abc123
     // But this goes to Node.js server, NOT the browser!
     // The browser never receives the session cookie
@@ -112,7 +112,7 @@ export async function loginFn(data: LoginInput): Promise<AuthResult> {
     credentials: 'include', // Browser auto-sends AND receives cookies
     body: JSON.stringify(data),
   })
-  
+
   // Django sends: Set-Cookie: sessionid=abc123
   // Browser receives and stores the cookie automatically
   // All future requests include the cookie
@@ -137,20 +137,20 @@ export async function loginFn(data: LoginInput): Promise<AuthResult> {
 export function getCookieHeader(ctx: any): string | undefined {
   // Try multiple possible locations for the request object
   const req = ctx?.request || (ctx as any)?.context?.request || ctx
-  
+
   if (!req?.headers?.get) {
     if (import.meta.env.DEV) {
       console.warn('[getCookieHeader] No headers.get method found')
     }
     return undefined
   }
-  
+
   const cookie = req.headers.get('cookie') || undefined
-  
+
   if (import.meta.env.DEV) {
     console.debug('[getCookieHeader] Cookie found:', cookie ? 'YES' : 'NO')
   }
-  
+
   return cookie
 }
 ```
@@ -164,16 +164,16 @@ import { getCookieHeader } from '@/lib/api-client'
 export const getDataFn = createServerFn({ method: 'GET' }).handler(
   async (ctx) => {
     const cookieHeader = getCookieHeader(ctx)
-    
+
     const res = await fetch(`${BACKEND_URL}/api/v2/endpoint/`, {
       headers: {
         ...(cookieHeader ? { Cookie: cookieHeader } : {}),
       },
       credentials: 'include',
     })
-    
+
     return await res.json()
-  }
+  },
 )
 ```
 
@@ -194,23 +194,23 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 export const getAcademicYearsFn = createServerFn({ method: 'GET' }).handler(
   async (ctx) => {
     const cookieHeader = getCookieHeader(ctx)
-    
+
     const res = await fetch(`${BACKEND_URL}/api/v1/academic/academic-years/`, {
       headers: cookieHeader ? { Cookie: cookieHeader } : {},
       credentials: 'include',
     })
-    
+
     if (!res.ok) {
       return null
     }
-    
+
     const contentType = res.headers.get('content-type') || ''
     if (!contentType.includes('application/json')) {
       return null
     }
-    
+
     return await res.json()
-  }
+  },
 )
 ```
 
@@ -245,15 +245,15 @@ export const getAcademicYearFn = createServerFn({ method: 'GET' })
   })
   .handler(async ({ data: id, context }) => {
     const cookieHeader = getCookieHeader(context)
-    
+
     const res = await fetch(
       `${BACKEND_URL}/api/v1/academic/academic-years/${id}/`,
       {
         headers: cookieHeader ? { Cookie: cookieHeader } : {},
         credentials: 'include',
-      }
+      },
     )
-    
+
     if (!res.ok) return null
     return await res.json()
   })
@@ -295,24 +295,24 @@ export const createAcademicYearFn = createServerFn({ method: 'POST' })
   })
   .handler(async ({ data, context }) => {
     const cookieHeader = getCookieHeader(context)
-    
+
     // Step 1: Get CSRF token
     const csrfRes = await fetch(`${BACKEND_URL}/api/v2/auth/csrf/`, {
       headers: cookieHeader ? { Cookie: cookieHeader } : {},
       credentials: 'include',
     })
-    
+
     if (!csrfRes.ok) {
       throw new Error('Failed to get CSRF token')
     }
-    
+
     const csrfData = await csrfRes.json()
     const csrfToken = csrfData?.data?.csrf_token
-    
+
     if (!csrfToken) {
       throw new Error('CSRF token not found')
     }
-    
+
     // Step 2: Make mutation request
     const res = await fetch(`${BACKEND_URL}/api/v1/academic/academic-years/`, {
       method: 'POST',
@@ -324,16 +324,16 @@ export const createAcademicYearFn = createServerFn({ method: 'POST' })
       credentials: 'include',
       body: JSON.stringify(data),
     })
-    
+
     const responseData = await res.json()
-    
+
     if (!res.ok) {
       return {
         success: false,
         error: responseData?.message || `Request failed (${res.status})`,
       }
     }
-    
+
     return {
       success: true,
       data: responseData,
@@ -349,7 +349,7 @@ const result = await createAcademicYearFn({
     name: '2024-2025',
     start_date: '2024-09-01',
     end_date: '2025-06-30',
-  }
+  },
 })
 
 if (result.success) {
@@ -372,12 +372,12 @@ if (result.success) {
 ```typescript
 // src/lib/api-mutations.ts
 export async function createAcademicYear(
-  input: AcademicYearInput
+  input: AcademicYearInput,
 ): Promise<MutationResult<AcademicYear>> {
   try {
     // Get CSRF from browser cookies
     const csrfToken = getCsrfTokenFromCookie()
-    
+
     // Call via Vite proxy
     const res = await fetch('/api/v1/academic/academic-years/', {
       method: 'POST',
@@ -388,16 +388,16 @@ export async function createAcademicYear(
       credentials: 'include',
       body: JSON.stringify(input),
     })
-    
+
     const data = await res.json()
-    
+
     if (!res.ok) {
       return {
         success: false,
         error: data?.message || `Request failed (${res.status})`,
       }
     }
-    
+
     return {
       success: true,
       data,
@@ -440,11 +440,11 @@ async function getCsrfToken(cookieHeader?: string): Promise<string> {
     headers: cookieHeader ? { Cookie: cookieHeader } : {},
     credentials: 'include',
   })
-  
+
   if (!res.ok) {
     throw new Error(`Failed to get CSRF token (${res.status})`)
   }
-  
+
   const data = await res.json()
   return data?.data?.csrf_token
 }
@@ -461,27 +461,30 @@ export const createAcademicYearFn = createServerFn({ method: 'POST' })
     try {
       const cookieHeader = getCookieHeader(context)
       const csrfToken = await getCsrfToken(cookieHeader)
-      
-      const res = await fetch(`${BACKEND_URL}/api/v1/academic/academic-years/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken,
-          ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+
+      const res = await fetch(
+        `${BACKEND_URL}/api/v1/academic/academic-years/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+            ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+          },
+          credentials: 'include',
+          body: JSON.stringify(data),
         },
-        credentials: 'include',
-        body: JSON.stringify(data),
-      })
-      
+      )
+
       const responseData = await res.json()
-      
+
       if (!res.ok) {
         return {
           success: false,
           error: responseData?.message || `Request failed (${res.status})`,
         }
       }
-      
+
       return {
         success: true,
         data: responseData,
@@ -534,23 +537,23 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
  */
 export async function getCsrfTokenServerSide(ctx: any): Promise<string> {
   const cookieHeader = getCookieHeader(ctx)
-  
+
   const res = await fetch(`${BACKEND_URL}/api/v2/auth/csrf/`, {
     headers: cookieHeader ? { Cookie: cookieHeader } : {},
     credentials: 'include',
   })
-  
+
   if (!res.ok) {
     throw new Error(`Failed to get CSRF token (${res.status})`)
   }
-  
+
   const data = await res.json()
   const token = data?.data?.csrf_token
-  
+
   if (!token) {
     throw new Error('CSRF token not found in response')
   }
-  
+
   return token
 }
 ```
@@ -578,7 +581,7 @@ interface MutationResult<T = any> {
  */
 export function createMutationFn<TInput, TOutput>(
   endpoint: string,
-  method: 'POST' | 'PATCH' | 'DELETE' = 'POST'
+  method: 'POST' | 'PATCH' | 'DELETE' = 'POST',
 ) {
   return createServerFn({ method: 'POST' })
     .validator((input: unknown) => input as TInput)
@@ -586,7 +589,7 @@ export function createMutationFn<TInput, TOutput>(
       try {
         const cookieHeader = getCookieHeader(context)
         const csrfToken = await getCsrfTokenServerSide(context)
-        
+
         const res = await fetch(`${BACKEND_URL}${endpoint}`, {
           method,
           headers: {
@@ -597,19 +600,18 @@ export function createMutationFn<TInput, TOutput>(
           credentials: 'include',
           body: method !== 'DELETE' ? JSON.stringify(data) : undefined,
         })
-        
-        const responseData = method !== 'DELETE' && res.ok 
-          ? await res.json() 
-          : null
-        
+
+        const responseData =
+          method !== 'DELETE' && res.ok ? await res.json() : null
+
         if (!res.ok) {
-          const errorData = responseData || await res.json().catch(() => ({}))
+          const errorData = responseData || (await res.json().catch(() => ({})))
           return {
             success: false,
             error: errorData?.message || `Request failed (${res.status})`,
           }
         }
-        
+
         return {
           success: true,
           data: responseData,
@@ -630,21 +632,21 @@ export function createMutationFn<TInput, TOutput>(
 import { createMutationFn } from '@/server/mutation-helper'
 import type { AcademicYear, AcademicYearInput } from '@/types/academic'
 
-export const createAcademicYearFn = createMutationFn<AcademicYearInput, AcademicYear>(
-  '/api/v1/academic/academic-years/',
-  'POST'
-)
+export const createAcademicYearFn = createMutationFn<
+  AcademicYearInput,
+  AcademicYear
+>('/api/v1/academic/academic-years/', 'POST')
 
-export const updateAcademicYearFn = (id: string) => 
+export const updateAcademicYearFn = (id: string) =>
   createMutationFn<Partial<AcademicYearInput>, AcademicYear>(
     `/api/v1/academic/academic-years/${id}/`,
-    'PATCH'
+    'PATCH',
   )
 
 export const deleteAcademicYearFn = (id: string) =>
   createMutationFn<void, void>(
     `/api/v1/academic/academic-years/${id}/`,
-    'DELETE'
+    'DELETE',
   )
 ```
 
@@ -669,18 +671,20 @@ const res = await fetch(url)
 
 ```typescript
 // ✅ GOOD - Runtime validation
-export const createItemFn = createServerFn({ method: 'POST' })
-  .validator((input: unknown) => {
+export const createItemFn = createServerFn({ method: 'POST' }).validator(
+  (input: unknown) => {
     const data = input as ItemInput
     if (!data.name) throw new Error('Name required')
     return data
-  })
+  },
+)
 
 // ❌ BAD - No validation, unsafe
-export const createItemFn = createServerFn({ method: 'POST' })
-  .handler(async ({ data }) => {
+export const createItemFn = createServerFn({ method: 'POST' }).handler(
+  async ({ data }) => {
     // data is any, no validation
-  })
+  },
+)
 ```
 
 ### 3. Handle Errors Gracefully
@@ -725,7 +729,10 @@ export const updateFn = () => { success: boolean } // different shape
 
 ```typescript
 if (import.meta.env.DEV) {
-  console.debug('[functionName] Cookie forwarding:', cookieHeader ? 'yes' : 'no')
+  console.debug(
+    '[functionName] Cookie forwarding:',
+    cookieHeader ? 'yes' : 'no',
+  )
   console.debug('[functionName] Response status:', res.status)
 }
 ```

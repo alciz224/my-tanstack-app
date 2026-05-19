@@ -1,39 +1,159 @@
-import type { Cycle, Level, Track, Subject, Period } from './types';
+import type { Cycle, Level, Period, Subject, Track } from './types'
 
-export const mockCycles: Cycle[] = [
-  { id: 'CYC-01', name: 'Préscolaire', duration: '3 ans', status: 'Active' },
-  { id: 'CYC-02', name: 'Primaire', duration: '6 ans', status: 'Active' },
-  { id: 'CYC-03', name: 'Collège', duration: '4 ans', status: 'Active' },
-  { id: 'CYC-04', name: 'Lycée', duration: '3 ans', status: 'Active' },
-];
+// Guinea school system
+export const mockCycles: Array<Cycle> = [
+  { id: 'PRI', name: 'Primaire', duration: '6 ans', status: 'Active' },
+  { id: 'COL', name: 'Collège', duration: '4 ans', status: 'Active' },
+  { id: 'LYC', name: 'Lycée', duration: '3 ans', status: 'Active' },
+]
 
-export const mockLevels: Level[] = [
-  { id: 'LVL-01', cycle_id: 'CYC-02', name: 'Cours Préparatoire 1', code: 'CP1' },
-  { id: 'LVL-02', cycle_id: 'CYC-02', name: 'Cours Préparatoire 2', code: 'CP2' },
-  { id: 'LVL-03', cycle_id: 'CYC-03', name: '7ème Année', code: '7A' },
-  { id: 'LVL-04', cycle_id: 'CYC-03', name: '8ème Année', code: '8A' },
-  { id: 'LVL-05', cycle_id: 'CYC-04', name: '11ème Année', code: '11A' },
-  { id: 'LVL-06', cycle_id: 'CYC-04', name: 'Terminale', code: 'TLE' },
-];
+export const mockLevels: Array<Level> = [
+  // Primaire (1ère à 6ème année)
+  { id: 'level-1', cycle_id: 'PRI', code: '1A', name: '1ère Année', order: 1 },
+  { id: 'level-2', cycle_id: 'PRI', code: '2A', name: '2ème Année', order: 2 },
+  { id: 'level-3', cycle_id: 'PRI', code: '3A', name: '3ème Année', order: 3 },
+  { id: 'level-4', cycle_id: 'PRI', code: '4A', name: '4ème Année', order: 4 },
+  { id: 'level-5', cycle_id: 'PRI', code: '5A', name: '5ème Année', order: 5 },
+  { id: 'level-6', cycle_id: 'PRI', code: '6A', name: '6ème Année', order: 6 },
+  // Collège (7ème à 10ème / 3ème)
+  { id: 'level-7', cycle_id: 'COL', code: '7A', name: '7ème Année', order: 7 },
+  { id: 'level-8', cycle_id: 'COL', code: '8A', name: '8ème Année', order: 8 },
+  { id: 'level-9', cycle_id: 'COL', code: '9A', name: '9ème Année', order: 9 },
+  {
+    id: 'level-10',
+    cycle_id: 'COL',
+    code: '10A',
+    name: '10ème Année',
+    order: 10,
+  },
+  // Lycée (2nde, 1ère, Terminale)
+  { id: 'level-11', cycle_id: 'LYC', code: '2NDE', name: '2nde', order: 11 },
+  { id: 'level-12', cycle_id: 'LYC', code: '1ERE', name: '1ère', order: 12 },
+  {
+    id: 'level-13',
+    cycle_id: 'LYC',
+    code: 'TERM',
+    name: 'Terminale',
+    order: 13,
+  },
+]
 
-export const mockTracks: Track[] = [
-  { id: 'TRK-01', name: 'Sciences Mathématiques', description: 'Profil scientifique axé sur les mathématiques et la physique.', cycle_id: 'CYC-04', status: 'Active' },
-  { id: 'TRK-02', name: 'Sciences Expérimentales', description: 'Profil scientifique axé sur la biologie et la chimie.', cycle_id: 'CYC-04', status: 'Active' },
-  { id: 'TRK-03', name: 'Sciences Sociales', description: 'Profil littéraire et sciences humaines.', cycle_id: 'CYC-04', status: 'Active' },
-  { id: 'TRK-04', name: 'Enseignement Général', description: 'Tronc commun pour le collège.', cycle_id: 'CYC-03', status: 'Active' },
-];
+// Only for Lycée (has_track = true)
+export const mockTracks: Array<Track> = [
+  {
+    id: 'TRK-SM',
+    cycle_id: 'LYC',
+    code: 'SM',
+    name: 'Sciences Mathématiques (SM)',
+    status: 'ACTIVE',
+  },
+  {
+    id: 'TRK-SE',
+    cycle_id: 'LYC',
+    code: 'SE',
+    name: 'Sciences Expérimentales (SE)',
+    status: 'ACTIVE',
+  },
+  {
+    id: 'TRK-SS',
+    cycle_id: 'LYC',
+    code: 'SS',
+    name: 'Sciences Sociales (SS)',
+    status: 'ACTIVE',
+  },
+  {
+    id: 'TRK-TC',
+    cycle_id: 'LYC',
+    code: 'TC',
+    name: 'Technique Commerciale',
+    status: 'ACTIVE',
+  },
+  {
+    id: 'TRK-TI',
+    cycle_id: 'LYC',
+    code: 'TI',
+    name: 'Technique Industrielle',
+    status: 'ACTIVE',
+  },
+]
 
-export const mockSubjects: Subject[] = [
-  { id: 'SUB-01', name: 'Mathématiques', code: 'MATH', coefficient: 5, cycle_ids: ['CYC-03', 'CYC-04'], track_id: 'TRK-01' },
-  { id: 'SUB-02', name: 'Physique-Chimie', code: 'PC', coefficient: 4, cycle_ids: ['CYC-03', 'CYC-04'], track_id: 'TRK-02' },
-  { id: 'SUB-03', name: 'Français', code: 'FR', coefficient: 3, cycle_ids: ['CYC-02', 'CYC-03', 'CYC-04'] },
-  { id: 'SUB-04', name: 'Histoire-Géographie', code: 'HG', coefficient: 3, cycle_ids: ['CYC-03', 'CYC-04'], track_id: 'TRK-03' },
-  { id: 'SUB-05', name: 'Biologie', code: 'BIO', coefficient: 4, cycle_ids: ['CYC-04'], track_id: 'TRK-02' },
-];
+export const mockSubjects: Array<Subject> = [
+  {
+    id: 'sub-1',
+    code: 'MATH',
+    name: 'Mathématiques',
+    description: 'Mathématiques générales',
+  },
+  {
+    id: 'sub-2',
+    code: 'FRAN',
+    name: 'Français',
+    description: 'Langue et littérature françaises',
+  },
+  { id: 'sub-3', code: 'ANG', name: 'Anglais', description: 'Langue anglaise' },
+  {
+    id: 'sub-4',
+    code: 'PHY',
+    name: 'Physique',
+    description: 'Physique-Chimie',
+  },
+  {
+    id: 'sub-5',
+    code: 'SVT',
+    name: 'SVT',
+    description: 'Sciences de la Vie et de la Terre',
+  },
+  {
+    id: 'sub-6',
+    code: 'HG',
+    name: 'Histoire-Géographie',
+    description: 'Histoire et Géographie',
+  },
+  {
+    id: 'sub-7',
+    code: 'PHILO',
+    name: 'Philosophie',
+    description: 'Philosophie',
+  },
+  {
+    id: 'sub-8',
+    code: 'EPS',
+    name: 'Éducation Physique',
+    description: 'Éducation physique et sportive',
+  },
+  {
+    id: 'sub-9',
+    code: 'ECM',
+    name: 'Éducation au Citoyen',
+    description: 'Éducation Civique et Morale',
+  },
+  {
+    id: 'sub-10',
+    code: 'ART',
+    name: 'Arts',
+    description: 'Education artistique',
+  },
+]
 
-export const mockPeriods: Period[] = [
-  { id: 'PER-01', name: '1er Trimestre', type: 'Trimestre', start_date: '2024-10-01', end_date: '2024-12-31', status: 'Active' },
-  { id: 'PER-02', name: '2ème Trimestre', type: 'Trimestre', start_date: '2025-01-01', end_date: '2025-03-31', status: 'Inactive' },
-  { id: 'PER-03', name: '3ème Trimestre', type: 'Trimestre', start_date: '2025-04-01', end_date: '2025-06-30', status: 'Inactive' },
-  { id: 'PER-04', name: '1er Semestre', type: 'Semestre', start_date: '2024-10-01', end_date: '2025-02-28', status: 'Active' },
-];
+export const mockPeriods: Array<Period> = [
+  {
+    id: 'p1',
+    name: 'Trimestre 1',
+    start_date: '2024-09-15',
+    end_date: '2024-12-15',
+  },
+  {
+    id: 'p2',
+    name: 'Trimestre 2',
+    start_date: '2025-01-06',
+    end_date: '2025-03-31',
+  },
+  {
+    id: 'p3',
+    name: 'Trimestre 3',
+    start_date: '2025-04-14',
+    end_date: '2025-06-30',
+  },
+]
+
+export type { Cycle, Level, Track, Subject, Period } from './types'

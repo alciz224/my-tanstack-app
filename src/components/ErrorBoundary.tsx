@@ -1,5 +1,6 @@
-import { Component, type ReactNode, type ErrorInfo } from 'react'
+import { Component } from 'react'
 import { useRouter } from '@tanstack/react-router'
+import type { ErrorInfo, ReactNode } from 'react'
 import { useTranslation } from '@/lib/i18n'
 
 interface ErrorBoundaryProps {
@@ -16,7 +17,10 @@ interface ErrorBoundaryState {
  * Error Boundary component for catching React errors
  * Provides a fallback UI when errors occur
  */
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = { hasError: false, error: null }
@@ -31,7 +35,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (import.meta.env.MODE !== 'production') {
       console.error('ErrorBoundary caught an error:', error, errorInfo)
     }
-    
+
     // In production, you might want to log to an error tracking service
     // logErrorToService(error, errorInfo)
   }
@@ -45,7 +49,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       if (this.props.fallback) {
         return this.props.fallback(this.state.error, this.reset)
       }
-      return <DefaultErrorFallback error={this.state.error} reset={this.reset} />
+      return (
+        <DefaultErrorFallback error={this.state.error} reset={this.reset} />
+      )
     }
 
     return this.props.children
@@ -55,9 +61,15 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 /**
  * Default error fallback UI
  */
-function DefaultErrorFallback({ error, reset }: { error: Error; reset: () => void }) {
+function DefaultErrorFallback({
+  error,
+  reset,
+}: {
+  error: Error
+  reset: () => void
+}) {
   const { t } = useTranslation()
-  
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="w-full max-w-md">
@@ -82,7 +94,7 @@ function DefaultErrorFallback({ error, reset }: { error: Error; reset: () => voi
             <p className="text-muted-foreground mb-4">
               {t('errors.unexpectedError') || 'An unexpected error occurred'}
             </p>
-            
+
             {import.meta.env.MODE !== 'production' && (
               <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-left">
                 <p className="text-sm font-mono text-destructive break-all">
@@ -100,7 +112,7 @@ function DefaultErrorFallback({ error, reset }: { error: Error; reset: () => voi
               {t('actions.tryAgain') || 'Try Again'}
             </button>
             <button
-              onClick={() => window.location.href = '/'}
+              onClick={() => (window.location.href = '/')}
               className="w-full px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
             >
               {t('actions.goHome') || 'Go to Home'}
@@ -116,12 +128,22 @@ function DefaultErrorFallback({ error, reset }: { error: Error; reset: () => voi
  * Auth-specific error fallback
  * Shows when authentication errors occur
  */
-export function AuthErrorFallback({ error, reset }: { error: Error; reset: () => void }) {
+export function AuthErrorFallback({
+  error,
+  reset,
+}: {
+  error: Error
+  reset: () => void
+}) {
   const { t } = useTranslation()
   const router = useRouter()
 
   const handleLoginRedirect = () => {
-    router.navigate({ to: '/login', search: { from: undefined }, replace: true })
+    router.navigate({
+      to: '/login',
+      search: { from: undefined },
+      replace: true,
+    })
   }
 
   return (
@@ -146,9 +168,10 @@ export function AuthErrorFallback({ error, reset }: { error: Error; reset: () =>
               {t('errors.authError') || 'Authentication Error'}
             </h1>
             <p className="text-muted-foreground mb-4">
-              {t('errors.authErrorMessage') || 'Your session may have expired or you may not have permission to access this page.'}
+              {t('errors.authErrorMessage') ||
+                'Your session may have expired or you may not have permission to access this page.'}
             </p>
-            
+
             {import.meta.env.MODE !== 'production' && (
               <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-left">
                 <p className="text-sm font-mono text-destructive break-all">

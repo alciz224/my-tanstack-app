@@ -1,5 +1,12 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { Building2, Users, Calendar, FileText, Settings, TrendingUp } from 'lucide-react'
+import { Link, createFileRoute } from '@tanstack/react-router'
+import {
+  Building2,
+  Calendar,
+  FileText,
+  Settings,
+  TrendingUp,
+  Users,
+} from 'lucide-react'
 
 /**
  * School Admin Portal Home Page
@@ -26,7 +33,8 @@ function SchoolAdminDashboard() {
           </div>
         </div>
         <p className="text-white/80">
-          Gérez votre établissement - Personnel, élèves, emplois du temps et ressources
+          Gérez votre établissement - Personnel, élèves, emplois du temps et
+          ressources
         </p>
       </div>
 
@@ -89,9 +97,10 @@ function SchoolAdminDashboard() {
             description="Statistiques et analyses"
             icon={FileText}
           />
-          <ActionButton
+          <ActionLink
+            to="/school-admin/years"
             title="Configuration école"
-            description="Paramètres de l'établissement"
+            description="Paramètres de l'établissement et années scolaires"
             icon={Settings}
           />
           <ActionButton
@@ -104,13 +113,11 @@ function SchoolAdminDashboard() {
 
       {/* Recent Activity */}
       <div className="bg-card border border-border rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-foreground mb-4">Activité Récente</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-4">
+          Activité Récente
+        </h2>
         <div className="space-y-3">
-          <ActivityItem
-            action="Aucune activité récente"
-            time="—"
-            type="info"
-          />
+          <ActivityItem action="Aucune activité récente" time="—" type="info" />
         </div>
       </div>
     </div>
@@ -129,7 +136,9 @@ function StatCard({ title, value, icon: Icon, color, trend }: StatCardProps) {
   return (
     <div className="bg-card border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}>
+        <div
+          className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}
+        >
           <Icon className="w-6 h-6 text-white" />
         </div>
         <span className="text-sm text-muted-foreground">{trend}</span>
@@ -159,6 +168,32 @@ function ActionButton({ title, description, icon: Icon }: ActionButtonProps) {
         </div>
       </div>
     </button>
+  )
+}
+
+interface ActionLinkProps {
+  to: string
+  title: string
+  description: string
+  icon: React.ComponentType<{ className?: string }>
+}
+
+function ActionLink({ to, title, description, icon: Icon }: ActionLinkProps) {
+  return (
+    <Link
+      to={to}
+      className="p-4 bg-muted hover:bg-muted/80 rounded-lg text-left transition-colors group block"
+    >
+      <div className="flex items-start gap-3">
+        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+          <Icon className="w-5 h-5 text-primary" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-foreground mb-1">{title}</h3>
+          <p className="text-sm text-muted-foreground">{description}</p>
+        </div>
+      </div>
+    </Link>
   )
 }
 

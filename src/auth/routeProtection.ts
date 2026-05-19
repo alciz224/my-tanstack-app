@@ -1,6 +1,6 @@
 /**
  * Improved route protection detection using route metadata instead of hard-coded paths.
- * 
+ *
  * This approach is more maintainable and less error-prone than maintaining a list of paths.
  */
 
@@ -8,10 +8,10 @@ import type { Router } from '@tanstack/react-router'
 
 /**
  * Check if the current route requires authentication by examining the route tree.
- * 
+ *
  * Routes under `/_authed` are considered protected.
  * Public routes: `/`, `/login`, `/logout`, `/unauthorized`, `/demo/*`
- * 
+ *
  * @param router - The router instance
  * @returns true if the current route requires authentication
  */

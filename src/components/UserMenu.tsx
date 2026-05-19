@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { LogOut, User as UserIcon, Shield } from 'lucide-react'
+import { LogOut, Shield, User as UserIcon } from 'lucide-react'
 import type { User } from '@/server/auth'
+import type { UserRole } from '@/types/roles'
 import { useTranslation } from '@/lib/i18n'
 import { PORTAL_LABELS } from '@/types/roles'
-import type { UserRole } from '@/types/roles'
 
 interface UserMenuProps {
   user: User
@@ -81,12 +81,13 @@ export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
                   )}
                   {user.security?.level && (
                     <span
-                      className={`text-xs px-2 py-1 rounded-full ${user.security.level === 'high'
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        user.security.level === 'high'
                           ? 'bg-success/10 text-success border border-success/20'
                           : user.security.level === 'medium'
                             ? 'bg-warning/10 text-warning border border-warning/20'
                             : 'bg-destructive/10 text-destructive border border-destructive/20'
-                        }`}
+                      }`}
                     >
                       {t('user.security')}: {user.security.level}
                     </span>
@@ -98,14 +99,18 @@ export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
             {/* Menu items */}
             <div className="p-2">
               {/* Show current role and available roles count */}
-              {user.role && user.available_roles && user.available_roles.length > 1 && (
-                <div className="px-3 py-2 mb-2">
-                  <div className="text-xs text-muted-foreground mb-1">Portail actuel:</div>
-                  <div className="text-sm font-semibold text-foreground">
-                    {PORTAL_LABELS[user.role as UserRole]?.title || user.role}
+              {user.role &&
+                user.available_roles &&
+                user.available_roles.length > 1 && (
+                  <div className="px-3 py-2 mb-2">
+                    <div className="text-xs text-muted-foreground mb-1">
+                      Portail actuel:
+                    </div>
+                    <div className="text-sm font-semibold text-foreground">
+                      {PORTAL_LABELS[user.role]?.title || user.role}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               <Link
                 to="/dashboard"

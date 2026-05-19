@@ -1,12 +1,12 @@
 /**
  * Mutation Helpers
- * 
+ *
  * Generic factories for creating TanStack Start server functions for mutations.
  * These handle common boilerplate like cookie forwarding and CSRF tokens.
  */
 
 import { createServerFn } from '@tanstack/react-start'
-import { getCookieHeader } from '@/lib/api-client'
+import { getCookies } from '@tanstack/react-start/server'
 import { getCsrfTokenServerSide } from './csrf'
 
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
@@ -20,10 +20,10 @@ export interface MutationResult<T = any> {
 
 /**
  * Create a simple mutation server function
- * 
+ *
  * @param endpoint - The API endpoint relative to BACKEND_URL
  * @param method - HTTP method
- * 
+ *
  * @example
  * ```typescript
  * export const createPostFn = createMutationFn<PostInput, Post>('/api/posts/', 'POST')
@@ -31,18 +31,33 @@ export interface MutationResult<T = any> {
  */
 export function createMutationFn<TInput, TOutput>(
   endpoint: string,
-  method: 'POST' | 'PATCH' | 'DELETE' = 'POST'
+  method: 'POST' | 'PATCH' | 'DELETE' = 'POST',
 ) {
   return createServerFn({ method: 'POST' })
     .inputValidator((input: unknown) => input as TInput)
-    .handler(async ({ data, request }): Promise<MutationResult<TOutput>> => {
+    .handler(async ({ data }) => {
       try {
-        const cookieHeader = getCookieHeader({ request })
+        const cookies = getCookies()
+        const cookieHeader =
+          Object.entries(cookies)
+            .map(([k, v]) => `${k}=${v}`)
+            .join('; ') || undefined
+        const csrfToken = await getCsrfTokenServerSide({
+          headers: {
+            get: (name: string) =>
+              name === 'cookie' ? cookieHeader : undefined,
+          },
+        })
 
         if (import.meta.env.DEV) {
-          console.debug(`[${method} ${endpoint}] Cookie forwarding:`, cookieHeader ? 'yes' : 'no')
+          console.debug(
+            `[${method} ${endpoint}] Cookie forwarding:`,
+            cookieHeader ? 'yes' : 'no',
+          )
           if (!cookieHeader) {
-            console.warn(`[${method} ${endpoint}] Missing cookie header from request`)
+            console.warn(
+              `[${method} ${endpoint}] Missing cookie header from request`,
+            )
           }
         }
 
@@ -50,11 +65,8 @@ export function createMutationFn<TInput, TOutput>(
           return {
             success: false,
             error: 'Missing auth cookies in server function request',
-          }
+          } as any
         }
-
-        // Get CSRF token
-        const csrfToken = await getCsrfTokenServerSide({ request })
 
         // Make mutation request
         const res = await fetch(`${BACKEND_URL}${endpoint}`, {
@@ -95,7 +107,10 @@ export function createMutationFn<TInput, TOutput>(
 
           return {
             success: false,
-            error: responseData?.message || responseData?.detail || `Request failed (${res.status})`,
+            error:
+              responseData?.message ||
+              responseData?.detail ||
+              `Request failed (${res.status})`,
             errorCode: responseData?.error?.code,
           }
         }
@@ -103,7 +118,7 @@ export function createMutationFn<TInput, TOutput>(
         return {
           success: true,
           data: responseData as TOutput,
-        }
+        } as any
       } catch (err: any) {
         if (import.meta.env.DEV) {
           console.error(`[${method} ${endpoint}] Error:`, err)
@@ -112,23 +127,23 @@ export function createMutationFn<TInput, TOutput>(
         return {
           success: false,
           error: err?.message || 'Network error',
-        }
+        } as any
       }
     })
 }
 
 /**
  * Create a parameterized mutation server function
- * 
+ *
  * Use this when the endpoint includes a dynamic parameter (like an ID).
- * 
+ *
  * IMPORTANT: The input type uses `body` (not `data`) for the request payload
  * because TanStack Start reserves the top-level `data` property in the
  * calling convention: `fn({ data: inputValue })`.
- * 
+ *
  * @param getEndpoint - Function that takes the parameter and returns the endpoint
  * @param method - HTTP method
- * 
+ *
  * @example
  * ```typescript
  * export const updateAcademicYearFn = createParameterizedMutationFn<
@@ -138,33 +153,43 @@ export function createMutationFn<TInput, TOutput>(
  *   (params) => `/api/v1/academic/academic-years/${params.id}/`,
  *   'PATCH'
  * )
- * 
+ *
  * // Usage — note the { data: ... } wrapper (TanStack Start convention)
  * const result = await updateAcademicYearFn({
  *   data: { id: '123', body: { name: 'Updated Name' } }
  * })
  * ```
  */
-export function createParameterizedMutationFn<TInput extends { id: string; body?: any }, TOutput>(
+export function createParameterizedMutationFn<
+  TInput extends { id: string; body?: any },
+  TOutput,
+>(
   getEndpoint: (params: TInput) => string,
-  method: 'POST' | 'PATCH' | 'DELETE' = 'POST'
+  method: 'POST' | 'PATCH' | 'DELETE' = 'POST',
 ) {
   return createServerFn({ method: 'POST' })
     .inputValidator((input: unknown) => input as TInput)
-    .handler(async ({ data: input, request }): Promise<MutationResult<TOutput>> => {
+    .handler(async ({ data: input }) => {
       const endpointPrefix = `[${method}]`
       try {
         if (import.meta.env.DEV) {
           console.log(`${endpointPrefix} Handler input:`, JSON.stringify(input))
         }
 
-        const cookieHeader = getCookieHeader({ request })
-        const endpoint = getEndpoint(input)
+        const cookies2 = getCookies()
+        const cookieHeader =
+          Object.entries(cookies2)
+            .map(([k, v]) => `${k}=${v}`)
+            .join('; ') || undefined
+        const endpoint = getEndpoint(input as TInput)
         const requestBody = input.body
 
         if (import.meta.env.DEV) {
           console.log(`${endpointPrefix} Target endpoint: ${endpoint}`)
-          console.debug(`${endpointPrefix} Cookie forwarding:`, cookieHeader ? 'yes' : 'no')
+          console.debug(
+            `${endpointPrefix} Cookie forwarding:`,
+            cookieHeader ? 'yes' : 'no',
+          )
           if (!cookieHeader) {
             console.warn(`${endpointPrefix} Missing cookie header from request`)
           }
@@ -174,11 +199,16 @@ export function createParameterizedMutationFn<TInput extends { id: string; body?
           return {
             success: false,
             error: 'Missing auth cookies in server function request',
-          }
+          } as any
         }
 
         // Get CSRF token
-        const csrfToken = await getCsrfTokenServerSide({ request })
+        const csrfToken = await getCsrfTokenServerSide({
+          headers: {
+            get: (name: string) =>
+              name === 'cookie' ? cookieHeader : undefined,
+          },
+        })
 
         // Make mutation request
         const res = await fetch(`${BACKEND_URL}${endpoint}`, {
@@ -189,7 +219,10 @@ export function createParameterizedMutationFn<TInput extends { id: string; body?
             ...(cookieHeader ? { Cookie: cookieHeader } : {}),
           },
           credentials: 'include',
-          body: method !== 'DELETE' && requestBody != null ? JSON.stringify(requestBody) : undefined,
+          body:
+            method !== 'DELETE' && requestBody != null
+              ? JSON.stringify(requestBody)
+              : undefined,
         })
 
         if (import.meta.env.DEV) {
@@ -219,7 +252,10 @@ export function createParameterizedMutationFn<TInput extends { id: string; body?
 
           return {
             success: false,
-            error: responseData?.message || responseData?.detail || `Request failed (${res.status})`,
+            error:
+              responseData?.message ||
+              responseData?.detail ||
+              `Request failed (${res.status})`,
             errorCode: responseData?.error?.code,
           }
         }
@@ -227,7 +263,7 @@ export function createParameterizedMutationFn<TInput extends { id: string; body?
         return {
           success: true,
           data: responseData as TOutput,
-        }
+        } as any
       } catch (err: any) {
         if (import.meta.env.DEV) {
           console.error(`${endpointPrefix} Mutation handler crash:`, err)
@@ -236,7 +272,7 @@ export function createParameterizedMutationFn<TInput extends { id: string; body?
         return {
           success: false,
           error: err?.message || 'Network error',
-        }
+        } as any
       }
     })
 }

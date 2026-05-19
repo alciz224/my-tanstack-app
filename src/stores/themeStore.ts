@@ -12,7 +12,9 @@ interface ThemeState {
 // Helper to get system theme
 const getSystemTheme = (): 'light' | 'dark' => {
   if (typeof window === 'undefined') return 'light'
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light'
 }
 
 // Helper to resolve theme
@@ -29,7 +31,7 @@ export const useThemeStore = create<ThemeState>()(
       setTheme: (theme: Theme) => {
         const resolved = resolveTheme(theme)
         set({ theme, resolvedTheme: resolved })
-        
+
         // Apply to document
         if (typeof window !== 'undefined') {
           const root = window.document.documentElement
@@ -49,8 +51,8 @@ export const useThemeStore = create<ThemeState>()(
           root.classList.add(resolved)
         }
       },
-    }
-  )
+    },
+  ),
 )
 
 // Initialize theme on client

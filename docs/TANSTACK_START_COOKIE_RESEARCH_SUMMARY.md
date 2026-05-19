@@ -29,7 +29,9 @@
 ## 📚 Documentation Created
 
 ### 1. **SERVER_FUNCTIONS_GUIDE.md** (Comprehensive)
+
 Complete implementation guide covering:
+
 - Cookie forwarding patterns
 - When to use server functions vs client functions
 - Step-by-step migration examples
@@ -37,7 +39,9 @@ Complete implementation guide covering:
 - Testing strategies
 
 ### 2. **COOKIE_FORWARDING_AND_SERVER_FUNCTIONS.md** (This Document)
+
 Executive summary with:
+
 - Quick reference guide
 - Visual flow diagrams
 - Why auth must be client-side
@@ -49,6 +53,7 @@ Executive summary with:
 ## 🛠️ Helper Functions Created
 
 ### 1. **`src/server/csrf.ts`**
+
 Server-side CSRF token fetching with cookie forwarding:
 
 ```typescript
@@ -58,19 +63,22 @@ export async function getCsrfTokenServerSide(ctx: any): Promise<string>
 **Use in:** Server function mutations that need CSRF protection
 
 ### 2. **`src/server/mutation-helper.ts`**
+
 Generic mutation server function factory:
 
 ```typescript
 export function createMutationFn<TInput, TOutput>(
   endpoint: string,
-  method: 'POST' | 'PATCH' | 'DELETE'
+  method: 'POST' | 'PATCH' | 'DELETE',
 )
 ```
 
 **Use for:** Quick creation of type-safe mutation server functions
 
 ### 3. **`src/server/api/academic-mutations.ts`**
+
 Example server function mutations for academic years:
+
 - `createAcademicYearFn`
 - `updateAcademicYearFn`
 - `deleteAcademicYearFn`
@@ -85,14 +93,17 @@ Example server function mutations for academic years:
 ## 🔍 TanStack Start Cookie API Research
 
 ### What We Looked For
+
 - Built-in `getCookie()`, `setCookie()`, `deleteCookie()` functions
 - Cookie management utilities similar to Next.js or Remix
 - Official patterns for external API cookie forwarding
 
 ### What We Found
+
 **TanStack Start v1.157.16 does NOT include built-in cookie helpers.**
 
 Instead, the framework provides:
+
 1. **Request context in server functions** (`ctx.request`)
 2. **Access to request headers** (`ctx.request.headers.get('cookie')`)
 3. **Manual forwarding is developer responsibility**
@@ -103,7 +114,7 @@ Instead, the framework provides:
 createServerFn({ method: 'GET' }).handler(async (ctx) => {
   const request = ctx.request // or ctx?.context?.request
   const cookieHeader = request?.headers.get('cookie')
-  
+
   // Forward to external API
   const res = await fetch(externalAPI, {
     headers: {
@@ -116,11 +127,13 @@ createServerFn({ method: 'GET' }).handler(async (ctx) => {
 ### Why No Built-in Helpers?
 
 TanStack Start focuses on:
+
 - **Server-side rendering** (not full-stack framework)
 - **Minimal abstractions** (you control the fetch)
 - **Framework agnostic** (works with any backend)
 
 Cookie management is left to:
+
 - The browser (client-side)
 - Your backend (Django in our case)
 - Developer implementation (manual forwarding)
@@ -132,11 +145,13 @@ Cookie management is left to:
 ### The Problem: httpOnly Session Cookies
 
 Django uses **httpOnly cookies** for authentication:
+
 ```
 Set-Cookie: sessionid=abc123; HttpOnly; Secure; SameSite=Lax
 ```
 
 These cookies:
+
 - ✅ Are set by Django on login
 - ✅ Are stored by browser automatically
 - ✅ Are auto-sent by browser on requests
@@ -170,6 +185,7 @@ Browser                    Node.js Server              Django
 ```
 
 **What happens:**
+
 1. Server function runs on Node.js server (not in browser)
 2. Django sends `Set-Cookie` header to Node.js server
 3. Node.js server receives the cookie
@@ -205,6 +221,7 @@ Browser                    Vite Proxy                  Django
 ```
 
 **What happens:**
+
 1. `fetch()` runs in browser context
 2. Request goes through Vite proxy to Django
 3. Django validates and sends `Set-Cookie` header
@@ -224,12 +241,12 @@ This is not a limitation—it's the correct architecture for httpOnly cookie man
 
 ### Pattern Matrix
 
-| Operation Type | Use | Example |
-|----------------|-----|---------|
-| **Data Fetching (GET)** | Server Function | `getCurrentUserFn`, `getAcademicYearsFn` |
-| **Auth Mutations** | Client Function | `loginFn`, `logoutFn`, `registerFn` |
-| **Non-Auth Mutations** | Server Function (optional) | `createAcademicYearFn`, `updateAcademicYearFn` |
-| **Background Jobs** | Server Function | Email sending, report generation |
+| Operation Type          | Use                        | Example                                        |
+| ----------------------- | -------------------------- | ---------------------------------------------- |
+| **Data Fetching (GET)** | Server Function            | `getCurrentUserFn`, `getAcademicYearsFn`       |
+| **Auth Mutations**      | Client Function            | `loginFn`, `logoutFn`, `registerFn`            |
+| **Non-Auth Mutations**  | Server Function (optional) | `createAcademicYearFn`, `updateAcademicYearFn` |
+| **Background Jobs**     | Server Function            | Email sending, report generation               |
 
 ### Quick Reference: Server Function Template
 
@@ -243,15 +260,15 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 export const getDataFn = createServerFn({ method: 'GET' }).handler(
   async (ctx) => {
     const cookieHeader = getCookieHeader(ctx)
-    
+
     const res = await fetch(`${BACKEND_URL}/api/v2/endpoint/`, {
       headers: cookieHeader ? { Cookie: cookieHeader } : {},
       credentials: 'include',
     })
-    
+
     if (!res.ok) return null
     return await res.json()
-  }
+  },
 )
 
 // POST: Mutation with CSRF
@@ -262,7 +279,7 @@ export const createDataFn = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     const cookieHeader = getCookieHeader(context)
     const csrfToken = await getCsrfTokenServerSide(context)
-    
+
     const res = await fetch(`${BACKEND_URL}/api/v2/endpoint/`, {
       method: 'POST',
       headers: {
@@ -273,13 +290,13 @@ export const createDataFn = createServerFn({ method: 'POST' })
       credentials: 'include',
       body: JSON.stringify(data),
     })
-    
+
     const responseData = await res.json()
-    
+
     if (!res.ok) {
       return { success: false, error: responseData?.message }
     }
-    
+
     return { success: true, data: responseData }
   })
 ```
@@ -295,7 +312,7 @@ export async function authMutationFn(data: InputData): Promise<AuthResult> {
   })
   const csrfData = await csrfRes.json()
   const csrfToken = csrfData?.data?.csrf_token
-  
+
   // Step 2: Make mutation
   const res = await fetch('/api/v2/auth/endpoint/', {
     method: 'POST',
@@ -306,14 +323,14 @@ export async function authMutationFn(data: InputData): Promise<AuthResult> {
     credentials: 'include',
     body: JSON.stringify(data),
   })
-  
+
   // Browser handles Set-Cookie automatically
   const responseData = await res.json()
-  
+
   if (!res.ok) {
     return { success: false, error: responseData?.message }
   }
-  
+
   return { success: true, user: responseData?.data?.user }
 }
 ```
@@ -361,6 +378,7 @@ export const Route = createFileRoute('/_authed/test')({
 ```
 
 **How to verify:**
+
 1. Clear browser cache
 2. Hard refresh the page (Ctrl+Shift+R)
 3. Check browser DevTools → Network tab
@@ -380,6 +398,7 @@ const result = await loginFn({
 ```
 
 **How to verify:**
+
 1. Open DevTools → Network tab
 2. Submit login form
 3. Find `/api/v2/auth/login/` request
@@ -394,11 +413,12 @@ const result = await loginFn({
 
 ```typescript
 const result = await createAcademicYearFn({
-  data: { name: 'Test Year', start_date: '2024-01-01', end_date: '2024-12-31' }
+  data: { name: 'Test Year', start_date: '2024-01-01', end_date: '2024-12-31' },
 })
 ```
 
 **How to verify:**
+
 1. Check DevTools → Network tab
 2. Look for server function request
 3. Server logs should show CSRF token fetch
@@ -412,23 +432,23 @@ const result = await createAcademicYearFn({
 
 ### Strengths ✅
 
-| Aspect | Implementation | Status |
-|--------|---------------|--------|
+| Aspect            | Implementation                       | Status     |
+| ----------------- | ------------------------------------ | ---------- |
 | SSR data fetching | `getCurrentUserFn` (server function) | ✅ Correct |
-| Cookie forwarding | Manual via `getCookieHeader()` | ✅ Working |
-| Auth mutations | Client-side `fetch()` | ✅ Correct |
-| CSRF handling | Per-request fetch | ✅ Secure |
-| Type safety | TypeScript interfaces | ✅ Good |
-| Error handling | Consistent patterns | ✅ Good |
+| Cookie forwarding | Manual via `getCookieHeader()`       | ✅ Working |
+| Auth mutations    | Client-side `fetch()`                | ✅ Correct |
+| CSRF handling     | Per-request fetch                    | ✅ Secure  |
+| Type safety       | TypeScript interfaces                | ✅ Good    |
+| Error handling    | Consistent patterns                  | ✅ Good    |
 
 ### Opportunities 💡
 
-| Area | Current | Possible Improvement |
-|------|---------|---------------------|
-| Non-auth mutations | Client functions | Migrate to server functions (optional) |
-| CSRF fetching | Duplicate code | Centralized helper (✅ created) |
-| Mutation pattern | Manual implementation | Generic factory (✅ created) |
-| Documentation | Scattered | Comprehensive guides (✅ created) |
+| Area               | Current               | Possible Improvement                   |
+| ------------------ | --------------------- | -------------------------------------- |
+| Non-auth mutations | Client functions      | Migrate to server functions (optional) |
+| CSRF fetching      | Duplicate code        | Centralized helper (✅ created)        |
+| Mutation pattern   | Manual implementation | Generic factory (✅ created)           |
+| Documentation      | Scattered             | Comprehensive guides (✅ created)      |
 
 ### Must NOT Change ⛔
 
@@ -499,10 +519,12 @@ const result = await createAcademicYearFn({
 **TanStack Start does not provide built-in cookie helpers.** Manual cookie forwarding is required when calling external APIs from server functions.
 
 **The current EduVault authentication architecture is correct:**
+
 - Server functions for data fetching (with cookie forwarding)
 - Client functions for auth mutations (browser handles cookies)
 
 **Optional improvements available:**
+
 - Migrate non-auth mutations to server functions
 - Use new helper functions for consistency
 - Follow documented patterns for new features
@@ -516,7 +538,6 @@ const result = await createAcademicYearFn({
 1. **Do you want to migrate non-auth mutations to server functions?**
    - Pros: Type safety, SSR support, unified pattern
    - Cons: More boilerplate, complexity
-   
 2. **Do you want to use the helper functions?**
    - `getCsrfTokenServerSide(ctx)` - simplifies CSRF handling
    - `createMutationFn<Input, Output>()` - reduces boilerplate

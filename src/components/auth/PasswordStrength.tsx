@@ -38,8 +38,12 @@ export function PasswordStrength({
       {/* Strength bar */}
       <div className="space-y-1">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Password strength</span>
-          <span className={`text-xs font-medium capitalize ${textColorClasses[strength.level]}`}>
+          <span className="text-xs text-muted-foreground">
+            Password strength
+          </span>
+          <span
+            className={`text-xs font-medium capitalize ${textColorClasses[strength.level]}`}
+          >
             {strength.level}
           </span>
         </div>
@@ -84,7 +88,11 @@ interface RequirementItemProps {
   optional?: boolean
 }
 
-function RequirementItem({ met, text, optional = false }: RequirementItemProps) {
+function RequirementItem({
+  met,
+  text,
+  optional = false,
+}: RequirementItemProps) {
   return (
     <div className="flex items-center gap-2 text-xs">
       {met ? (

@@ -1,12 +1,12 @@
 /**
  * API Client Utilities
- * 
+ *
  * Base fetch wrapper for all API requests with:
  * - Cookie forwarding for SSR (server functions)
  * - CSRF token handling for mutations
  * - Typed responses
  * - Consistent error handling
- * 
+ *
  * USAGE PATTERNS:
  * - Server functions (SSR): Use `serverFetch` with cookie forwarding
  * - Client-side: Use `clientFetch` (goes through Vite proxy)
@@ -23,28 +23,31 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 /**
  * Extract cookie header from server function context
  * Pattern used across all TanStack Start server functions
- * 
+ *
  * Handles both handler patterns:
  * - Simple: handler(async (ctx) => ...) - ctx.request
  * - With validator: handler(async ({ data, context }) => ...) - context.request
  */
 export function getCookieHeader(ctx: any): string | undefined {
   // Try multiple possible locations for the request object
-  const req = ctx?.request || (ctx as any)?.context?.request || ctx
-  
+  const req = ctx?.request || ctx?.context?.request || ctx
+
   if (!req?.headers?.get) {
     if (import.meta.env.DEV) {
-      console.warn('[getCookieHeader] No headers.get method found in context:', Object.keys(ctx || {}))
+      console.warn(
+        '[getCookieHeader] No headers.get method found in context:',
+        Object.keys(ctx || {}),
+      )
     }
     return undefined
   }
-  
+
   const cookie = req.headers.get('cookie') || undefined
-  
+
   if (import.meta.env.DEV) {
     console.debug('[getCookieHeader] Cookie found:', cookie ? 'YES' : 'NO')
   }
-  
+
   return cookie
 }
 
@@ -52,9 +55,11 @@ export function getCookieHeader(ctx: any): string | undefined {
  * Get CSRF token from cookie header (server-side)
  * Reads the csrftoken cookie set by Django
  */
-export function getCsrfTokenFromCookie(cookieHeader?: string): string | undefined {
+export function getCsrfTokenFromCookie(
+  cookieHeader?: string,
+): string | undefined {
   if (!cookieHeader) return undefined
-  
+
   const match = cookieHeader.match(/csrftoken=([^;]+)/)
   return match?.[1]
 }
@@ -85,7 +90,7 @@ export async function fetchCsrfToken(): Promise<string> {
 /**
  * Server-side fetch wrapper with cookie forwarding
  * Use this in createServerFn handlers for SSR data fetching
- * 
+ *
  * @example
  * export const getDataFn = createServerFn({ method: 'GET' }).handler(
  *   async (ctx) => {
@@ -96,7 +101,7 @@ export async function fetchCsrfToken(): Promise<string> {
 export async function serverFetch<T>(
   endpoint: string,
   ctx?: any,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T | null> {
   try {
     // Extract cookies from SSR context
@@ -145,15 +150,15 @@ export async function serverFetch<T>(
 
     // Parse API response
     const responseData = await res.json()
-    
+
     if (import.meta.env.DEV) {
       console.debug('[serverFetch] Parsed data:', responseData)
     }
-    
+
     // Handle two response formats:
     // 1. Custom ApiResponse wrapper: { success: true, data: {...} }
     // 2. Direct Django REST response: { count, results, ... } or plain object
-    
+
     // Check if it's wrapped in ApiResponse format
     if ('success' in responseData && 'data' in responseData) {
       const data = responseData as ApiResponse<T>
@@ -165,7 +170,7 @@ export async function serverFetch<T>(
       }
       return data.data
     }
-    
+
     // Otherwise, return the response directly (DRF paginated or plain object)
     return responseData as T
   } catch (err) {
@@ -179,7 +184,7 @@ export async function serverFetch<T>(
 /**
  * Server-side mutation wrapper with cookie forwarding + CSRF
  * Use this in createServerFn({ method: 'POST' }) handlers
- * 
+ *
  * @example
  * export const createItemFn = createServerFn({ method: 'POST' })
  *   .inputValidator((data: CreateItemInput) => data)
@@ -193,15 +198,22 @@ export async function serverFetch<T>(
 export async function serverMutate<T>(
   endpoint: string,
   ctx?: any,
-  options: RequestInit = {}
-): Promise<{ success: true; data: T } | { success: false; error: string; errorCode?: string }> {
+  options: RequestInit = {},
+): Promise<
+  | { success: true; data: T }
+  | { success: false; error: string; errorCode?: string }
+> {
   try {
     // Extract cookies from SSR context
     const cookieHeader = getCookieHeader(ctx)
     const csrfToken = getCsrfTokenFromCookie(cookieHeader)
 
     if (import.meta.env.DEV) {
-      console.debug('[serverMutate] Request:', endpoint, options.method || 'POST')
+      console.debug(
+        '[serverMutate] Request:',
+        endpoint,
+        options.method || 'POST',
+      )
     }
 
     // Build headers with cookie + CSRF
@@ -228,7 +240,7 @@ export async function serverMutate<T>(
     // Parse response
     let responseData: any = null
     const contentType = res.headers.get('content-type') || ''
-    
+
     if (contentType.includes('application/json')) {
       try {
         responseData = await res.json()
@@ -238,15 +250,28 @@ export async function serverMutate<T>(
     }
 
     if (import.meta.env.DEV) {
-      console.debug('[serverMutate] Response:', endpoint, res.status, responseData)
+      console.debug(
+        '[serverMutate] Response:',
+        endpoint,
+        res.status,
+        responseData,
+      )
     }
 
     if (!res.ok) {
-      const errorMsg = responseData?.message || responseData?.detail || `Request failed (${res.status})`
+      const errorMsg =
+        responseData?.message ||
+        responseData?.detail ||
+        `Request failed (${res.status})`
       const errorCode = responseData?.error?.code
 
       if (import.meta.env.DEV) {
-        console.error('[serverMutate] HTTP error:', endpoint, res.status, errorMsg)
+        console.error(
+          '[serverMutate] HTTP error:',
+          endpoint,
+          res.status,
+          errorMsg,
+        )
       }
 
       return {
@@ -259,7 +284,7 @@ export async function serverMutate<T>(
     // Handle two response formats:
     // 1. Custom ApiResponse wrapper: { success: true, data: {...} }
     // 2. Direct Django REST response: plain object or created item
-    
+
     if (responseData && 'success' in responseData && 'data' in responseData) {
       // ApiResponse wrapper format
       if (!responseData.success || !responseData.data) {
@@ -273,7 +298,7 @@ export async function serverMutate<T>(
         data: responseData.data,
       }
     }
-    
+
     // Direct DRF response - return as-is
     return {
       success: true,
@@ -295,13 +320,13 @@ export async function serverMutate<T>(
  * Client-side fetch wrapper (uses Vite proxy)
  * Use this in React components for client-side data fetching
  * Browser automatically includes cookies via credentials: 'include'
- * 
+ *
  * @example
  * const data = await clientFetch<MyType>('/api/v1/endpoint/')
  */
 export async function clientFetch<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T | null> {
   try {
     const res = await fetch(endpoint, {
@@ -337,7 +362,7 @@ export async function clientFetch<T>(
 /**
  * Client-side mutation wrapper with CSRF token
  * Use this in React components for mutations
- * 
+ *
  * @example
  * const result = await clientMutate<Item>('/api/v1/items/', {
  *   method: 'POST',
@@ -346,8 +371,11 @@ export async function clientFetch<T>(
  */
 export async function clientMutate<T>(
   endpoint: string,
-  options: RequestInit = {}
-): Promise<{ success: true; data: T } | { success: false; error: string; errorCode?: string }> {
+  options: RequestInit = {},
+): Promise<
+  | { success: true; data: T }
+  | { success: false; error: string; errorCode?: string }
+> {
   try {
     // Get CSRF token first
     const csrfToken = await fetchCsrfToken()
@@ -366,7 +394,7 @@ export async function clientMutate<T>(
 
     let responseData: ApiResponse<T> | null = null
     const contentType = res.headers.get('content-type') || ''
-    
+
     if (contentType.includes('application/json')) {
       try {
         responseData = await res.json()
@@ -380,7 +408,12 @@ export async function clientMutate<T>(
       const errorCode = responseData?.error?.code
 
       if (import.meta.env.DEV) {
-        console.error('[clientMutate] HTTP error:', endpoint, res.status, errorMsg)
+        console.error(
+          '[clientMutate] HTTP error:',
+          endpoint,
+          res.status,
+          errorMsg,
+        )
       }
 
       return {

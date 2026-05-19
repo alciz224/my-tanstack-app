@@ -1,5 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { BookOpen, Users, Calendar, FileText, ClipboardCheck, TrendingUp } from 'lucide-react'
+import {
+  BookOpen,
+  Calendar,
+  ClipboardCheck,
+  FileText,
+  TrendingUp,
+  Users,
+} from 'lucide-react'
 
 /**
  * Teacher Portal Home Page
@@ -26,7 +33,8 @@ function TeacherDashboard() {
           </div>
         </div>
         <p className="text-white/80">
-          Gérez vos classes et évaluations - Emploi du temps, devoirs et suivi des élèves
+          Gérez vos classes et évaluations - Emploi du temps, devoirs et suivi
+          des élèves
         </p>
       </div>
 
@@ -117,7 +125,9 @@ function TeacherDashboard() {
 
       {/* Recent Activity */}
       <div className="bg-card border border-border rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-foreground mb-4">Activité Récente</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-4">
+          Activité Récente
+        </h2>
         <div className="space-y-3">
           <div className="p-4 bg-muted/50 rounded-lg text-center text-muted-foreground">
             Aucune activité récente.
@@ -140,7 +150,9 @@ function StatCard({ title, value, icon: Icon, color, trend }: StatCardProps) {
   return (
     <div className="bg-card border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}>
+        <div
+          className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}
+        >
           <Icon className="w-6 h-6 text-white" />
         </div>
         <span className="text-sm text-muted-foreground">{trend}</span>

@@ -1,15 +1,15 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import {
-  Smartphone,
-  MessageSquare,
-  FileText,
-  PieChart,
-  Zap,
-  Headphones,
   ArrowRight,
-  TrendingUp,
+  FileText,
+  Headphones,
+  MessageSquare,
+  PieChart,
   School,
-  Users
+  Smartphone,
+  TrendingUp,
+  Users,
+  Zap,
 } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n'
 import { LandingNavbar } from '@/components/LandingNavbar'
@@ -57,17 +57,17 @@ function HomePage() {
     {
       label: t('home.stats.schools'),
       value: t('home.stats.schoolsValue'),
-      icon: <School className="w-6 h-6 text-primary" />
+      icon: <School className="w-6 h-6 text-primary" />,
     },
     {
       label: t('home.stats.students'),
       value: t('home.stats.studentsValue'),
-      icon: <Users className="w-6 h-6 text-primary" />
+      icon: <Users className="w-6 h-6 text-primary" />,
     },
     {
       label: t('home.stats.efficiency'),
       value: t('home.stats.efficiencyValue'),
-      icon: <TrendingUp className="w-6 h-6 text-primary" />
+      icon: <TrendingUp className="w-6 h-6 text-primary" />,
     },
   ]
 
@@ -86,7 +86,7 @@ function HomePage() {
         <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 px-6 overflow-hidden">
           {/* Animated gradient background */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 animate-gradient" />
-          
+
           {/* Floating orbs for depth */}
           <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse-glow" />
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse-glow delay-300" />
@@ -155,16 +155,20 @@ function HomePage() {
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {stats.map((stat, idx) => (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className="flex flex-col items-center justify-center p-6 text-center group animate-fade-in-up"
                   style={{ animationDelay: `${idx * 0.1}s` }}
                 >
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
                     {stat.icon}
                   </div>
-                  <span className="text-4xl font-black text-foreground mb-2 group-hover:text-primary transition-colors">{stat.value}</span>
-                  <span className="text-muted-foreground font-medium">{stat.label}</span>
+                  <span className="text-4xl font-black text-foreground mb-2 group-hover:text-primary transition-colors">
+                    {stat.value}
+                  </span>
+                  <span className="text-muted-foreground font-medium">
+                    {stat.label}
+                  </span>
                 </div>
               ))}
             </div>
@@ -223,15 +227,17 @@ function HomePage() {
               <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent -z-0" />
 
               {steps.map((step, idx) => (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className="relative z-10 flex flex-col items-center text-center group animate-fade-in-up"
                   style={{ animationDelay: `${idx * 0.15}s` }}
                 >
                   <div className="w-24 h-24 rounded-2xl bg-card border-2 border-border shadow-sm flex items-center justify-center mb-6 text-2xl font-bold text-primary group-hover:border-primary/50 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
                     {idx + 1}
                   </div>
-                  <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">{step.title}</h3>
+                  <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">
+                    {step.title}
+                  </h3>
                   <p className="text-muted-foreground max-w-xs">{step.desc}</p>
                 </div>
               ))}
@@ -243,10 +249,10 @@ function HomePage() {
         <section className="py-24 px-6">
           <div className="max-w-4xl mx-auto bg-gradient-to-br from-primary/5 to-secondary/5 rounded-3xl p-10 md:p-16 border border-primary/10 text-center animate-fade-in-up hover-lift">
             <div className="mb-8 flex justify-center text-primary gap-1">
-              {[1, 2, 3, 4, 5].map(i => (
-                <Zap 
-                  key={i} 
-                  className="w-5 h-5 fill-current animate-fade-in" 
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Zap
+                  key={i}
+                  className="w-5 h-5 fill-current animate-fade-in"
                   style={{ animationDelay: `${i * 0.1}s` }}
                 />
               ))}
@@ -255,8 +261,12 @@ function HomePage() {
               {t('home.testimonial1')}
             </blockquote>
             <cite className="not-italic flex flex-col items-center">
-              <span className="font-bold text-lg text-foreground">{t('home.testimonial1Author')}</span>
-              <span className="text-muted-foreground">{t('home.testimonial1Role')}</span>
+              <span className="font-bold text-lg text-foreground">
+                {t('home.testimonial1Author')}
+              </span>
+              <span className="text-muted-foreground">
+                {t('home.testimonial1Role')}
+              </span>
             </cite>
           </div>
         </section>
@@ -268,9 +278,9 @@ function HomePage() {
           </div>
 
           <div className="space-y-6">
-            {[1, 2].map(i => (
-              <div 
-                key={i} 
+            {[1, 2].map((i) => (
+              <div
+                key={i}
                 className="bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-primary/30 transition-all duration-300 hover-lift animate-fade-in-up cursor-pointer"
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
@@ -291,7 +301,7 @@ function HomePage() {
           {/* Animated background orbs */}
           <div className="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse-glow" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse-glow delay-300" />
-          
+
           <div className="relative max-w-4xl mx-auto text-center text-primary-foreground">
             <h2 className="text-3xl md:text-5xl font-black mb-8 tracking-tight animate-fade-in-up">
               Prêt à transformer votre établissement ?
@@ -304,7 +314,7 @@ function HomePage() {
               search={{ from: undefined }}
               className="group inline-flex items-center gap-2 bg-background text-foreground px-8 py-4 rounded-xl font-bold hover:bg-background/90 transition-all text-lg shadow-2xl hover:shadow-3xl btn-shine hover-lift animate-fade-in-up delay-200"
             >
-              Créer un compte maintenant 
+              Créer un compte maintenant
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>

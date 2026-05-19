@@ -1,6 +1,6 @@
 /**
  * Centralized Role Type Definitions
- * 
+ *
  * This module defines all user roles, portal routes, and role metadata
  * used throughout the EduVault application.
  */
@@ -20,7 +20,7 @@ export const USER_ROLES = [
 /**
  * User role type - derived from USER_ROLES array
  */
-export type UserRole = typeof USER_ROLES[number]
+export type UserRole = (typeof USER_ROLES)[number]
 
 /**
  * Portal route paths for each role
@@ -39,7 +39,10 @@ export const PORTAL_ROUTES: Record<UserRole, string> = {
  * Portal metadata for each role
  * Used in the portal selection UI
  */
-export const PORTAL_LABELS: Record<UserRole, { title: string; description: string }> = {
+export const PORTAL_LABELS: Record<
+  UserRole,
+  { title: string; description: string }
+> = {
   student: {
     title: 'Portail Étudiant',
     description: 'Accédez à vos cours, notes et devoirs',

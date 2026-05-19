@@ -1,5 +1,13 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { Shield, Users, Database, Activity, Settings, BarChart, BookOpen } from 'lucide-react'
+import { Link, createFileRoute } from '@tanstack/react-router'
+import {
+  Activity,
+  BarChart,
+  BookOpen,
+  Database,
+  Settings,
+  Shield,
+  Users,
+} from 'lucide-react'
 
 /**
  * Super Admin Portal Home Page
@@ -26,7 +34,8 @@ function SuperAdminDashboard() {
           </div>
         </div>
         <p className="text-white/80">
-          Gestion complète de la plateforme EduVault - Accès à tous les systèmes et données
+          Gestion complète de la plateforme EduVault - Accès à tous les systèmes
+          et données
         </p>
       </div>
 
@@ -110,12 +119,30 @@ function SuperAdminDashboard() {
 
       {/* System Status */}
       <div className="bg-card border border-border rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-foreground mb-4">État du Système</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-4">
+          État du Système
+        </h2>
         <div className="space-y-3">
-          <StatusRow label="Base de données" status="Opérationnel" variant="success" />
-          <StatusRow label="API Backend" status="Opérationnel" variant="success" />
-          <StatusRow label="Services de cache" status="Opérationnel" variant="success" />
-          <StatusRow label="Système de fichiers" status="Opérationnel" variant="success" />
+          <StatusRow
+            label="Base de données"
+            status="Opérationnel"
+            variant="success"
+          />
+          <StatusRow
+            label="API Backend"
+            status="Opérationnel"
+            variant="success"
+          />
+          <StatusRow
+            label="Services de cache"
+            status="Opérationnel"
+            variant="success"
+          />
+          <StatusRow
+            label="Système de fichiers"
+            status="Opérationnel"
+            variant="success"
+          />
         </div>
       </div>
     </div>
@@ -134,7 +161,9 @@ function StatCard({ title, value, icon: Icon, color, trend }: StatCardProps) {
   return (
     <div className="bg-card border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}>
+        <div
+          className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}
+        >
           <Icon className="w-6 h-6 text-white" />
         </div>
         <span className="text-sm text-muted-foreground">{trend}</span>
@@ -209,7 +238,9 @@ function StatusRow({ label, status, variant }: StatusRowProps) {
   return (
     <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
       <span className="text-foreground font-medium">{label}</span>
-      <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide border ${colors[variant]}`}>
+      <span
+        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide border ${colors[variant]}`}
+      >
         {status}
       </span>
     </div>

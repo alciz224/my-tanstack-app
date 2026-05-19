@@ -75,7 +75,9 @@ export default function Header() {
               className="flex items-center gap-2 hover:opacity-80 transition-opacity lg:hidden"
             >
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md">
-                <span className="text-base font-black text-primary-foreground">EV</span>
+                <span className="text-base font-black text-primary-foreground">
+                  EV
+                </span>
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
                 EduVault
@@ -89,7 +91,10 @@ export default function Header() {
             <ThemeToggle />
 
             {displayedUser ? (
-              <UserMenu user={displayedUser} isAuthRefreshing={isAuthRefreshing} />
+              <UserMenu
+                user={displayedUser}
+                isAuthRefreshing={isAuthRefreshing}
+              />
             ) : (
               <Link
                 to="/login"

@@ -6,14 +6,14 @@ Request:
     refresh: string
 
 Response Success (200):
-  { "success": true, "message": "Token rafraîchi", "data": {
-        "access": "eyJ...",
-        "refresh": "eyJ...", # Nouveau refresh (rotation)
+  { 'success': true, 'message': 'Token rafraîchi', 'data': {
+        'access': 'eyJ...',
+        'refresh': 'eyJ...', # Nouveau refresh (rotation)
       } }
 
 Response Error (401):
   {
-    "success": false,
-    "message": "Token invalide ou expiré",
-    "error": { "code": "AUTH_TOKEN_INVALID", "details": null },
+    'success': false,
+    'message': 'Token invalide ou expiré',
+    'error': { 'code': 'AUTH_TOKEN_INVALID', 'details': null },
   }

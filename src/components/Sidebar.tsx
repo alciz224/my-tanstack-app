@@ -38,7 +38,9 @@ export function Sidebar({ user }: SidebarProps) {
       <div className="p-4 border-t border-border">
         {user ? (
           <div className="text-xs text-muted-foreground">
-            <div className="font-semibold text-foreground truncate">{user.full_name}</div>
+            <div className="font-semibold text-foreground truncate">
+              {user.full_name}
+            </div>
             <div className="truncate">{user.email}</div>
           </div>
         ) : (

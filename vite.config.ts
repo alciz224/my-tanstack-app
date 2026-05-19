@@ -50,7 +50,10 @@ const config = defineConfig({
 
                 // Make sure SameSite is Lax
                 if (/;\s*SameSite=/i.test(rewritten)) {
-                  rewritten = rewritten.replace(/;\s*SameSite=[^;]+/gi, '; SameSite=Lax')
+                  rewritten = rewritten.replace(
+                    /;\s*SameSite=[^;]+/gi,
+                    '; SameSite=Lax',
+                  )
                 } else {
                   rewritten += '; SameSite=Lax'
                 }

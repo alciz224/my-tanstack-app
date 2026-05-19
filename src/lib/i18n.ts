@@ -3,7 +3,8 @@
  * No external dependencies, lightweight
  */
 
-import { useLanguageStore, type Language } from '@/stores/languageStore'
+import type { Language } from '@/stores/languageStore'
+import { useLanguageStore } from '@/stores/languageStore'
 
 const translations = {
   en: {
@@ -39,6 +40,7 @@ const translations = {
       sectionStudent: 'Student',
       sectionParent: 'Parent',
       schools: 'Schools',
+      schoolYears: 'School Years',
       users: 'Users',
       configuration: 'Settings',
       reports: 'Reports',
@@ -51,6 +53,8 @@ const translations = {
       students: 'Students',
       parentsTutors: 'Parents/Tutors',
       classes: 'Classes',
+      schedule: 'Schedule',
+      assessments: 'Assessments',
       finance: 'Finance',
       myClasses: 'My Classes',
       attendance: 'Attendance',
@@ -102,7 +106,8 @@ const translations = {
       loginSuccess: 'Welcome back!',
       loginSuccessMessage: 'You have successfully logged in.',
       registerSuccess: 'Account created!',
-      registerSuccessMessage: 'Welcome to EduVault! Your account has been created successfully.',
+      registerSuccessMessage:
+        'Welcome to EduVault! Your account has been created successfully.',
       logoutSuccess: 'Logged out',
       logoutSuccessMessage: 'You have been logged out successfully.',
     },
@@ -113,7 +118,8 @@ const translations = {
       network: 'Network error. Please try again.',
       invalidCredentials: 'Incorrect identifier or password.',
       accountLocked: 'Account Locked',
-      accountLockedMessage: 'Account temporarily locked. Please contact support or try again later.',
+      accountLockedMessage:
+        'Account temporarily locked. Please contact support or try again later.',
       rateLimited: 'Rate Limited',
       rateLimitMessage: 'Too many attempts. Try again in {seconds} seconds.',
       tryAgainIn: 'Try again in {seconds}s',
@@ -135,7 +141,8 @@ const translations = {
     // Home page
     home: {
       heroTitle: 'The #1 School Management Solution in Guinea',
-      heroSubtitle: 'Simplify administration, secure payments (Orange/MTN), and engage parents. A reliable platform designed for our schools.',
+      heroSubtitle:
+        'Simplify administration, secure payments (Orange/MTN), and engage parents. A reliable platform designed for our schools.',
       getStarted: 'Get Started',
       signUpFree: 'Sign Up Free',
       features: 'Why Choose EduVault?',
@@ -143,19 +150,23 @@ const translations = {
 
       // Feature 1: Mobile Money
       payments: 'Mobile Payments',
-      paymentsDesc: 'Automated tuition collection via Orange Money & MTN MoMo with instant receipts.',
+      paymentsDesc:
+        'Automated tuition collection via Orange Money & MTN MoMo with instant receipts.',
 
       // Feature 2: SMS/WhatsApp
       communication: 'Parent Tracking',
-      communicationDesc: 'Automatic SMS & WhatsApp alerts for grades, absences, and school announcements.',
+      communicationDesc:
+        'Automatic SMS & WhatsApp alerts for grades, absences, and school announcements.',
 
       // Feature 3: Academic
       academic: 'Smart Reporting',
-      academicDesc: 'Generate report cards and transcripts compliant with Ministry standards in one click.',
+      academicDesc:
+        'Generate report cards and transcripts compliant with Ministry standards in one click.',
 
       // Feature 4: Finance
       finance: 'Financial Control',
-      financeDesc: 'Real-time cash flow tracking, expense management, and digital receipts.',
+      financeDesc:
+        'Real-time cash flow tracking, expense management, and digital receipts.',
 
       // Feature 5: Offline/Reliable
       reliability: 'Fast & Reliable',
@@ -182,14 +193,17 @@ const translations = {
         step1: 'Create Account',
         step1Desc: 'Sign up in 2 minutes. No credit card required.',
         step2: 'Import Data',
-        step2Desc: 'Easily upload your students, classes, and teachers via Excel.',
+        step2Desc:
+          'Easily upload your students, classes, and teachers via Excel.',
         step3: 'Go Live',
-        step3Desc: 'Start managing grades, payments, and communication immediately.',
+        step3Desc:
+          'Start managing grades, payments, and communication immediately.',
       },
 
       // Testimonials
       testimonials: 'What Principals Say',
-      testimonial1: '"EduVault has completely transformed how we manage tuition payments. Parents love the Mobile Money integration!"',
+      testimonial1:
+        '"EduVault has completely transformed how we manage tuition payments. Parents love the Mobile Money integration!"',
       testimonial1Author: 'Mamadou Diallo',
       testimonial1Role: 'Principal, Lycée de Kipé',
 
@@ -280,6 +294,7 @@ const translations = {
       sectionStudent: 'Étudiant',
       sectionParent: 'Parent',
       schools: 'Écoles',
+      schoolYears: 'Années scolaires',
       users: 'Utilisateurs',
       configuration: 'Configuration',
       reports: 'Rapports',
@@ -288,10 +303,12 @@ const translations = {
       levels: 'Niveaux',
       subjects: 'Matières',
       periods: 'Périodes',
-      staff: 'Personnel',
+      staff: 'Enseignants',
       students: 'Élèves',
       parentsTutors: 'Parents/Tuteurs',
       classes: 'Classes',
+      schedule: 'Emploi du temps',
+      assessments: 'Évaluations',
       finance: 'Finances',
       myClasses: 'Mes classes',
       attendance: 'Présence',
@@ -343,7 +360,8 @@ const translations = {
       loginSuccess: 'Bon retour!',
       loginSuccessMessage: 'Vous vous êtes connecté avec succès.',
       registerSuccess: 'Compte créé!',
-      registerSuccessMessage: 'Bienvenue sur EduVault! Votre compte a été créé avec succès.',
+      registerSuccessMessage:
+        'Bienvenue sur EduVault! Votre compte a été créé avec succès.',
       logoutSuccess: 'Déconnecté',
       logoutSuccessMessage: 'Vous avez été déconnecté avec succès.',
     },
@@ -354,9 +372,11 @@ const translations = {
       network: 'Erreur réseau. Veuillez réessayer.',
       invalidCredentials: 'Identifiant ou mot de passe incorrect.',
       accountLocked: 'Compte Verrouillé',
-      accountLockedMessage: 'Compte temporairement verrouillé. Veuillez contacter le support ou réessayer plus tard.',
+      accountLockedMessage:
+        'Compte temporairement verrouillé. Veuillez contacter le support ou réessayer plus tard.',
       rateLimited: 'Limite Atteinte',
-      rateLimitMessage: 'Trop de tentatives. Réessayez dans {seconds} secondes.',
+      rateLimitMessage:
+        'Trop de tentatives. Réessayez dans {seconds} secondes.',
       tryAgainIn: 'Réessayez dans {seconds}s',
       fixFields: 'Veuillez corriger les champs surlignés.',
       contactSupport: 'Contacter le Support',
@@ -367,44 +387,52 @@ const translations = {
       passwordMismatch: 'Les mots de passe ne correspondent pas',
       termsRequired: 'Vous devez accepter les Conditions pour continuer',
       logoutFailed: 'Échec de la Déconnexion',
-      somethingWentWrong: 'Quelque chose s\'est mal passé',
-      unexpectedError: 'Une erreur inattendue s\'est produite',
-      authError: 'Erreur d\'Authentification',
+      somethingWentWrong: "Quelque chose s'est mal passé",
+      unexpectedError: "Une erreur inattendue s'est produite",
+      authError: "Erreur d'Authentification",
       authErrorMessage: 'Votre session a expiré. Veuillez vous reconnecter.',
     },
 
     // Home page
     home: {
       heroTitle: 'La Solution de Gestion Scolaire N°1 en Guinée',
-      heroSubtitle: 'Simplifiez la gestion administrative, sécurisez les paiements (Orange/MTN) et impliquez les parents. Une plateforme fiable, conçue pour nos écoles.',
+      heroSubtitle:
+        'Simplifiez la gestion administrative, sécurisez les paiements (Orange/MTN) et impliquez les parents. Une plateforme fiable, conçue pour nos écoles.',
       getStarted: 'Commencer',
       signUpFree: 'Essai Gratuit',
       features: 'Pourquoi Choisir EduVault ?',
-      featuresSubtitle: 'Tout ce dont vous avez besoin pour moderniser votre école.',
+      featuresSubtitle:
+        'Tout ce dont vous avez besoin pour moderniser votre école.',
 
       // Feature 1: Mobile Money
       payments: 'Paiements Mobiles',
-      paymentsDesc: 'Encaissement automatique des frais via Orange Money & MTN MoMo avec reçus instantanés.',
+      paymentsDesc:
+        'Encaissement automatique des frais via Orange Money & MTN MoMo avec reçus instantanés.',
 
       // Feature 2: SMS/WhatsApp
       communication: 'Suivi Parentale',
-      communicationDesc: 'Alertes SMS & WhatsApp automatiques pour les notes, absences et annonces.',
+      communicationDesc:
+        'Alertes SMS & WhatsApp automatiques pour les notes, absences et annonces.',
 
       // Feature 3: Academic
       academic: 'Bulletins Automatisés',
-      academicDesc: 'Génération de bulletins et relevés conformes aux normes du Ministère en un clic.',
+      academicDesc:
+        'Génération de bulletins et relevés conformes aux normes du Ministère en un clic.',
 
       // Feature 4: Finance
       finance: 'Contrôle Financier',
-      financeDesc: 'Suivi de trésorerie en temps réel, gestion des dépenses et reçus numériques.',
+      financeDesc:
+        'Suivi de trésorerie en temps réel, gestion des dépenses et reçus numériques.',
 
       // Feature 5: Offline/Reliable
       reliability: 'Connexion Optimisée',
-      reliabilityDesc: 'Fonctionne de manière fluide même avec une connexion internet lente.',
+      reliabilityDesc:
+        'Fonctionne de manière fluide même avec une connexion internet lente.',
 
       // Feature 6: Support
       support: 'Support Local 7/7',
-      supportDesc: 'Une équipe de support dédiée basée à Conakry pour vous accompagner.',
+      supportDesc:
+        'Une équipe de support dédiée basée à Conakry pour vous accompagner.',
       userManagement: 'Gestion Utilisateurs',
 
       // Stats
@@ -421,25 +449,30 @@ const translations = {
       howItWorks: 'Comment ça marche ?',
       steps: {
         step1: 'Créer un compte',
-        step1Desc: 'Inscrivez-vous en 2 minutes. Pas de carte bancaire requise.',
+        step1Desc:
+          'Inscrivez-vous en 2 minutes. Pas de carte bancaire requise.',
         step2: 'Importer vos données',
-        step2Desc: 'Importez facilement vos élèves, classes et enseignants via Excel.',
+        step2Desc:
+          'Importez facilement vos élèves, classes et enseignants via Excel.',
         step3: 'Commencer',
-        step3Desc: 'Gérez vos notes, paiements et communications immédiatement.',
+        step3Desc:
+          'Gérez vos notes, paiements et communications immédiatement.',
       },
 
       // Testimonials
       testimonials: 'Ce que disent les Directeurs',
-      testimonial1: '"EduVault a complètement transformé notre gestion des scolarités. Les parents adorent le paiement Mobile Money !"',
+      testimonial1:
+        '"EduVault a complètement transformé notre gestion des scolarités. Les parents adorent le paiement Mobile Money !"',
       testimonial1Author: 'Mamadou Diallo',
       testimonial1Role: 'Directeur, Lycée de Kipé',
 
       // FAQ
       faq: 'Questions Fréquentes',
       faq1: 'Mes données sont-elles sécurisées ?',
-      faq1Ans: 'Oui, nous utilisons un cryptage bancaire et des sauvegardes quotidiennes.',
+      faq1Ans:
+        'Oui, nous utilisons un cryptage bancaire et des sauvegardes quotidiennes.',
       faq2: 'Puis-je essayer gratuitement ?',
-      faq2Ans: 'Absolument ! Vous bénéficiez de 30 jours d\'essai gratuit.',
+      faq2Ans: "Absolument ! Vous bénéficiez de 30 jours d'essai gratuit.",
 
       // Footer
       footer: {
@@ -484,7 +517,7 @@ const translations = {
     // Actions
     actions: {
       tryAgain: 'Réessayer',
-      goHome: 'Aller à l\'Accueil',
+      goHome: "Aller à l'Accueil",
     },
   },
 } as const
@@ -494,10 +527,10 @@ export type { Language }
 
 type NestedKeyOf<TObject> = TObject extends object
   ? {
-    [Key in keyof TObject & (string | number)]: TObject[Key] extends object
-    ? `${Key}` | `${Key}.${NestedKeyOf<TObject[Key]>}`
-    : `${Key}`
-  }[keyof TObject & (string | number)]
+      [Key in keyof TObject & (string | number)]: TObject[Key] extends object
+        ? `${Key}` | `${Key}.${NestedKeyOf<TObject[Key]>}`
+        : `${Key}`
+    }[keyof TObject & (string | number)]
   : never
 
 type TranslationKey = NestedKeyOf<typeof translations.en>

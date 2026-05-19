@@ -3,24 +3,24 @@ Auth Required: Oui
 
 Response Success (200):
   {
-    "success": true,
-    "message": null,
-    "data":
+    'success': true,
+    'message': null,
+    'data':
       {
-        "is_verified": true,
-        "email":
+        'is_verified': true,
+        'email':
           {
-            "exists": true,
-            "value_masked": "u***@example.com",
-            "verified": true,
-            "verified_at": "2024-01-15T10:30:00Z",
+            'exists': true,
+            'value_masked': 'u***@example.com',
+            'verified': true,
+            'verified_at': '2024-01-15T10:30:00Z',
           },
-        "phone":
+        'phone':
           {
-            "exists": true,
-            "value_masked": "+224 6XX-XXX-456",
-            "verified": false,
-            "verified_at": null,
+            'exists': true,
+            'value_masked': '+224 6XX-XXX-456',
+            'verified': false,
+            'verified_at': null,
           },
       },
   }

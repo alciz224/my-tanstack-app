@@ -11,7 +11,7 @@ export interface Toast {
 }
 
 interface ToastStore {
-  toasts: Toast[]
+  toasts: Array<Toast>
   addToast: (toast: Omit<Toast, 'id'>) => void
   removeToast: (id: string) => void
   clearAll: () => void
@@ -23,15 +23,15 @@ interface ToastStore {
  */
 export const useToastStore = create<ToastStore>((set) => ({
   toasts: [],
-  
+
   addToast: (toast) => {
     const id = Math.random().toString(36).substring(2, 11)
     const newToast: Toast = { ...toast, id }
-    
+
     set((state) => ({
       toasts: [...state.toasts, newToast],
     }))
-    
+
     // Auto-dismiss after duration (default 5 seconds)
     const duration = toast.duration ?? 5000
     if (duration > 0) {
@@ -42,13 +42,13 @@ export const useToastStore = create<ToastStore>((set) => ({
       }, duration)
     }
   },
-  
+
   removeToast: (id) => {
     set((state) => ({
       toasts: state.toasts.filter((t) => t.id !== id),
     }))
   },
-  
+
   clearAll: () => {
     set({ toasts: [] })
   },
@@ -59,18 +59,26 @@ export const useToastStore = create<ToastStore>((set) => ({
  */
 export const toast = {
   success: (title: string, message?: string, duration?: number) => {
-    useToastStore.getState().addToast({ type: 'success', title, message, duration })
+    useToastStore
+      .getState()
+      .addToast({ type: 'success', title, message, duration })
   },
-  
+
   error: (title: string, message?: string, duration?: number) => {
-    useToastStore.getState().addToast({ type: 'error', title, message, duration })
+    useToastStore
+      .getState()
+      .addToast({ type: 'error', title, message, duration })
   },
-  
+
   warning: (title: string, message?: string, duration?: number) => {
-    useToastStore.getState().addToast({ type: 'warning', title, message, duration })
+    useToastStore
+      .getState()
+      .addToast({ type: 'warning', title, message, duration })
   },
-  
+
   info: (title: string, message?: string, duration?: number) => {
-    useToastStore.getState().addToast({ type: 'info', title, message, duration })
+    useToastStore
+      .getState()
+      .addToast({ type: 'info', title, message, duration })
   },
 }

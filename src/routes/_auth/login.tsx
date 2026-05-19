@@ -1,4 +1,9 @@
-import { Link, createFileRoute, redirect, useRouter } from '@tanstack/react-router'
+import {
+  Link,
+  createFileRoute,
+  redirect,
+  useRouter,
+} from '@tanstack/react-router'
 import * as React from 'react'
 import { emitAuthEvent } from '@/auth/authEvents'
 import { safeRedirectPath } from '@/auth/redirects'
@@ -37,9 +42,13 @@ function LoginPage() {
 
   // Error states
   const [globalError, setGlobalError] = React.useState<string | null>(null)
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({})
+  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>(
+    {},
+  )
   const [isLocked, setIsLocked] = React.useState(false)
-  const [rateLimitSeconds, setRateLimitSeconds] = React.useState<number | null>(null)
+  const [rateLimitSeconds, setRateLimitSeconds] = React.useState<number | null>(
+    null,
+  )
 
   const router = useRouter()
   const search = Route.useSearch()
@@ -82,7 +91,10 @@ function LoginPage() {
 
   const validatePassword = () => {
     if (!password) {
-      setFieldErrors((prev) => ({ ...prev, password: 'Please enter your password' }))
+      setFieldErrors((prev) => ({
+        ...prev,
+        password: 'Please enter your password',
+      }))
     } else {
       setFieldErrors((prev) => {
         const { password: _, ...rest } = prev
@@ -107,7 +119,10 @@ function LoginPage() {
 
       if (!result.success) {
         // Handle specific error codes
-        if (result.errorCode === 'ACCOUNT_LOCKED' || result.error?.includes('locked')) {
+        if (
+          result.errorCode === 'ACCOUNT_LOCKED' ||
+          result.error?.includes('locked')
+        ) {
           setIsLocked(true)
           setGlobalError(
             'Account temporarily locked. Please contact support or try again later.',
@@ -115,7 +130,9 @@ function LoginPage() {
         } else if (result.retryAfter) {
           // Rate limited
           setRateLimitSeconds(result.retryAfter)
-          setGlobalError(`Too many attempts. Try again in ${result.retryAfter} seconds.`)
+          setGlobalError(
+            `Too many attempts. Try again in ${result.retryAfter} seconds.`,
+          )
         } else if (result.fieldErrors) {
           // Field-level validation errors
           const mappedErrors: Record<string, string> = {}
@@ -142,19 +159,15 @@ function LoginPage() {
         return
       }
 
-      // Success: emit event, show toast, and navigate
-      if (typeof window !== 'undefined') {
-        emitAuthEvent('login')
-      }
-
+      // Success: show toast and navigate
       toast.success(
         t('auth.loginSuccess') || 'Welcome back!',
-        t('auth.loginSuccessMessage') || 'You have successfully logged in.'
+        t('auth.loginSuccessMessage') || 'You have successfully logged in.',
       )
 
       // Determine redirect destination based on user role
       let destination = '/dashboard'
-      
+
       if (result.user) {
         if (result.user.role === null) {
           // User hasn't selected a role yet - go to role selection
@@ -170,7 +183,15 @@ function LoginPage() {
         destination = safeRedirectPath(search.from, destination)
       }
 
-      router.navigate({ to: destination, replace: true })
+      // Invalidate the router to re-run beforeLoad with fresh user from server
+      await router.invalidate()
+
+      await router.navigate({ to: destination, replace: true })
+
+      // Notify other tabs AFTER navigation completes (cross-tab sync only)
+      if (typeof window !== 'undefined') {
+        emitAuthEvent('login')
+      }
     } catch (err: any) {
       setGlobalError(err?.message || 'Network error. Please try again.')
     } finally {
@@ -215,7 +236,9 @@ function LoginPage() {
             required
             autoComplete="username"
             aria-invalid={!!fieldErrors.identifier}
-            aria-describedby={fieldErrors.identifier ? 'identifier-error' : undefined}
+            aria-describedby={
+              fieldErrors.identifier ? 'identifier-error' : undefined
+            }
             className="w-full px-3 py-2 rounded-lg bg-background text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-ring transition-colors disabled:opacity-50"
           />
         </FormField>
@@ -235,7 +258,9 @@ function LoginPage() {
             required
             autoComplete="current-password"
             aria-invalid={!!fieldErrors.password}
-            aria-describedby={fieldErrors.password ? 'password-error' : undefined}
+            aria-describedby={
+              fieldErrors.password ? 'password-error' : undefined
+            }
           />
         </FormField>
 
@@ -256,10 +281,11 @@ function LoginPage() {
         {/* Global error/alert area */}
         {globalError && (
           <div
-            className={`p-3 rounded-lg text-sm animate-fade-in-up ${isLocked
-              ? 'bg-warning/10 border border-warning/20 text-warning'
-              : 'bg-destructive/10 border border-destructive/20 text-destructive'
-              }`}
+            className={`p-3 rounded-lg text-sm animate-fade-in-up ${
+              isLocked
+                ? 'bg-warning/10 border border-warning/20 text-warning'
+                : 'bg-destructive/10 border border-destructive/20 text-destructive'
+            }`}
             role="alert"
           >
             <div className="flex items-start gap-2">

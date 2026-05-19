@@ -8,13 +8,15 @@
 
 ```typescript
 // ✅ Data fetching in beforeLoad/loader
-export const getDataFn = createServerFn({ method: 'GET' }).handler(async (ctx) => {
-  const cookieHeader = getCookieHeader(ctx)
-  const res = await fetch(`${BACKEND_URL}/api/...`, {
-    headers: cookieHeader ? { Cookie: cookieHeader } : {},
-  })
-  return await res.json()
-})
+export const getDataFn = createServerFn({ method: 'GET' }).handler(
+  async (ctx) => {
+    const cookieHeader = getCookieHeader(ctx)
+    const res = await fetch(`${BACKEND_URL}/api/...`, {
+      headers: cookieHeader ? { Cookie: cookieHeader } : {},
+    })
+    return await res.json()
+  },
+)
 
 // ✅ Non-auth CRUD operations
 export const createItemFn = createServerFn({ method: 'POST' })
@@ -35,14 +37,14 @@ export const createItemFn = createServerFn({ method: 'POST' })
 export async function loginFn(data: LoginInput) {
   const csrfRes = await fetch('/api/v2/auth/csrf/', { credentials: 'include' })
   const csrfToken = (await csrfRes.json()).data.csrf_token
-  
+
   const res = await fetch('/api/v2/auth/login/', {
     method: 'POST',
     headers: { 'X-CSRFToken': csrfToken },
     credentials: 'include',
     body: JSON.stringify(data),
   })
-  
+
   return await res.json()
 }
 
@@ -98,14 +100,11 @@ import { createMutationFn } from '@/server/mutation-helper'
 
 export const createItemFn = createMutationFn<ItemInput, Item>(
   '/api/v1/items/',
-  'POST'
+  'POST',
 )
 
 export const updateItemFn = (id: string) =>
-  createMutationFn<Partial<ItemInput>, Item>(
-    `/api/v1/items/${id}/`,
-    'PATCH'
-  )
+  createMutationFn<Partial<ItemInput>, Item>(`/api/v1/items/${id}/`, 'PATCH')
 
 // Usage
 const result = await createItemFn({ data: { name: 'Test' } })
@@ -162,12 +161,12 @@ src/
 
 ## 🚨 Common Pitfalls
 
-| Problem | Cause | Solution |
-|---------|-------|----------|
-| 401 during SSR | No cookie forwarding | Add `getCookieHeader(ctx)` |
-| Login "succeeds" but logged out on refresh | Auth as server function | Use client-side `fetch()` |
-| CSRF 403 error | Missing CSRF token | Add `getCsrfTokenServerSide(context)` |
-| `getCookieHeader` returns undefined | Wrong context access | Try both `ctx.request` and `ctx.context.request` |
+| Problem                                    | Cause                   | Solution                                         |
+| ------------------------------------------ | ----------------------- | ------------------------------------------------ |
+| 401 during SSR                             | No cookie forwarding    | Add `getCookieHeader(ctx)`                       |
+| Login "succeeds" but logged out on refresh | Auth as server function | Use client-side `fetch()`                        |
+| CSRF 403 error                             | Missing CSRF token      | Add `getCsrfTokenServerSide(context)`            |
+| `getCookieHeader` returns undefined        | Wrong context access    | Try both `ctx.request` and `ctx.context.request` |
 
 ---
 

@@ -8,8 +8,11 @@ export function LanguageToggle() {
       <button
         type="button"
         onClick={() => setLanguage('fr')}
-        className={`px-2 py-1 rounded-md text-sm font-medium border ${language === 'fr' ? 'bg-muted text-foreground border-border' : 'text-muted-foreground border-transparent hover:bg-muted'
-          }`}
+        className={`px-2 py-1 rounded-md text-sm font-medium border ${
+          language === 'fr'
+            ? 'bg-muted text-foreground border-border'
+            : 'text-muted-foreground border-transparent hover:bg-muted'
+        }`}
         aria-pressed={language === 'fr'}
       >
         FR
@@ -17,8 +20,11 @@ export function LanguageToggle() {
       <button
         type="button"
         onClick={() => setLanguage('en')}
-        className={`px-2 py-1 rounded-md text-sm font-medium border ${language === 'en' ? 'bg-muted text-foreground border-border' : 'text-muted-foreground border-transparent hover:bg-muted'
-          }`}
+        className={`px-2 py-1 rounded-md text-sm font-medium border ${
+          language === 'en'
+            ? 'bg-muted text-foreground border-border'
+            : 'text-muted-foreground border-transparent hover:bg-muted'
+        }`}
         aria-pressed={language === 'en'}
       >
         EN

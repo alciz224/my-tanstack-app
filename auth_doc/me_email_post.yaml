@@ -8,12 +8,12 @@ Request:
 
 Response Success (200):
   {
-    "success": true,
-    "message": "Email modifié. Vérification requise.",
-    "data":
+    'success': true,
+    'message': 'Email modifié. Vérification requise.',
+    'data':
       {
-        "email": "new@example.com",
-        "email_verified": false,
-        "verification_sent": true,
+        'email': 'new@example.com',
+        'email_verified': false,
+        'verification_sent': true,
       },
   }

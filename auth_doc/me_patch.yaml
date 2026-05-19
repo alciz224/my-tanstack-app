@@ -11,5 +11,5 @@ Request:
     backup_phone_owner: string
 
 Response Success (200):
-  { "success": true, "message": "Profil mis à jour", "data": {} }
+  { 'success': true, 'message': 'Profil mis à jour', 'data': {} }
 # Même structure que GET /me/

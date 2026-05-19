@@ -2,7 +2,7 @@
 
 **Date:** January 2025  
 **Requested By:** User  
-**Completed By:** TanStack Router & Server Functions Expert Agent  
+**Completed By:** TanStack Router & Server Functions Expert Agent
 
 ---
 
@@ -27,7 +27,9 @@ The split between server functions (data fetching) and client functions (auth mu
 ### 1. Documentation (4 files)
 
 #### `docs/SERVER_FUNCTIONS_GUIDE.md` (Comprehensive - 500+ lines)
+
 Complete implementation guide with:
+
 - Cookie architecture explanation
 - When to use server functions vs client functions
 - Cookie forwarding patterns
@@ -39,7 +41,9 @@ Complete implementation guide with:
 - Testing strategies
 
 #### `docs/COOKIE_FORWARDING_AND_SERVER_FUNCTIONS.md` (Deep-dive - 600+ lines)
+
 Architecture analysis and reference with:
+
 - TanStack Start cookie API research findings
 - Why auth mutations MUST be client-side (visual diagrams)
 - Current implementation analysis
@@ -50,7 +54,9 @@ Architecture analysis and reference with:
 - Summary and action items
 
 #### `docs/TANSTACK_START_COOKIE_RESEARCH_SUMMARY.md` (Executive summary - 500+ lines)
+
 Research findings and recommendations:
+
 - Executive summary
 - TanStack Start cookie API research
 - Critical architecture decision explanation
@@ -62,7 +68,9 @@ Research findings and recommendations:
 - Further reading
 
 #### `docs/QUICK_REFERENCE_SERVER_FUNCTIONS.md` (Quick reference)
+
 One-page cheat sheet with:
+
 - When to use server vs client functions
 - Cookie forwarding pattern
 - CSRF token pattern
@@ -75,6 +83,7 @@ One-page cheat sheet with:
 ### 2. Helper Functions (3 files)
 
 #### `src/server/csrf.ts`
+
 Server-side CSRF token fetching with cookie forwarding:
 
 ```typescript
@@ -82,27 +91,30 @@ export async function getCsrfTokenServerSide(ctx: any): Promise<string>
 ```
 
 **Features:**
+
 - Extracts cookies from server function context
 - Forwards to Django `/api/v2/auth/csrf/` endpoint
 - Returns CSRF token for mutations
 - Proper error handling
 
 #### `src/server/mutation-helper.ts`
+
 Generic mutation server function factory:
 
 ```typescript
 export function createMutationFn<TInput, TOutput>(
   endpoint: string,
-  method: 'POST' | 'PATCH' | 'DELETE'
+  method: 'POST' | 'PATCH' | 'DELETE',
 ): ServerFunction<MutationResult<TOutput>>
 
 export function createParameterizedMutationFn<TInput, TOutput>(
   getEndpoint: (params: TInput) => string,
-  method: 'POST' | 'PATCH' | 'DELETE'
+  method: 'POST' | 'PATCH' | 'DELETE',
 ): ServerFunction<MutationResult<TOutput>>
 ```
 
 **Features:**
+
 - Automatic cookie forwarding
 - Automatic CSRF token handling
 - Type-safe input validation
@@ -110,6 +122,7 @@ export function createParameterizedMutationFn<TInput, TOutput>(
 - Parameterized endpoint support
 
 #### `src/server/api/academic-mutations.ts`
+
 Example server function mutations for academic years:
 
 ```typescript
@@ -122,6 +135,7 @@ export const setCurrentAcademicYearFn
 ```
 
 **Features:**
+
 - Real-world examples using helper functions
 - Type-safe implementations
 - Ready to use in routes/components
@@ -134,11 +148,13 @@ export const setCurrentAcademicYearFn
 ### TanStack Start Cookie API
 
 **Searched for:**
+
 - Built-in `getCookie()`, `setCookie()`, `deleteCookie()` functions
 - Cookie management utilities
 - Official patterns for external API cookie forwarding
 
 **Found:**
+
 - ❌ No built-in cookie helpers
 - ✅ Request context access: `ctx.request.headers.get('cookie')`
 - ✅ Manual forwarding pattern (documented in examples)
@@ -151,6 +167,7 @@ Manual cookie forwarding is the recommended approach. The existing `getCookieHea
 
 **Problem:**
 Django uses httpOnly session cookies that:
+
 - Cannot be read by JavaScript
 - Cannot be set by JavaScript
 - Must be set by browser receiving `Set-Cookie` header from Django
@@ -159,6 +176,7 @@ Django uses httpOnly session cookies that:
 Auth mutations (login/logout/register) **MUST run in browser** to allow Django to set cookies directly to the browser. Server functions cannot proxy this correctly.
 
 **Visual:**
+
 ```
 Server Function Auth (❌ Broken):
 Browser → Node.js Server → Django → Set-Cookie → Node.js Server (❌ cookie stuck here)
@@ -174,6 +192,7 @@ Browser → Vite Proxy → Django → Set-Cookie → Browser (✅ cookie stored)
 ### 1. Keep Current Auth Architecture (Critical)
 
 **Do NOT change:**
+
 - ✅ `loginFn` - client function
 - ✅ `logoutFn` - client function
 - ✅ `registerFn` - client function
@@ -185,16 +204,19 @@ Browser → Vite Proxy → Django → Set-Cookie → Browser (✅ cookie stored)
 ### 2. Optional: Migrate Non-Auth Mutations
 
 **Can migrate to server functions:**
+
 - Academic year CRUD operations (`src/lib/api-mutations.ts`)
 - Any mutations that don't modify session state
 
 **Benefits:**
+
 - Type-safe input validation
 - Works in SSR context (route actions)
 - Unified pattern with data fetching
 - Better security (code hidden from browser)
 
 **Trade-offs:**
+
 - More boilerplate (CSRF fetching, cookie forwarding)
 - Slightly more complex
 
@@ -203,11 +225,13 @@ Browser → Vite Proxy → Django → Set-Cookie → Browser (✅ cookie stored)
 ### 3. Use Provided Helper Functions
 
 **For new mutations:**
+
 - Use `createMutationFn<Input, Output>()` for simple endpoints
 - Use `createParameterizedMutationFn<Input, Output>()` for parameterized endpoints
 - Use `getCsrfTokenServerSide(ctx)` for manual implementations
 
 **For new data fetching:**
+
 - Use existing `getCookieHeader(ctx)` pattern
 - Follow examples in `src/server/api/academic.ts`
 
@@ -217,36 +241,38 @@ Browser → Vite Proxy → Django → Set-Cookie → Browser (✅ cookie stored)
 
 ### Current State (All ✅ Correct)
 
-| Function | Type | Location | Status |
-|----------|------|----------|--------|
-| `getCurrentUserFn` | Server Function | `src/server/auth.ts` | ✅ Correct |
-| `loginFn` | Client Function | `src/server/auth.ts` | ✅ Correct |
-| `logoutFn` | Client Function | `src/server/auth.ts` | ✅ Correct |
-| `registerFn` | Client Function | `src/server/auth.ts` | ✅ Correct |
-| `selectRoleFn` | Client Function | `src/server/auth.ts` | ✅ Correct |
-| `createAcademicYear` | Client Function | `src/lib/api-mutations.ts` | 💡 Can migrate |
-| `updateAcademicYear` | Client Function | `src/lib/api-mutations.ts` | 💡 Can migrate |
-| Other CRUD | Client Functions | `src/lib/api-mutations.ts` | 💡 Can migrate |
+| Function             | Type             | Location                   | Status         |
+| -------------------- | ---------------- | -------------------------- | -------------- |
+| `getCurrentUserFn`   | Server Function  | `src/server/auth.ts`       | ✅ Correct     |
+| `loginFn`            | Client Function  | `src/server/auth.ts`       | ✅ Correct     |
+| `logoutFn`           | Client Function  | `src/server/auth.ts`       | ✅ Correct     |
+| `registerFn`         | Client Function  | `src/server/auth.ts`       | ✅ Correct     |
+| `selectRoleFn`       | Client Function  | `src/server/auth.ts`       | ✅ Correct     |
+| `createAcademicYear` | Client Function  | `src/lib/api-mutations.ts` | 💡 Can migrate |
+| `updateAcademicYear` | Client Function  | `src/lib/api-mutations.ts` | 💡 Can migrate |
+| Other CRUD           | Client Functions | `src/lib/api-mutations.ts` | 💡 Can migrate |
 
 ### Proposed State (Optional Migration)
 
-| Function | Type | Location | Change |
-|----------|------|----------|--------|
-| Auth functions | Client Functions | `src/server/auth.ts` | ⛔ No change |
-| `createAcademicYearFn` | Server Function | `src/server/api/academic-mutations.ts` | ✅ Created |
-| `updateAcademicYearFn` | Server Function | `src/server/api/academic-mutations.ts` | ✅ Created |
-| Other CRUD mutations | Server Functions | `src/server/api/*-mutations.ts` | 💡 Optional |
+| Function               | Type             | Location                               | Change       |
+| ---------------------- | ---------------- | -------------------------------------- | ------------ |
+| Auth functions         | Client Functions | `src/server/auth.ts`                   | ⛔ No change |
+| `createAcademicYearFn` | Server Function  | `src/server/api/academic-mutations.ts` | ✅ Created   |
+| `updateAcademicYearFn` | Server Function  | `src/server/api/academic-mutations.ts` | ✅ Created   |
+| Other CRUD mutations   | Server Functions | `src/server/api/*-mutations.ts`        | 💡 Optional  |
 
 ---
 
 ## 🧪 Testing Checklist
 
 ### Before Migration
+
 - [ ] Current auth flow works (login → protected route → hard refresh → still logged in)
 - [ ] SSR user fetching works (hard refresh shows user data immediately)
 - [ ] Client mutations work (academic year CRUD)
 
 ### After Migration (if you migrate)
+
 - [ ] Auth still works exactly the same
 - [ ] SSR data fetching still works
 - [ ] New server function mutations work from client
@@ -264,11 +290,9 @@ Browser → Vite Proxy → Django → Set-Cookie → Browser (✅ cookie stored)
 
 1. **Start with:** `docs/QUICK_REFERENCE_SERVER_FUNCTIONS.md`
    - Quick overview and decision tree
-   
 2. **Deep dive:** `docs/COOKIE_FORWARDING_AND_SERVER_FUNCTIONS.md`
    - Understand why auth is client-side
    - See visual flow diagrams
-   
 3. **Research details:** `docs/TANSTACK_START_COOKIE_RESEARCH_SUMMARY.md`
    - Full research findings
    - Architecture assessment
@@ -283,7 +307,6 @@ Browser → Vite Proxy → Django → Set-Cookie → Browser (✅ cookie stored)
 2. **Use helpers:**
    - Import `getCsrfTokenServerSide` from `@/server/csrf`
    - Import `createMutationFn` from `@/server/mutation-helper`
-   
 3. **Follow examples:**
    - Study `src/server/api/academic-mutations.ts`
    - Copy pattern for new modules
@@ -324,24 +347,31 @@ Browser → Vite Proxy → Django → Set-Cookie → Browser (✅ cookie stored)
 ## 🤔 Questions Answered
 
 ### Q: Does TanStack Start have built-in cookie helpers?
+
 **A:** No. Manual cookie forwarding using `ctx.request.headers.get('cookie')` is required.
 
 ### Q: Should we convert auth mutations to server functions?
+
 **A:** **No.** Auth mutations MUST stay client-side due to httpOnly cookie limitations.
 
 ### Q: Should we convert non-auth mutations to server functions?
+
 **A:** Optional. Benefits: type safety, SSR support. Trade-offs: more boilerplate. Helper functions reduce complexity.
 
 ### Q: Is the current implementation correct?
+
 **A:** **Yes.** The split between server functions (data fetching) and client functions (auth) is architecturally correct.
 
 ### Q: How do we handle CSRF tokens in server functions?
+
 **A:** Use the new `getCsrfTokenServerSide(ctx)` helper or the `createMutationFn()` factory (handles it automatically).
 
 ### Q: How do we forward cookies in server functions?
+
 **A:** Use the existing `getCookieHeader(ctx)` helper from `src/lib/api-client.ts`.
 
 ### Q: Can server functions modify session cookies?
+
 **A:** No. Only the browser can receive and store `Set-Cookie` headers from Django. This is why auth must be client-side.
 
 ---
@@ -358,17 +388,20 @@ Browser → Vite Proxy → Django → Set-Cookie → Browser (✅ cookie stored)
 ### Suggested Next Steps
 
 **Option 1: Keep Current Architecture (Safest)**
+
 - No changes needed
 - Everything works correctly
 - Use new helpers for future features
 
 **Option 2: Incremental Migration (Recommended if migrating)**
+
 - Migrate one module (academic years already done)
 - Test thoroughly
 - Evaluate benefits vs complexity
 - Decide whether to continue
 
 **Option 3: Full Migration (Most work)**
+
 - Migrate all non-auth mutations
 - Update all components
 - Comprehensive testing
@@ -394,17 +427,20 @@ Browser → Vite Proxy → Django → Set-Cookie → Browser (✅ cookie stored)
 ## 📄 File Summary
 
 ### Documentation Created
+
 1. `docs/SERVER_FUNCTIONS_GUIDE.md` (500+ lines)
 2. `docs/COOKIE_FORWARDING_AND_SERVER_FUNCTIONS.md` (600+ lines)
 3. `docs/TANSTACK_START_COOKIE_RESEARCH_SUMMARY.md` (500+ lines)
 4. `docs/QUICK_REFERENCE_SERVER_FUNCTIONS.md` (150+ lines)
 
 ### Code Created
+
 5. `src/server/csrf.ts` (60 lines)
 6. `src/server/mutation-helper.ts` (200+ lines)
 7. `src/server/api/academic-mutations.ts` (120 lines)
 
 ### Meta
+
 8. `RESEARCH_DELIVERABLES.md` (this file)
 
 **Total:** 8 files, ~2500+ lines of documentation and code

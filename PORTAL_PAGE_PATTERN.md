@@ -79,13 +79,14 @@ import { serverFetch } from '@/lib/api-client'
 import { ACADEMIC_ENDPOINTS } from '@/lib/api-endpoints'
 
 // List — used in loader (SSR) and client-side useQuery
-export const getAcademicYearsFn = createServerFn({ method: 'GET' })
-  .handler(async (ctx) => {
+export const getAcademicYearsFn = createServerFn({ method: 'GET' }).handler(
+  async (ctx) => {
     return serverFetch<PaginatedResponse<AcademicYear>>(
       ACADEMIC_ENDPOINTS.ACADEMIC_YEARS,
-      ctx
+      ctx,
     )
-  })
+  },
+)
 ```
 
 ### Service Actions — Mutations (`server/api/academic-mutations.ts`)
@@ -97,27 +98,21 @@ import { createParameterizedMutationFn } from '@/server/mutation-helper'
 
 // Action mutation: only needs an ID, no request body
 export const activateAcademicYearFn = createParameterizedMutationFn<
-  { id: string },         // Input type: just the resource ID
-  AcademicYear             // Output type: the updated resource
->(
-  (params) => {
-    if (!params.id) throw new Error('Missing ID for activate')
-    return `/api/v1/academic/academic-years/${params.id}/activate/`
-  },
-  'POST'
-)
+  { id: string }, // Input type: just the resource ID
+  AcademicYear // Output type: the updated resource
+>((params) => {
+  if (!params.id) throw new Error('Missing ID for activate')
+  return `/api/v1/academic/academic-years/${params.id}/activate/`
+}, 'POST')
 
 // Action mutation with body: needs ID + payload
 export const updateAcademicYearFn = createParameterizedMutationFn<
   { id: string; body: Partial<AcademicYearInput> },
   AcademicYear
->(
-  (params) => {
-    if (!params.id) throw new Error('Missing ID for update')
-    return `/api/v1/academic/academic-years/${params.id}/`
-  },
-  'PATCH'
-)
+>((params) => {
+  if (!params.id) throw new Error('Missing ID for update')
+  return `/api/v1/academic/academic-years/${params.id}/`
+}, 'PATCH')
 ```
 
 > [!CAUTION]
@@ -133,8 +128,7 @@ export const academicKeys = {
   academicYears: () => [...academicKeys.all, 'academic-years'] as const,
   academicYearsList: (filters?: Record<string, any>) =>
     [...academicKeys.academicYears(), 'list', filters] as const,
-  academicYear: (id: string) =>
-    [...academicKeys.academicYears(), id] as const,
+  academicYear: (id: string) => [...academicKeys.academicYears(), id] as const,
 }
 ```
 
@@ -146,7 +140,7 @@ export const academicKeys = {
 export const Route = createFileRoute('/_authed/super-admin/academic-years')({
   loader: async () => {
     const data = await getAcademicYearsFn()
-    const results = Array.isArray(data) ? data : data?.results ?? []
+    const results = Array.isArray(data) ? data : (data?.results ?? [])
     return { academicYears: results }
   },
   component: AcademicYearsPage,
@@ -192,7 +186,7 @@ const activateMutation = useMutation({
 // ❌ WRONG — TanStack Start interprets `data: {}` as input, losing id
 const activateMutation = useMutation({
   mutationFn: async (id: string) => {
-    // WRONG: result = await activateItemFn({ id, data: {} }) 
+    // WRONG: result = await activateItemFn({ id, data: {} })
     // WARNING: handler receives {} instead of { id }, id is LOST!
   },
 })
@@ -216,17 +210,25 @@ const handleConfirm = () => {
 
   // Guard: reject empty/undefined IDs before calling mutation
   if (!id || id === 'undefined' || id === 'null') {
-    toast.error("Cannot execute action: missing item ID")
+    toast.error('Cannot execute action: missing item ID')
     setConfirmAction(null)
     return
   }
 
   // Dispatch to correct mutation
   switch (confirmAction.type) {
-    case 'activate': activateMutation.mutate(id); break
-    case 'set-current': setCurrentMutation.mutate(id); break
-    case 'archive': archiveMutation.mutate(id); break
-    case 'delete': deleteMutation.mutate(id); break
+    case 'activate':
+      activateMutation.mutate(id)
+      break
+    case 'set-current':
+      setCurrentMutation.mutate(id)
+      break
+    case 'archive':
+      archiveMutation.mutate(id)
+      break
+    case 'delete':
+      deleteMutation.mutate(id)
+      break
   }
 }
 ```
@@ -242,14 +244,14 @@ const invalidate = () =>
 
 ## 5. Service Action vs. CRUD Comparison
 
-| Aspect | Traditional CRUD | Portal Service Actions |
-|--------|-----------------|----------------------|
-| **Endpoints** | `POST /items/`, `PATCH /items/:id/` | `POST /items/:id/activate/` |
-| **Request body** | Full resource payload | Usually empty or minimal |
-| **Input type** | `{ id: string; body: Partial<T> }` | `{ id: string }` |
-| **UI trigger** | Edit form submit | Action button → confirm dialog |
-| **State change** | Raw field updates | Business state transitions |
-| **Examples** | Create, Update, Delete | Activate, Archive, Set Current |
+| Aspect           | Traditional CRUD                    | Portal Service Actions         |
+| ---------------- | ----------------------------------- | ------------------------------ |
+| **Endpoints**    | `POST /items/`, `PATCH /items/:id/` | `POST /items/:id/activate/`    |
+| **Request body** | Full resource payload               | Usually empty or minimal       |
+| **Input type**   | `{ id: string; body: Partial<T> }`  | `{ id: string }`               |
+| **UI trigger**   | Edit form submit                    | Action button → confirm dialog |
+| **State change** | Raw field updates                   | Business state transitions     |
+| **Examples**     | Create, Update, Delete              | Activate, Archive, Set Current |
 
 ---
 

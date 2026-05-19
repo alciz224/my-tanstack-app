@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import { NavLinks } from './NavLinks'
 import type { User } from '@/server/auth'
@@ -104,7 +104,10 @@ export function NavDrawer({ isOpen, onClose, user }: NavDrawerProps) {
         <div className="p-4 border-t border-border mt-auto">
           {user ? (
             <div className="text-sm text-muted-foreground">
-              {t('user.signedInAs')} <span className="font-semibold text-foreground">{user.email}</span>
+              {t('user.signedInAs')}{' '}
+              <span className="font-semibold text-foreground">
+                {user.email}
+              </span>
             </div>
           ) : (
             <div className="space-y-2">

@@ -1,6 +1,6 @@
 /**
  * Academic Domain Types
- * 
+ *
  * TypeScript types matching Django models from domain/academic
  * Used for type-safe API interactions with academic reference data
  */
@@ -157,7 +157,7 @@ export interface PaginatedResponse<T> {
   count: number
   next: string | null
   previous: string | null
-  results: T[]
+  results: Array<T>
 }
 
 /**

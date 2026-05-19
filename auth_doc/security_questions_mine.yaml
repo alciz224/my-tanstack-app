@@ -3,18 +3,18 @@ Auth Required: Oui
 
 Response Success (200):
   {
-    "success": true,
-    "message": null,
-    "data":
+    'success': true,
+    'message': null,
+    'data':
       {
-        "configured_count": 2,
-        "questions":
+        'configured_count': 2,
+        'questions':
           [
             {
-              "order": 1,
-              "question": "Quel est le nom de votre école primaire ?",
+              'order': 1,
+              'question': 'Quel est le nom de votre école primaire ?',
             },
-            { "order": 2, "question": "Quel est le prénom de votre mère ?" },
+            { 'order': 2, 'question': 'Quel est le prénom de votre mère ?' },
           ],
       },
   }

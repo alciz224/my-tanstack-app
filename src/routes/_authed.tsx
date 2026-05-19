@@ -1,9 +1,9 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import type { User } from '@/server/auth'
 import { buildFromParameter } from '@/auth/redirects'
 import Header from '@/components/Header'
 import { Sidebar } from '@/components/Sidebar'
 import { AuthErrorFallback } from '@/components/ErrorBoundary'
-import type { User } from '@/server/auth'
 
 /**
  * Protected route layout - requires authentication
@@ -15,23 +15,34 @@ export const Route = createFileRoute('/_authed')({
     const user = context.user
 
     if (import.meta.env.DEV) {
-      console.debug('[_authed.beforeLoad] path:', location.pathname, '| user.role:', user?.role ?? 'no user')
+      console.debug(
+        '[_authed.beforeLoad] path:',
+        location.pathname,
+        '| user.role:',
+        user?.role ?? 'no user',
+      )
     }
 
     if (!user) {
-      if (import.meta.env.DEV) console.debug('[_authed.beforeLoad] → redirect /login (no user)')
+      if (import.meta.env.DEV)
+        console.debug('[_authed.beforeLoad] → redirect /login (no user)')
       const from = buildFromParameter(location)
       throw redirect({ to: '/login', search: { from } })
     }
-    
+
     if (user.role === null && location.pathname !== '/select-portal') {
-      if (import.meta.env.DEV) console.debug('[_authed.beforeLoad] → redirect /select-portal (role is null)')
+      if (import.meta.env.DEV)
+        console.debug(
+          '[_authed.beforeLoad] → redirect /select-portal (role is null)',
+        )
       throw redirect({ to: '/select-portal' })
     }
-    
-    return { user } as { user: User }
+
+    return { user }
   },
-  errorComponent: ({ error, reset }) => <AuthErrorFallback error={error} reset={reset} />,
+  errorComponent: ({ error, reset }) => (
+    <AuthErrorFallback error={error} reset={reset} />
+  ),
   component: AuthedLayout,
 })
 

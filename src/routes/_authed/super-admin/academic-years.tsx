@@ -3,22 +3,22 @@ import { useServerFn } from '@tanstack/react-start'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Calendar, Plus } from 'lucide-react'
+import type { AcademicYear } from '@/types/academic'
 import { getAcademicYearsFn } from '@/server/api/academic'
 import {
-  createAcademicYearFn,
-  deleteAcademicYearFn,
   activateAcademicYearFn,
   archiveAcademicYearFn,
+  createAcademicYearFn,
+  deleteAcademicYearFn,
   setCurrentAcademicYearFn,
 } from '@/server/api/academic-mutations'
 import { academicKeys } from '@/lib/query-client'
-import type { AcademicYear } from '@/types/academic'
 import { toast } from '@/stores/toastStore'
 
 export const Route = createFileRoute('/_authed/super-admin/academic-years')({
   loader: async () => {
     const data = await getAcademicYearsFn()
-    const results = Array.isArray(data) ? data : data?.results ?? []
+    const results = Array.isArray(data) ? data : (data?.results ?? [])
     return { academicYears: results }
   },
   component: AcademicYearsPage,
@@ -41,7 +41,9 @@ function AcademicYearsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null)
   const [pendingRowId, setPendingRowId] = useState<string | null>(null)
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive' | 'archived'>('all')
+  const [statusFilter, setStatusFilter] = useState<
+    'all' | 'active' | 'inactive' | 'archived'
+  >('all')
 
   // Server functions wrapped with useServerFn
   const fetchAcademicYears = useServerFn(getAcademicYearsFn)
@@ -52,11 +54,15 @@ function AcademicYearsPage() {
   const deleteAcademicYear = useServerFn(deleteAcademicYearFn)
 
   // Fetch academic years — SSR-prefetched via loader, kept fresh client-side
-  const { data: academicYears, isLoading, isFetching } = useQuery({
+  const {
+    data: academicYears,
+    isLoading,
+    isFetching,
+  } = useQuery({
     queryKey: academicKeys.academicYearsList(),
     queryFn: async () => {
       const response = await fetchAcademicYears()
-      return Array.isArray(response) ? response : response?.results ?? []
+      return Array.isArray(response) ? response : (response?.results ?? [])
     },
     initialData: loaderData.academicYears,
   })
@@ -65,9 +71,17 @@ function AcademicYearsPage() {
   const currentYear = academicYears?.find((y) => y.is_current)
 
   const normalizeStatus = (year: AcademicYear) => {
-    const fallback = year.is_active === undefined ? undefined : year.is_active ? 'active' : 'inactive'
-    const raw = year.status ?? fallback ?? (year.is_current ? 'active' : 'inactive')
-    const normalized = String(raw ?? '').toLowerCase().trim()
+    const fallback =
+      year.is_active === undefined
+        ? undefined
+        : year.is_active
+          ? 'active'
+          : 'inactive'
+    const raw =
+      year.status ?? fallback ?? (year.is_current ? 'active' : 'inactive')
+    const normalized = String(raw ?? '')
+      .toLowerCase()
+      .trim()
     if (normalized === 'archived' || normalized === 'archive') return 'archived'
     if (normalized === 'inactive' || normalized === 'inactif') return 'inactive'
     if (normalized === 'active' || normalized === 'actif') return 'active'
@@ -86,7 +100,9 @@ function AcademicYearsPage() {
       }
       return rank(a) - rank(b)
     })
-    .filter((y) => statusFilter === 'all' || normalizeStatus(y) === statusFilter)
+    .filter(
+      (y) => statusFilter === 'all' || normalizeStatus(y) === statusFilter,
+    )
 
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: academicKeys.academicYears() })
@@ -98,9 +114,17 @@ function AcademicYearsPage() {
 
   // Create mutation
   const createMutation = useMutation({
-    mutationFn: async ({ start_year, end_year }: { start_year: number; end_year: number }) => {
+    mutationFn: async ({
+      start_year,
+      end_year,
+    }: {
+      start_year: number
+      end_year: number
+    }) => {
       const name = `${start_year}-${end_year}`
-      const result = await createAcademicYear({ data: { name, start_year, end_year } })
+      const result = await createAcademicYear({
+        data: { name, start_year, end_year },
+      })
       if (!result.success) throw new Error(result.error)
       return result.data
     },
@@ -110,7 +134,7 @@ function AcademicYearsPage() {
       setIsCreateModalOpen(false)
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Impossible de créer l\'année scolaire')
+      toast.error(error.message || "Impossible de créer l'année scolaire")
     },
   })
 
@@ -129,7 +153,7 @@ function AcademicYearsPage() {
     },
     onError: (error: any) => {
       done()
-      toast.error(error.message || 'Impossible d\'activer l\'année scolaire')
+      toast.error(error.message || "Impossible d'activer l'année scolaire")
     },
   })
 
@@ -148,7 +172,7 @@ function AcademicYearsPage() {
     },
     onError: (error: any) => {
       done()
-      toast.error(error.message || 'Impossible de définir l\'année courante')
+      toast.error(error.message || "Impossible de définir l'année courante")
     },
   })
 
@@ -167,7 +191,7 @@ function AcademicYearsPage() {
     },
     onError: (error: any) => {
       done()
-      toast.error(error.message || 'Impossible d\'archiver l\'année scolaire')
+      toast.error(error.message || "Impossible d'archiver l'année scolaire")
     },
   })
 
@@ -185,7 +209,7 @@ function AcademicYearsPage() {
     },
     onError: (error: any) => {
       done()
-      toast.error(error.message || 'Impossible de supprimer l\'année scolaire')
+      toast.error(error.message || "Impossible de supprimer l'année scolaire")
     },
   })
 
@@ -206,7 +230,9 @@ function AcademicYearsPage() {
         action: confirmAction.type,
         year: confirmAction.year,
       })
-      toast.error("Impossible d'exécuter l'action : identifiant de l'année manquant")
+      toast.error(
+        "Impossible d'exécuter l'action : identifiant de l'année manquant",
+      )
       done()
       return
     }
@@ -223,9 +249,12 @@ function AcademicYearsPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Années scolaires</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Années scolaires
+          </h1>
           <p className="text-muted-foreground mt-1">
-            Gérez les années scolaires de la plateforme, définissez l'année courante et archivez les années passées.
+            Gérez les années scolaires de la plateforme, définissez l'année
+            courante et archivez les années passées.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -249,12 +278,19 @@ function AcademicYearsPage() {
           <button
             key={f}
             onClick={() => setStatusFilter(f)}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${statusFilter === f
-              ? 'bg-card text-foreground shadow'
-              : 'text-muted-foreground hover:text-foreground'
-              }`}
+            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              statusFilter === f
+                ? 'bg-card text-foreground shadow'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
-            {f === 'all' ? 'Tous' : f === 'active' ? 'Actifs' : f === 'inactive' ? 'Inactifs' : 'Archivés'}
+            {f === 'all'
+              ? 'Tous'
+              : f === 'active'
+                ? 'Actifs'
+                : f === 'inactive'
+                  ? 'Inactifs'
+                  : 'Archivés'}
           </button>
         ))}
       </div>
@@ -347,7 +383,9 @@ function AcademicYearsPage() {
                     {/* Actions — right-aligned */}
                     <td className="whitespace-nowrap px-6 py-4 text-right">
                       {isPending ? (
-                        <span className="text-xs text-muted-foreground">Mise à jour…</span>
+                        <span className="text-xs text-muted-foreground">
+                          Mise à jour…
+                        </span>
                       ) : status === 'archived' ? (
                         <span className="text-xs text-muted-foreground">—</span>
                       ) : (
@@ -357,7 +395,9 @@ function AcademicYearsPage() {
                             <ActionButton
                               label="Activer"
                               variant="primary"
-                              onClick={() => setConfirmAction({ type: 'activate', year })}
+                              onClick={() =>
+                                setConfirmAction({ type: 'activate', year })
+                              }
                             />
                           )}
                           {/* active, not current: Set Current (primary) */}
@@ -365,7 +405,9 @@ function AcademicYearsPage() {
                             <ActionButton
                               label="Définir comme courante"
                               variant="primary"
-                              onClick={() => setConfirmAction({ type: 'set-current', year })}
+                              onClick={() =>
+                                setConfirmAction({ type: 'set-current', year })
+                              }
                             />
                           )}
                           {/* active: Archive (secondary, disabled if current) */}
@@ -376,20 +418,29 @@ function AcademicYearsPage() {
                               disabled={year.is_current}
                               title={
                                 year.is_current
-                                  ? 'Impossible d\'archiver l\'année courante. Définissez d\'abord une autre année comme courante.'
+                                  ? "Impossible d'archiver l'année courante. Définissez d'abord une autre année comme courante."
                                   : 'Archiver cette année scolaire'
                               }
-                              onClick={() => setConfirmAction({ type: 'archive', year })}
+                              onClick={() =>
+                                setConfirmAction({ type: 'archive', year })
+                              }
                             />
                           )}
                           {/* inactive only: Delete (destructive, separated) */}
                           {status === 'inactive' && (
                             <>
-                              <span className="text-muted-foreground/40" aria-hidden>|</span>
+                              <span
+                                className="text-muted-foreground/40"
+                                aria-hidden
+                              >
+                                |
+                              </span>
                               <ActionButton
                                 label="Supprimer"
                                 variant="danger"
-                                onClick={() => setConfirmAction({ type: 'delete', year })}
+                                onClick={() =>
+                                  setConfirmAction({ type: 'delete', year })
+                                }
                               />
                             </>
                           )}
@@ -429,7 +480,8 @@ function AcademicYearsPage() {
                           Aucune année scolaire
                         </h3>
                         <p className="mb-4 text-xs text-muted-foreground">
-                          Créez la première année scolaire pour commencer la configuration de la plateforme.
+                          Créez la première année scolaire pour commencer la
+                          configuration de la plateforme.
                         </p>
                         <button
                           onClick={() => setIsCreateModalOpen(true)}
@@ -452,7 +504,9 @@ function AcademicYearsPage() {
         <CreateAcademicYearModal
           isSubmitting={createMutation.isPending}
           onClose={() => setIsCreateModalOpen(false)}
-          onSubmit={({ start_year, end_year }) => createMutation.mutate({ start_year, end_year })}
+          onSubmit={({ start_year, end_year }) =>
+            createMutation.mutate({ start_year, end_year })
+          }
         />
       )}
 
@@ -489,7 +543,9 @@ function StatusBadge({ status }: { status: string }) {
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${styles[status] ?? styles.inactive}`}
     >
-      <span className={`h-1.5 w-1.5 rounded-full ${dots[status] ?? dots.inactive}`} />
+      <span
+        className={`h-1.5 w-1.5 rounded-full ${dots[status] ?? dots.inactive}`}
+      />
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   )
@@ -535,7 +591,10 @@ function ConfirmDialog({
   onCancel,
   onConfirm,
 }: {
-  action: { type: 'activate' | 'set-current' | 'archive' | 'delete'; year: AcademicYear }
+  action: {
+    type: 'activate' | 'set-current' | 'archive' | 'delete'
+    year: AcademicYear
+  }
   currentYear: AcademicYear | undefined
   isSubmitting: boolean
   onCancel: () => void
@@ -550,9 +609,9 @@ function ConfirmDialog({
       title: 'Activer cette année scolaire ?',
       description: (
         <>
-          <span className="font-medium text-foreground">{year.name}</span> passera au statut{' '}
-          <span className="font-medium">actif</span>. Elle sera disponible pour être définie comme
-          année courante.
+          <span className="font-medium text-foreground">{year.name}</span>{' '}
+          passera au statut <span className="font-medium">actif</span>. Elle
+          sera disponible pour être définie comme année courante.
         </>
       ),
       confirmLabel: 'Activer',
@@ -565,12 +624,13 @@ function ConfirmDialog({
       title: 'Définir comme année courante ?',
       description: (
         <>
-          <span className="font-medium text-foreground">{year.name}</span> deviendra l'année scolaire
-          de référence pour toute la plateforme.
+          <span className="font-medium text-foreground">{year.name}</span>{' '}
+          deviendra l'année scolaire de référence pour toute la plateforme.
           {currentYear && currentYear.id !== year.id && (
             <span className="mt-1 block text-amber-600 dark:text-amber-400">
-              L'année actuelle (<span className="font-medium">{currentYear.name}</span>) ne sera plus
-              marquée comme courante.
+              L'année actuelle (
+              <span className="font-medium">{currentYear.name}</span>) ne sera
+              plus marquée comme courante.
             </span>
           )}
         </>
@@ -585,8 +645,10 @@ function ConfirmDialog({
       title: 'Archiver cette année scolaire ?',
       description: (
         <>
-          <span className="font-medium text-foreground">{year.name}</span> sera archivée et deviendra
-          <span className="font-medium"> en lecture seule</span>. Cette action ne supprime aucune donnée.
+          <span className="font-medium text-foreground">{year.name}</span> sera
+          archivée et deviendra
+          <span className="font-medium"> en lecture seule</span>. Cette action
+          ne supprime aucune donnée.
         </>
       ),
       confirmLabel: 'Archiver',
@@ -599,8 +661,11 @@ function ConfirmDialog({
       title: 'Supprimer cette année scolaire ?',
       description: (
         <>
-          <span className="font-medium text-foreground">{year.name}</span> sera définitivement supprimée.{' '}
-          <span className="font-medium text-destructive">Cette action est irréversible.</span>
+          <span className="font-medium text-foreground">{year.name}</span> sera
+          définitivement supprimée.{' '}
+          <span className="font-medium text-destructive">
+            Cette action est irréversible.
+          </span>
         </>
       ),
       confirmLabel: 'Supprimer',
@@ -675,7 +740,10 @@ function CreateAcademicYearModal({
   const thisYear = new Date().getFullYear()
   const [startYear, setStartYear] = useState(thisYear)
   const [endYear, setEndYear] = useState(thisYear + 1)
-  const [errors, setErrors] = useState<{ start_year?: string; end_year?: string }>({})
+  const [errors, setErrors] = useState<{
+    start_year?: string
+    end_year?: string
+  }>({})
 
   const previewName = `${startYear}-${endYear}`
 
@@ -688,7 +756,8 @@ function CreateAcademicYearModal({
   const validate = () => {
     const e: { start_year?: string; end_year?: string } = {}
     if (!startYear || startYear < 2000) e.start_year = 'Année de début invalide'
-    if (!endYear || endYear <= startYear) e.end_year = 'L\'année de fin doit être supérieure'
+    if (!endYear || endYear <= startYear)
+      e.end_year = "L'année de fin doit être supérieure"
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -701,8 +770,7 @@ function CreateAcademicYearModal({
 
   const inputBase =
     'w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary'
-  const inputError =
-    'border-destructive focus:ring-destructive'
+  const inputError = 'border-destructive focus:ring-destructive'
 
   return (
     <div
@@ -738,11 +806,15 @@ function CreateAcademicYearModal({
                 min={2000}
                 max={2100}
                 autoFocus
-                onChange={(e) => handleStartChange(parseInt(e.target.value) || thisYear)}
+                onChange={(e) =>
+                  handleStartChange(parseInt(e.target.value) || thisYear)
+                }
                 className={`${inputBase} ${errors.start_year ? inputError : ''}`}
               />
               {errors.start_year && (
-                <p className="mt-1 text-xs text-destructive">{errors.start_year}</p>
+                <p className="mt-1 text-xs text-destructive">
+                  {errors.start_year}
+                </p>
               )}
             </div>
             <div>
@@ -761,7 +833,9 @@ function CreateAcademicYearModal({
                 className={`${inputBase} ${errors.end_year ? inputError : ''}`}
               />
               {errors.end_year && (
-                <p className="mt-1 text-xs text-destructive">{errors.end_year}</p>
+                <p className="mt-1 text-xs text-destructive">
+                  {errors.end_year}
+                </p>
               )}
             </div>
           </div>

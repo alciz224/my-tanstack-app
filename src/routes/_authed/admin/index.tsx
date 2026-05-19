@@ -1,5 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Settings, Users, FileText, Database, Activity, Shield } from 'lucide-react'
+import {
+  Activity,
+  Database,
+  FileText,
+  Settings,
+  Shield,
+  Users,
+} from 'lucide-react'
 
 /**
  * Admin Portal Home Page
@@ -26,7 +33,8 @@ function AdminDashboard() {
           </div>
         </div>
         <p className="text-white/80">
-          Administration générale - Gestion des utilisateurs, contenus et paramètres
+          Administration générale - Gestion des utilisateurs, contenus et
+          paramètres
         </p>
       </div>
 
@@ -104,13 +112,11 @@ function AdminDashboard() {
 
       {/* Recent Activity */}
       <div className="bg-card border border-border rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-foreground mb-4">Activité Récente</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-4">
+          Activité Récente
+        </h2>
         <div className="space-y-3">
-          <ActivityItem
-            action="Aucune activité récente"
-            time="—"
-            type="info"
-          />
+          <ActivityItem action="Aucune activité récente" time="—" type="info" />
         </div>
       </div>
     </div>
@@ -129,7 +135,9 @@ function StatCard({ title, value, icon: Icon, color, trend }: StatCardProps) {
   return (
     <div className="bg-card border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}>
+        <div
+          className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}
+        >
           <Icon className="w-6 h-6 text-white" />
         </div>
         <span className="text-sm text-muted-foreground">{trend}</span>

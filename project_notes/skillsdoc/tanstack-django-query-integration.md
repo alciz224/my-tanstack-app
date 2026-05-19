@@ -70,8 +70,8 @@ export function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 60 * 1000,        // 1 minute par défaut
-        refetchOnWindowFocus: false,  // Optionnel selon ton besoin
+        staleTime: 60 * 1000, // 1 minute par défaut
+        refetchOnWindowFocus: false, // Optionnel selon ton besoin
         retry: (failureCount, error: any) => {
           // Ne pas retry sur 401/403
           if (error?.status === 401 || error?.status === 403) return false
@@ -81,7 +81,8 @@ export function makeQueryClient() {
       dehydrate: {
         // N'hydrate que les queries en succès (pas les erreurs)
         shouldDehydrateQuery: (query) =>
-          defaultShouldDehydrateQuery(query) && query.state.status === 'success',
+          defaultShouldDehydrateQuery(query) &&
+          query.state.status === 'success',
       },
     },
   })
@@ -116,16 +117,19 @@ export interface RouterContext {
 
 export function createRouter(context?: Partial<RouterContext>) {
   const queryClient = context?.queryClient ?? getQueryClient()
-  
+
   return createTanStackRouter({
     routeTree,
     context: { queryClient, user: null, ...context },
     // 🔑 CRUCIAL : Déshydrater/Rehydrater React Query
     dehydrate: () => ({
-      queryClientState: queryClient.getQueryCache().getAll().map(q => ({
-        queryKey: q.queryKey,
-        state: q.state,
-      })),
+      queryClientState: queryClient
+        .getQueryCache()
+        .getAll()
+        .map((q) => ({
+          queryKey: q.queryKey,
+          state: q.state,
+        })),
     }),
   })
 }
@@ -190,7 +194,7 @@ function getCsrfToken(cookieHeader: string | null): string {
 // ─── apiFetch principal ─────────────────────────────────────────────
 
 interface ApiFetchOptions extends RequestInit {
-  params?: Record<string, string>  // Query params
+  params?: Record<string, string> // Query params
 }
 
 export async function apiFetch<T>(
@@ -200,7 +204,7 @@ export async function apiFetch<T>(
   const { params, ...fetchOptions } = options
   const headers = getRequestHeaders()
   const cookieHeader = headers.get('cookie') || ''
-  
+
   // Construire l'URL avec query params
   const url = new URL(`${API_BASE_URL}${path}`)
   if (params) {
@@ -214,10 +218,10 @@ export async function apiFetch<T>(
   const response = await fetch(url.toString(), {
     ...fetchOptions,
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
       // Forward le cookie de session Django
-      'Cookie': cookieHeader,
+      Cookie: cookieHeader,
       // CSRF token pour les mutations
       ...(isMutation ? { 'X-CSRFToken': getCsrfToken(cookieHeader) } : {}),
       // Merge les headers custom
@@ -228,7 +232,7 @@ export async function apiFetch<T>(
   // Gestion des erreurs Django
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}))
-    
+
     throw new DjangoAPIError(
       errorData.detail || errorData.message || `HTTP ${response.status}`,
       response.status,
@@ -295,16 +299,16 @@ export const Route = createFileRoute('/posts/')({
   // ─── SSR : Précharge la query ──────────────────────────────────
   loader: async ({ context }) => {
     const { queryClient } = context
-    
+
     // Prefetch côté serveur → forward les cookies automatiquement
     await queryClient.prefetchQuery({
       queryKey: postsQueryKey,
       queryFn: () => getPosts(),
     })
-    
+
     // Pas besoin de return data — React Query gère le cache
   },
-  
+
   component: PostsPage,
 })
 
@@ -317,7 +321,7 @@ function PostsPage() {
   })
 
   if (isLoading) return <Skeleton />
-  
+
   return (
     <div>
       {posts?.map(post => (
@@ -330,13 +334,13 @@ function PostsPage() {
 
 ### Avantage de ce pattern
 
-| Scénario | Comportement |
-|----------|-------------|
-| **Premier rendu (SSR)** | `loader` prefetch → HTML rendu avec données |
-| **Hydratation** | React Query trouve les données en cache → pas de refetch |
-| **Navigation SPA** | `useQuery` vérifie le cache → staleTime OK → pas de refetch |
-| **Après staleTime** | `useQuery` refetch automatiquement en arrière-plan |
-| **Invalidation** | `queryClient.invalidateQueries` force le refetch |
+| Scénario                | Comportement                                                |
+| ----------------------- | ----------------------------------------------------------- |
+| **Premier rendu (SSR)** | `loader` prefetch → HTML rendu avec données                 |
+| **Hydratation**         | React Query trouve les données en cache → pas de refetch    |
+| **Navigation SPA**      | `useQuery` vérifie le cache → staleTime OK → pas de refetch |
+| **Après staleTime**     | `useQuery` refetch automatiquement en arrière-plan          |
+| **Invalidation**        | `queryClient.invalidateQueries` force le refetch            |
 
 ---
 
@@ -352,9 +356,7 @@ import { apiGet, apiFetch } from './api.server'
 // ─── Liste des posts ───────────────────────────────────────────────
 
 export const getPosts = createServerFn({ method: 'GET' })
-  .inputValidator(
-    (data: { page?: number; search?: string } = {}) => data,
-  )
+  .inputValidator((data: { page?: number; search?: string } = {}) => data)
   .handler(async ({ data }) => {
     return apiGet<Post[]>('/posts/', {
       page: String(data.page || 1),
@@ -372,10 +374,11 @@ export const getPost = createServerFn({ method: 'GET' })
 
 // ─── Posts de l'utilisateur connecté ───────────────────────────────
 
-export const getMyPosts = createServerFn({ method: 'GET' })
-  .handler(async () => {
+export const getMyPosts = createServerFn({ method: 'GET' }).handler(
+  async () => {
     return apiGet<Post[]>('/posts/my/')
-  })
+  },
+)
 ```
 
 ### Composants avec useQuery
@@ -397,7 +400,7 @@ export function PostList({ search }: PostListProps) {
   })
 
   if (isLoading) return <PostsSkeleton />
-  
+
   if (error) {
     if (error.message.includes('401')) {
       return <LoginRedirect />
@@ -425,7 +428,7 @@ import { getPost } from '~/utils/posts.functions'
 export const Route = createFileRoute('/posts/$postId')({
   loader: async ({ context, params }) => {
     const { queryClient } = context
-    
+
     await queryClient.prefetchQuery({
       queryKey: ['posts', 'detail', params.postId],
       queryFn: () => getPost({ data: { id: params.postId } }),
@@ -436,7 +439,7 @@ export const Route = createFileRoute('/posts/$postId')({
 
 function PostDetailPage() {
   const { postId } = Route.useParams()
-  
+
   const { data: post } = useQuery({
     queryKey: ['posts', 'detail', postId],
     queryFn: () => getPost({ data: { id: postId } }),
@@ -479,7 +482,9 @@ export const createPost = createServerFn({ method: 'POST' })
   })
 
 export const updatePost = createServerFn({ method: 'PUT' })
-  .inputValidator((data: { id: string; title: string; content: string }) => data)
+  .inputValidator(
+    (data: { id: string; title: string; content: string }) => data,
+  )
   .handler(async ({ data }) => {
     const { id, ...body } = data
     return apiPut<Post>(`/posts/${id}/`, body)
@@ -507,22 +512,22 @@ export function CreatePostForm() {
   const mutation = useMutation({
     mutationFn: (data: { title: string; content: string }) =>
       createPost({ data }),
-    
+
     onSuccess: (newPost) => {
       // ─── Invalidation ──────────────────────────────────────────
       // Invalide la liste des posts → refetch automatique
       queryClient.invalidateQueries({ queryKey: postsQueryKey })
-      
+
       // Optionnel : Ajoute le nouveau post dans le cache
       queryClient.setQueryData(
         [...postsQueryKey],
         (old: Post[] = []) => [newPost, ...old],
       )
-      
+
       // Redirige vers le nouveau post
       navigate({ to: '/posts/$postId', params: { postId: newPost.id } })
     },
-    
+
     onError: (error: DjangoAPIError) => {
       if (error.status === 401) {
         toast.error('Veuillez vous connecter')
@@ -567,30 +572,30 @@ export function LikeButton({ post }: { post: Post }) {
 
   const mutation = useMutation({
     mutationFn: () => likePost({ data: { id: post.id } }),
-    
+
     // ─── Optimistic Update ──────────────────────────────────────
     onMutate: async () => {
       // Annule les refetches en cours
       await queryClient.cancelQueries({
         queryKey: ['posts', 'detail', post.id],
       })
-      
+
       // Snapshot de l'ancienne valeur
       const previousPost = queryClient.getQueryData<Post>(
         ['posts', 'detail', post.id],
       )
-      
+
       // Met à jour le cache immédiatement
       queryClient.setQueryData(
         ['posts', 'detail', post.id],
         (old: Post | undefined) =>
           old ? { ...old, likes: old.likes + 1, liked: true } : old,
       )
-      
+
       // Retourne le contexte pour onError
       return { previousPost }
     },
-    
+
     onError: (err, variables, context) => {
       // Rollback en cas d'erreur
       if (context?.previousPost) {
@@ -601,7 +606,7 @@ export function LikeButton({ post }: { post: Post }) {
       }
       toast.error('Erreur lors du like')
     },
-    
+
     onSettled: () => {
       // Refetch pour synchroniser
       queryClient.invalidateQueries({
@@ -748,7 +753,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 export function getCsrfToken(): string {
   if (typeof document === 'undefined') return ''
-  
+
   const match = document.cookie.match(/csrftoken=([^;]+)/)
   return match ? match[1] : ''
 }
@@ -764,9 +769,9 @@ export async function clientFetch<T>(
 
   const response = await fetch(`/api${path}`, {
     ...options,
-    credentials: 'include',  // 🔑 Envoie les cookies
+    credentials: 'include', // 🔑 Envoie les cookies
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
       ...(isMutation ? { 'X-CSRFToken': getCsrfToken() } : {}),
       ...options.headers,
@@ -849,9 +854,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from '../api.server'
 import type { Post, CreatePostInput, UpdatePostInput } from './posts.types'
 
 export const getPosts = createServerFn({ method: 'GET' })
-  .inputValidator(
-    (data: { search?: string; page?: number } = {}) => data,
-  )
+  .inputValidator((data: { search?: string; page?: number } = {}) => data)
   .handler(async ({ data }) => {
     return apiGet<Post[]>('/posts/', {
       page: String(data.page || 1),
@@ -900,16 +903,16 @@ export const Route = createFileRoute('/posts/')({
     search: (search.search as string) || '',
     page: Number(search.page) || 1,
   }),
-  
+
   loader: async ({ context, deps }) => {
     const { queryClient } = context
-    
+
     await queryClient.prefetchQuery({
       queryKey: postsKeys.list({ search: deps.search, page: deps.page }),
       queryFn: () => getPosts({ data: { search: deps.search, page: deps.page } }),
     })
   },
-  
+
   component: PostsPage,
 })
 
@@ -931,9 +934,9 @@ function PostsPage() {
         }
         placeholder="Rechercher..."
       />
-      
+
       {isLoading ? <Skeleton /> : <PostList posts={data || []} />}
-      
+
       <Pagination
         page={page}
         onChange={(p) => navigate({ search: { search, page: p } })}
@@ -990,7 +993,7 @@ import { postsKeys } from '~/utils/posts/posts.keys'
 export const Route = createFileRoute('/posts/$postId/edit')({
   loader: async ({ context, params }) => {
     const { queryClient } = context
-    
+
     await queryClient.prefetchQuery({
       queryKey: postsKeys.detail(params.postId),
       queryFn: () => getPost({ data: { id: params.postId } }),
@@ -1020,7 +1023,7 @@ function EditPostPage() {
       )
       // Invalide les listes
       queryClient.invalidateQueries({ queryKey: postsKeys.lists() })
-      
+
       navigate({ to: '/posts/$postId', params: { postId } })
     },
   })
@@ -1042,15 +1045,15 @@ function EditPostPage() {
 
 ## 10. Récapitulatif des Patterns
 
-| Pattern | Quand l'utiliser | Code |
-|---------|-----------------|------|
-| **Prefetch in loader** | SSR initial | `queryClient.prefetchQuery({ queryKey, queryFn })` dans `loader` |
-| **useQuery in component** | Lecture de données | `useQuery({ queryKey, queryFn })` |
-| **useMutation + invalidate** | Création/Suppression | `useMutation({ onSuccess: () => invalidateQueries() })` |
-| **Optimistic update** | Like, toggle rapide | `onMutate: setQueryData + onError: rollback` |
-| **Query key dépendante** | Filtres, pagination | `queryKey: ['posts', { search, page }]` |
-| **Enabled query** | Query conditionnelle | `enabled: !!userId` |
-| **apiFetch server** | Toutes les requêtes backend | Forward `Cookie` header automatiquement |
+| Pattern                      | Quand l'utiliser            | Code                                                             |
+| ---------------------------- | --------------------------- | ---------------------------------------------------------------- |
+| **Prefetch in loader**       | SSR initial                 | `queryClient.prefetchQuery({ queryKey, queryFn })` dans `loader` |
+| **useQuery in component**    | Lecture de données          | `useQuery({ queryKey, queryFn })`                                |
+| **useMutation + invalidate** | Création/Suppression        | `useMutation({ onSuccess: () => invalidateQueries() })`          |
+| **Optimistic update**        | Like, toggle rapide         | `onMutate: setQueryData + onError: rollback`                     |
+| **Query key dépendante**     | Filtres, pagination         | `queryKey: ['posts', { search, page }]`                          |
+| **Enabled query**            | Query conditionnelle        | `enabled: !!userId`                                              |
+| **apiFetch server**          | Toutes les requêtes backend | Forward `Cookie` header automatiquement                          |
 
 ### Checklist Django + TanStack Query
 
@@ -1065,4 +1068,4 @@ function EditPostPage() {
 
 ---
 
-*Document généré le 17 avril 2026 — TanStack Start v1.167+ avec Django REST Framework*
+_Document généré le 17 avril 2026 — TanStack Start v1.167+ avec Django REST Framework_

@@ -1,5 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Users, BookOpen, Calendar, MessageSquare, TrendingUp, Bell } from 'lucide-react'
+import {
+  Bell,
+  BookOpen,
+  Calendar,
+  MessageSquare,
+  TrendingUp,
+  Users,
+} from 'lucide-react'
 
 /**
  * Parent Portal Home Page
@@ -26,7 +33,8 @@ function ParentDashboard() {
           </div>
         </div>
         <p className="text-white/80">
-          Suivez la scolarité de vos enfants - Notes, devoirs, présence et communications
+          Suivez la scolarité de vos enfants - Notes, devoirs, présence et
+          communications
         </p>
       </div>
 
@@ -119,11 +127,18 @@ interface ActionCardProps {
   color: string
 }
 
-function ActionCard({ title, description, icon: Icon, color }: ActionCardProps) {
+function ActionCard({
+  title,
+  description,
+  icon: Icon,
+  color,
+}: ActionCardProps) {
   return (
     <button className="p-6 bg-card border border-border rounded-lg hover:shadow-lg transition-all hover:scale-105 text-left group">
       <div className="flex items-start gap-4">
-        <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center flex-shrink-0`}>
+        <div
+          className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center flex-shrink-0`}
+        >
           <Icon className="w-6 h-6 text-white" />
         </div>
         <div>

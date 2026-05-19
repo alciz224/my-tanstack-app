@@ -9,7 +9,10 @@ interface LoadingSpinnerProps {
  * Loading spinner component
  * Shows an animated spinner for loading states
  */
-export function LoadingSpinner({ size = 'md', className = '' }: LoadingSpinnerProps) {
+export function LoadingSpinner({
+  size = 'md',
+  className = '',
+}: LoadingSpinnerProps) {
   const sizeClasses = {
     sm: 'h-4 w-4 border-2',
     md: 'h-8 w-8 border-4',
@@ -44,7 +47,13 @@ export function FullPageLoading({ message }: { message?: string }) {
 /**
  * Button loading state
  */
-export function ButtonLoading({ children, isLoading }: { children: ReactNode; isLoading: boolean }) {
+export function ButtonLoading({
+  children,
+  isLoading,
+}: {
+  children: ReactNode
+  isLoading: boolean
+}) {
   return (
     <>
       {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
@@ -57,9 +66,7 @@ export function ButtonLoading({ children, isLoading }: { children: ReactNode; is
  * Skeleton loader for content
  */
 export function Skeleton({ className = '' }: { className?: string }) {
-  return (
-    <div className={`animate-pulse bg-muted rounded ${className}`} />
-  )
+  return <div className={`animate-pulse bg-muted rounded ${className}`} />
 }
 
 /**

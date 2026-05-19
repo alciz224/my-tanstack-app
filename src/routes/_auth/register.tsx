@@ -1,4 +1,9 @@
-import { Link, createFileRoute, redirect, useRouter } from '@tanstack/react-router'
+import {
+  Link,
+  createFileRoute,
+  redirect,
+  useRouter,
+} from '@tanstack/react-router'
 import * as React from 'react'
 import { emitAuthEvent } from '@/auth/authEvents'
 import { safeRedirectPath } from '@/auth/redirects'
@@ -47,13 +52,17 @@ function RegisterPage() {
 
   // Error State
   const [globalError, setGlobalError] = React.useState<string | null>(null)
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({})
+  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>(
+    {},
+  )
 
   const validateForm = () => {
     const errors: Record<string, string> = {}
 
-    if (!firstName.trim()) errors.first_name = t('errors.required', { field: t('auth.firstName') })
-    if (!lastName.trim()) errors.last_name = t('errors.required', { field: t('auth.lastName') })
+    if (!firstName.trim())
+      errors.first_name = t('errors.required', { field: t('auth.firstName') })
+    if (!lastName.trim())
+      errors.last_name = t('errors.required', { field: t('auth.lastName') })
 
     if (!email.trim()) {
       errors.email = t('errors.required', { field: t('auth.email') })
@@ -123,18 +132,15 @@ function RegisterPage() {
       }
 
       // Success
-      if (typeof window !== 'undefined') {
-        emitAuthEvent('login') // Assuming auto-login after register, or distinct event
-      }
-
       toast.success(
         t('auth.registerSuccess') || 'Account created!',
-        t('auth.registerSuccessMessage') || 'Welcome to EduVault! Your account has been created successfully.'
+        t('auth.registerSuccessMessage') ||
+          'Welcome to EduVault! Your account has been created successfully.',
       )
 
       // Determine redirect destination based on user role
       let destination = '/dashboard'
-      
+
       if (result.user) {
         if (result.user.role === null) {
           // User hasn't selected a role yet - go to role selection
@@ -150,8 +156,15 @@ function RegisterPage() {
         destination = safeRedirectPath(search.from, destination)
       }
 
-      router.navigate({ to: destination, replace: true })
+      // Invalidate the router to re-run beforeLoad with fresh user from server
+      await router.invalidate()
 
+      await router.navigate({ to: destination, replace: true })
+
+      // Notify other tabs AFTER navigation completes (cross-tab sync only)
+      if (typeof window !== 'undefined') {
+        emitAuthEvent('login')
+      }
     } catch (err: any) {
       setGlobalError(err?.message || t('errors.network'))
     } finally {
@@ -303,11 +316,17 @@ function RegisterPage() {
             <div className="ml-2 text-sm">
               <label htmlFor="terms" className="text-foreground">
                 {t('auth.termsAccept')}{' '}
-                <a href="#" className="text-primary hover:underline font-medium">
+                <a
+                  href="#"
+                  className="text-primary hover:underline font-medium"
+                >
                   {t('auth.termsService')}
                 </a>{' '}
                 {t('auth.and')}{' '}
-                <a href="#" className="text-primary hover:underline font-medium">
+                <a
+                  href="#"
+                  className="text-primary hover:underline font-medium"
+                >
                   {t('auth.privacyPolicy')}
                 </a>
               </label>
@@ -342,7 +361,12 @@ function RegisterPage() {
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
             <span>{globalError}</span>
           </div>

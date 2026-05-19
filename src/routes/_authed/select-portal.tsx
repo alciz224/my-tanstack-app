@@ -1,22 +1,22 @@
 import {
-  GraduationCap,
   BookOpen,
-  Users,
-  Settings,
   Building2,
-  Shield
+  GraduationCap,
+  Settings,
+  Shield,
+  Users,
 } from 'lucide-react'
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
+import type { UserRole } from '@/types/roles'
 import { selectRoleFn } from '@/server/auth'
 import { toast } from '@/stores/toastStore'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { PORTAL_LABELS, PORTAL_ROUTES, type UserRole, isValidRole } from '@/types/roles'
-
+import { PORTAL_LABELS, PORTAL_ROUTES, isValidRole } from '@/types/roles'
 
 /**
  * Role Selection Page
- * 
+ *
  * Allows users with multiple available roles to select which portal they want to access.
  * Auto-redirects if user only has one role available.
  */
@@ -41,7 +41,10 @@ export const Route = createFileRoute('/_authed/select-portal')({
 /**
  * Icon mapping for each role
  */
-const ROLE_ICONS: Record<UserRole, React.ComponentType<{ className?: string }>> = {
+const ROLE_ICONS: Record<
+  UserRole,
+  React.ComponentType<{ className?: string }>
+> = {
   student: GraduationCap,
   teacher: BookOpen,
   parent: Users,
@@ -53,7 +56,10 @@ const ROLE_ICONS: Record<UserRole, React.ComponentType<{ className?: string }>> 
 /**
  * Color schemes for portal cards
  */
-const ROLE_COLORS: Record<UserRole, { bg: string; border: string; icon: string; hover: string }> = {
+const ROLE_COLORS: Record<
+  UserRole,
+  { bg: string; border: string; icon: string; hover: string }
+> = {
   student: {
     bg: 'bg-blue-500/10',
     border: 'border-blue-500/30',
@@ -122,7 +128,8 @@ function SelectPortalPage() {
       if (!result.success) {
         toast.error(
           'Erreur de sélection',
-          result.error || 'Impossible de sélectionner ce rôle. Veuillez réessayer.'
+          result.error ||
+            'Impossible de sélectionner ce rôle. Veuillez réessayer.',
         )
         setSelecting(false)
         setSelectedRole(null)
@@ -131,7 +138,7 @@ function SelectPortalPage() {
 
       toast.success(
         'Portail sélectionné',
-        `Bienvenue dans le ${PORTAL_LABELS[role].title}`
+        `Bienvenue dans le ${PORTAL_LABELS[role].title}`,
       )
 
       // Invalidate the router so __root.tsx re-runs beforeLoad with a fresh
@@ -140,7 +147,10 @@ function SelectPortalPage() {
       await router.invalidate()
 
       if (import.meta.env.DEV) {
-        console.debug('[select-portal] router invalidated, navigating to:', PORTAL_ROUTES[role])
+        console.debug(
+          '[select-portal] router invalidated, navigating to:',
+          PORTAL_ROUTES[role],
+        )
       }
 
       // Navigate to the portal — root beforeLoad will fetch the fresh user
@@ -153,7 +163,8 @@ function SelectPortalPage() {
       }
       toast.error(
         'Erreur réseau',
-        err?.message || 'Une erreur est survenue lors de la sélection du portail.'
+        err?.message ||
+          'Une erreur est survenue lors de la sélection du portail.',
       )
       setSelecting(false)
       setSelectedRole(null)
@@ -166,20 +177,26 @@ function SelectPortalPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary mb-6 shadow-lg">
-            <span className="text-3xl font-black text-primary-foreground">EV</span>
+            <span className="text-3xl font-black text-primary-foreground">
+              EV
+            </span>
           </div>
           <h1 className="text-4xl font-bold text-foreground mb-3">
             Sélectionnez votre portail
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Bonjour <span className="font-semibold text-foreground">{user.full_name}</span>,
-            vous avez accès à plusieurs portails. Veuillez choisir celui que vous souhaitez utiliser.
+            Bonjour{' '}
+            <span className="font-semibold text-foreground">
+              {user.full_name}
+            </span>
+            , vous avez accès à plusieurs portails. Veuillez choisir celui que
+            vous souhaitez utiliser.
           </p>
           {user.role && (
             <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-muted rounded-lg text-sm text-muted-foreground">
               <span>Portail actuel:</span>
               <span className="font-semibold text-foreground">
-                {PORTAL_LABELS[user.role as UserRole]?.title || user.role}
+                {PORTAL_LABELS[user.role]?.title || user.role}
               </span>
             </div>
           )}
@@ -210,7 +227,9 @@ function SelectPortalPage() {
                 `}
               >
                 {/* Icon */}
-                <div className={`inline-flex p-3 rounded-lg bg-background/60 mb-4`}>
+                <div
+                  className={`inline-flex p-3 rounded-lg bg-background/60 mb-4`}
+                >
                   <Icon className={`w-8 h-8 ${colors.icon}`} />
                 </div>
 
@@ -269,8 +288,8 @@ function SelectPortalPage() {
               Aucun portail disponible
             </h3>
             <p className="text-muted-foreground">
-              Aucun rôle n'est actuellement attribué à votre compte.
-              Veuillez contacter l'administrateur.
+              Aucun rôle n'est actuellement attribué à votre compte. Veuillez
+              contacter l'administrateur.
             </p>
           </div>
         )}
@@ -278,7 +297,8 @@ function SelectPortalPage() {
         {/* Help text */}
         <div className="mt-12 text-center">
           <p className="text-sm text-muted-foreground">
-            Vous pourrez changer de portail à tout moment depuis le menu utilisateur.
+            Vous pourrez changer de portail à tout moment depuis le menu
+            utilisateur.
           </p>
         </div>
       </div>

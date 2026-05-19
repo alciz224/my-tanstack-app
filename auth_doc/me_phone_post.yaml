@@ -8,12 +8,12 @@ Request:
 
 Response Success (200):
   {
-    "success": true,
-    "message": "Téléphone modifié. Vérification requise.",
-    "data":
+    'success': true,
+    'message': 'Téléphone modifié. Vérification requise.',
+    'data':
       {
-        "phone": "+224620999999",
-        "phone_verified": false,
-        "verification_sent": true,
+        'phone': '+224620999999',
+        'phone_verified': false,
+        'verification_sent': true,
       },
   }

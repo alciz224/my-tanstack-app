@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { Shield, ArrowLeft } from 'lucide-react'
+import { Link, createFileRoute } from '@tanstack/react-router'
+import { ArrowLeft, Shield } from 'lucide-react'
 
 export const Route = createFileRoute('/unauthorized')({
   component: Unauthorized,
@@ -12,14 +12,28 @@ function Unauthorized() {
         <div className="bg-card border border-border rounded-lg shadow-lg p-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-destructive/10 p-3 rounded-lg">
-              <svg className="w-8 h-8 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <svg
+                className="w-8 h-8 text-destructive"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
               </svg>
             </div>
-            <h2 className="text-foreground text-2xl font-bold">Accès Non Autorisé</h2>
+            <h2 className="text-foreground text-2xl font-bold">
+              Accès Non Autorisé
+            </h2>
           </div>
           <p className="text-muted-foreground mb-6">
-            Vous n'avez pas la permission d'accéder à cette page. Le portail demandé nécessite un rôle différent de celui actuellement sélectionné.
+            Vous n'avez pas la permission d'accéder à cette page. Le portail
+            demandé nécessite un rôle différent de celui actuellement
+            sélectionné.
           </p>
 
           {/* Action Buttons */}
@@ -42,7 +56,8 @@ function Unauthorized() {
 
           <div className="mt-6 pt-6 border-t border-border">
             <p className="text-sm text-muted-foreground text-center">
-              Si vous pensez qu'il s'agit d'une erreur, veuillez contacter votre administrateur.
+              Si vous pensez qu'il s'agit d'une erreur, veuillez contacter votre
+              administrateur.
             </p>
           </div>
         </div>

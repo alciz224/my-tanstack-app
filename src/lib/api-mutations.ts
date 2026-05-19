@@ -1,12 +1,12 @@
 /**
  * Client-side API mutation functions
- * 
+ *
  * These functions run in the BROWSER (not server-side) to ensure
  * session cookies are properly sent with requests.
- * 
+ *
  * Server functions (createServerFn) cannot access browser cookies
  * when called from user actions (button clicks, etc.)
- * 
+ *
  * Pattern: All mutations use browser fetch() with credentials: 'include'
  * and call through Vite proxy (/api/v1/...) which forwards to Django
  */
@@ -64,7 +64,7 @@ function getCsrfTokenFromCookie(): string | null {
  * POST /api/v1/academic/academic-years/
  */
 export async function createAcademicYear(
-  input: AcademicYearInput
+  input: AcademicYearInput,
 ): Promise<MutationResult<AcademicYear>> {
   try {
     const csrfToken = getCsrfTokenFromCookie()
@@ -90,15 +90,13 @@ export async function createAcademicYear(
       return {
         success: false,
         error:
-          (data as any)?.message ||
-          (data as any)?.detail ||
-          `Request failed (${res.status})`,
+          data?.message || data?.detail || `Request failed (${res.status})`,
       }
     }
 
     return {
       success: true,
-      data: data as any,
+      data: data,
     }
   } catch (err: any) {
     return {
@@ -114,7 +112,7 @@ export async function createAcademicYear(
  */
 export async function updateAcademicYear(
   id: string,
-  input: Partial<AcademicYearInput>
+  input: Partial<AcademicYearInput>,
 ): Promise<MutationResult<AcademicYear>> {
   try {
     const csrfToken = getCsrfTokenFromCookie()
@@ -140,15 +138,13 @@ export async function updateAcademicYear(
       return {
         success: false,
         error:
-          (data as any)?.message ||
-          (data as any)?.detail ||
-          `Request failed (${res.status})`,
+          data?.message || data?.detail || `Request failed (${res.status})`,
       }
     }
 
     return {
       success: true,
-      data: data as any,
+      data: data,
     }
   } catch (err: any) {
     return {
@@ -163,7 +159,7 @@ export async function updateAcademicYear(
  * DELETE /api/v1/academic/academic-years/{id}/
  */
 export async function deleteAcademicYear(
-  id: string
+  id: string,
 ): Promise<MutationResult<void>> {
   try {
     const csrfToken = getCsrfTokenFromCookie()
@@ -184,7 +180,8 @@ export async function deleteAcademicYear(
       const data = (await safeReadJson(res)) ?? {}
       return {
         success: false,
-        error: data?.message || data?.detail || `Request failed (${res.status})`,
+        error:
+          data?.message || data?.detail || `Request failed (${res.status})`,
       }
     }
 
@@ -204,7 +201,7 @@ export async function deleteAcademicYear(
  * POST /api/v1/academic/academic-years/{id}/activate/
  */
 export async function activateAcademicYear(
-  id: string
+  id: string,
 ): Promise<MutationResult<AcademicYear>> {
   try {
     const csrfToken = getCsrfTokenFromCookie()
@@ -229,15 +226,13 @@ export async function activateAcademicYear(
       return {
         success: false,
         error:
-          (data as any)?.message ||
-          (data as any)?.detail ||
-          `Request failed (${res.status})`,
+          data?.message || data?.detail || `Request failed (${res.status})`,
       }
     }
 
     return {
       success: true,
-      data: data as any,
+      data: data,
     }
   } catch (err: any) {
     return {
@@ -252,7 +247,7 @@ export async function activateAcademicYear(
  * POST /api/v1/academic/academic-years/{id}/archive/
  */
 export async function archiveAcademicYear(
-  id: string
+  id: string,
 ): Promise<MutationResult<AcademicYear>> {
   try {
     const csrfToken = getCsrfTokenFromCookie()
@@ -277,15 +272,13 @@ export async function archiveAcademicYear(
       return {
         success: false,
         error:
-          (data as any)?.message ||
-          (data as any)?.detail ||
-          `Request failed (${res.status})`,
+          data?.message || data?.detail || `Request failed (${res.status})`,
       }
     }
 
     return {
       success: true,
-      data: data as any,
+      data: data,
     }
   } catch (err: any) {
     return {
@@ -300,7 +293,7 @@ export async function archiveAcademicYear(
  * POST /api/v1/academic/academic-years/{id}/set-current/
  */
 export async function setCurrentAcademicYear(
-  id: string
+  id: string,
 ): Promise<MutationResult<AcademicYear>> {
   try {
     const csrfToken = getCsrfTokenFromCookie()
@@ -325,12 +318,12 @@ export async function setCurrentAcademicYear(
 
     // Some backends expose this action as `set-current` while others use `set_current`.
     let { res, data } = await attempt(
-      `/api/v1/academic/academic-years/${id}/set_current/`
+      `/api/v1/academic/academic-years/${id}/set_current/`,
     )
 
     if (res.status === 404) {
-      ; ({ res, data } = await attempt(
-        `/api/v1/academic/academic-years/${id}/set_current/`
+      ;({ res, data } = await attempt(
+        `/api/v1/academic/academic-years/${id}/set_current/`,
       ))
     }
 
@@ -338,15 +331,210 @@ export async function setCurrentAcademicYear(
       return {
         success: false,
         error:
-          (data as any)?.message ||
-          (data as any)?.detail ||
-          `Request failed (${res.status})`,
+          data?.message || data?.detail || `Request failed (${res.status})`,
       }
     }
 
     return {
       success: true,
-      data: data as any,
+      data: data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err?.message || 'Network error',
+    }
+  }
+}
+
+/**
+ * Get current theme state
+ * GET /api/v2/theme/
+ */
+export async function getTheme(): Promise<
+  MutationResult<{
+    theme: 'light' | 'dark' | 'system'
+    resolvedTheme: 'light' | 'dark'
+  }>
+> {
+  try {
+    const csrfToken = getCsrfTokenFromCookie()
+
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    }
+
+    if (csrfToken) {
+      headers['X-CSRFToken'] = csrfToken
+    }
+
+    const res = await fetch('/api/v2/theme/', {
+      method: 'GET',
+      headers,
+      credentials: 'include',
+    })
+
+    const data = await safeReadJson(res)
+
+    if (!res.ok) {
+      return {
+        success: false,
+        error:
+          data?.message || data?.detail || `Request failed (${res.status})`,
+      }
+    }
+
+    return {
+      success: true,
+      data: data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err?.message || 'Network error',
+    }
+  }
+}
+
+/**
+ * Set theme to specific value
+ * POST /api/v2/theme/
+ */
+export async function setTheme(theme: 'light' | 'dark' | 'system'): Promise<
+  MutationResult<{
+    theme: 'light' | 'dark' | 'system'
+    resolvedTheme: 'light' | 'dark'
+  }>
+> {
+  try {
+    const csrfToken = getCsrfTokenFromCookie()
+
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    }
+
+    if (csrfToken) {
+      headers['X-CSRFToken'] = csrfToken
+    }
+
+    const res = await fetch('/api/v2/theme/', {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: JSON.stringify({ theme }),
+    })
+
+    const data = await safeReadJson(res)
+
+    if (!res.ok) {
+      return {
+        success: false,
+        error:
+          data?.message || data?.detail || `Request failed (${res.status})`,
+      }
+    }
+
+    return {
+      success: true,
+      data: data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err?.message || 'Network error',
+    }
+  }
+}
+
+/**
+ * Toggle theme between light/dark
+ * POST /api/v2/theme/toggle
+ */
+export async function toggleTheme(): Promise<
+  MutationResult<{
+    theme: 'light' | 'dark' | 'system'
+    resolvedTheme: 'light' | 'dark'
+  }>
+> {
+  try {
+    const csrfToken = getCsrfTokenFromCookie()
+
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    }
+
+    if (csrfToken) {
+      headers['X-CSRFToken'] = csrfToken
+    }
+
+    const res = await fetch('/api/v2/theme/toggle', {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+    })
+
+    const data = await safeReadJson(res)
+
+    if (!res.ok) {
+      return {
+        success: false,
+        error:
+          data?.message || data?.detail || `Request failed (${res.status})`,
+      }
+    }
+
+    return {
+      success: true,
+      data: data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err?.message || 'Network error',
+    }
+  }
+}
+
+/**
+ * Reset theme to system default
+ * POST /api/v2/theme/reset
+ */
+export async function resetTheme(): Promise<
+  MutationResult<{
+    theme: 'light' | 'dark' | 'system'
+    resolvedTheme: 'light' | 'dark'
+  }>
+> {
+  try {
+    const csrfToken = getCsrfTokenFromCookie()
+
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    }
+
+    if (csrfToken) {
+      headers['X-CSRFToken'] = csrfToken
+    }
+
+    const res = await fetch('/api/v2/theme/reset', {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+    })
+
+    const data = await safeReadJson(res)
+
+    if (!res.ok) {
+      return {
+        success: false,
+        error:
+          data?.message || data?.detail || `Request failed (${res.status})`,
+      }
+    }
+
+    return {
+      success: true,
+      data: data,
     }
   } catch (err: any) {
     return {

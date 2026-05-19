@@ -25,6 +25,7 @@ EduVault is built with **TanStack Start** (full-stack React framework) using a m
 **Critical Distinction**: TanStack Start runs code in two contexts:
 
 #### Server Functions (SSR)
+
 - Run on the **server** during SSR
 - Have access to incoming request headers (cookies)
 - Created with `createServerFn()`
@@ -37,25 +38,27 @@ export const getCurrentUserFn = createServerFn({ method: 'GET' }).handler(
     // Access incoming request cookies
     const req = (ctx as any)?.request
     const cookieHeader = req?.headers.get('cookie')
-    
+
     // Forward cookies to backend
     const res = await fetch(`${BACKEND_URL}/api/v2/auth/status/`, {
       headers: { Cookie: cookieHeader },
       credentials: 'include',
     })
-    
+
     // Return user data
     return user
-  }
+  },
 )
 ```
 
 **Why Server Functions?**
+
 - Enable SSR with authenticated data
 - Forward cookies from browser → TanStack Start → Django
 - Keep session tokens secure (httpOnly cookies)
 
 #### Client Functions
+
 - Run in the **browser** only
 - Access browser APIs (localStorage, fetch with cookies)
 - Cannot modify httpOnly cookies from server
@@ -70,12 +73,13 @@ export async function loginFn(data: LoginInput): Promise<AuthResult> {
     credentials: 'include', // Browser handles cookies
     body: JSON.stringify(data),
   })
-  
+
   return result
 }
 ```
 
 **Why Client Functions for Auth?**
+
 - Browser must set/clear httpOnly cookies directly
 - Server-side functions cannot modify browser cookies
 - POST requests need CSRF tokens from browser context
@@ -85,6 +89,7 @@ export async function loginFn(data: LoginInput): Promise<AuthResult> {
 ### 2. Authentication Flow
 
 #### Login Flow
+
 ```
 1. User submits login form
    ↓
@@ -102,6 +107,7 @@ export async function loginFn(data: LoginInput): Promise<AuthResult> {
 ```
 
 #### SSR Auth Check
+
 ```
 1. Browser requests page
    ↓
@@ -121,6 +127,7 @@ export async function loginFn(data: LoginInput): Promise<AuthResult> {
 ```
 
 #### Logout Flow
+
 ```
 1. User navigates to /logout
    ↓
@@ -146,13 +153,13 @@ export async function loginFn(data: LoginInput): Promise<AuthResult> {
 export const Route = createFileRoute('/_authed')({
   beforeLoad: async ({ location, context }) => {
     const user = context.user // From root route
-    
+
     if (!user) {
       // Not authenticated - redirect to login
       const from = buildFromParameter(location)
       throw redirect({ to: '/login', search: { from } })
     }
-    
+
     // Return typed context for child routes
     return { user } as { user: User }
   },
@@ -161,12 +168,14 @@ export const Route = createFileRoute('/_authed')({
 ```
 
 **How it works:**
+
 - All routes under `_authed/` require authentication
 - `beforeLoad` runs before rendering
 - Redirects to login if no user
 - Child routes get guaranteed non-null user
 
 #### Route Structure
+
 ```
 src/routes/
 ├── __root.tsx              # Loads user for all routes
@@ -191,11 +200,11 @@ src/routes/
 ```typescript
 // src/types/router.ts
 export interface RouteContext {
-  user: User | null  // Available in all routes
+  user: User | null // Available in all routes
 }
 
 export interface AuthedRouteContext extends RouteContext {
-  user: User  // Non-null (guaranteed in protected routes)
+  user: User // Non-null (guaranteed in protected routes)
 }
 ```
 
@@ -241,6 +250,7 @@ export function subscribeAuthEvents(callback: (event) => void) {
 ```
 
 **Usage in Root Route:**
+
 ```typescript
 // src/routes/__root.tsx
 React.useEffect(() => {
@@ -268,7 +278,7 @@ export class ErrorBoundary extends React.Component {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error:', error, errorInfo)
   }
-  
+
   render() {
     if (this.state.hasError) {
       return <FallbackUI />
@@ -279,6 +289,7 @@ export class ErrorBoundary extends React.Component {
 ```
 
 **Applied at Route Level:**
+
 ```typescript
 // src/routes/__root.tsx
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -319,19 +330,22 @@ export const useToastStore = create<ToastStore>((set) => ({
     set((state) => ({ toasts: [...state.toasts, { ...toast, id }] }))
     // Auto-dismiss
     setTimeout(() => {
-      set((state) => ({ toasts: state.toasts.filter(t => t.id !== id) }))
+      set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }))
     }, toast.duration)
   },
 }))
 
 // Helper functions
 export const toast = {
-  success: (title, message) => useToastStore.getState().addToast({ type: 'success', title, message }),
-  error: (title, message) => useToastStore.getState().addToast({ type: 'error', title, message }),
+  success: (title, message) =>
+    useToastStore.getState().addToast({ type: 'success', title, message }),
+  error: (title, message) =>
+    useToastStore.getState().addToast({ type: 'error', title, message }),
 }
 ```
 
 **Stores:**
+
 - `themeStore` - Theme (light/dark/system) + localStorage persistence
 - `languageStore` - i18n language selection
 - `toastStore` - Global toast notifications
@@ -343,12 +357,14 @@ export const toast = {
 ### Why Session-based Auth (not JWT)?
 
 ✅ **Advantages:**
+
 - httpOnly cookies prevent XSS attacks
 - Server-side session invalidation
 - Simpler mobile app integration
 - No token refresh complexity
 
 ❌ **Tradeoffs:**
+
 - Requires cookie forwarding in SSR
 - CSRF protection needed for mutations
 - Slightly more complex than localStorage tokens
@@ -356,6 +372,7 @@ export const toast = {
 ### Why TanStack Start?
 
 ✅ **Advantages:**
+
 - True SSR with React (fast initial loads)
 - File-based routing (convention over configuration)
 - Type-safe route context
@@ -365,6 +382,7 @@ export const toast = {
 ### Why Separate Django Backend?
 
 ✅ **Advantages:**
+
 - Existing Django investment
 - Complex auth logic in Python
 - Database ORM (Django models)
@@ -376,16 +394,19 @@ export const toast = {
 ## Security Considerations
 
 ### CSRF Protection
+
 - All mutations require CSRF token
 - Token fetched from `/api/v2/auth/csrf/`
 - Sent in `X-CSRFToken` header
 
 ### Cookie Security
+
 - httpOnly cookies (JavaScript cannot access)
 - Secure flag in production (HTTPS only)
 - SameSite=Lax (CSRF protection)
 
 ### Redirect Safety
+
 ```typescript
 // src/auth/redirects.ts
 export function safeRedirectPath(path?: string, fallback = '/'): string {
@@ -398,6 +419,7 @@ export function safeRedirectPath(path?: string, fallback = '/'): string {
 ```
 
 ### Input Validation
+
 - Client-side validation for UX
 - Server-side validation enforced by Django
 - Type safety prevents invalid data shapes
@@ -407,16 +429,19 @@ export function safeRedirectPath(path?: string, fallback = '/'): string {
 ## Performance Optimizations
 
 ### Code Splitting
+
 - Route-based code splitting (automatic)
 - Lazy loading heavy components
 - Dynamic imports for optional features
 
 ### SSR Benefits
+
 - Faster first contentful paint
 - SEO-friendly (search engines see content)
 - Progressive enhancement (works without JS)
 
 ### Caching Strategy
+
 - Route loader caching (TanStack Router)
 - Browser cache for static assets
 - No aggressive API caching (auth state must be fresh)
@@ -428,6 +453,7 @@ export function safeRedirectPath(path?: string, fallback = '/'): string {
 ### Adding a New Protected Route
 
 1. Create route file under `_authed/`
+
 ```typescript
 // src/routes/_authed/new-feature.tsx
 export const Route = createFileRoute('/_authed/new-feature')({
@@ -446,19 +472,20 @@ function NewFeature() {
 ### Adding a New Server Function
 
 1. Define function in `src/server/auth.ts`
+
 ```typescript
 export const myServerFn = createServerFn({ method: 'GET' }).handler(
   async (ctx) => {
     const req = (ctx as any)?.request
     const cookieHeader = req?.headers.get('cookie')
-    
+
     const res = await fetch(`${BACKEND_URL}/api/v2/...`, {
       headers: { Cookie: cookieHeader },
       credentials: 'include',
     })
-    
+
     return await res.json()
-  }
+  },
 )
 ```
 
@@ -470,6 +497,7 @@ export const myServerFn = createServerFn({ method: 'GET' }).handler(
 ## Testing Strategy
 
 ### Manual Testing Checklist
+
 - [ ] Login/logout works
 - [ ] Protected routes redirect to login
 - [ ] Cross-tab logout syncs
@@ -479,6 +507,7 @@ export const myServerFn = createServerFn({ method: 'GET' }).handler(
 - [ ] Loading states show during async ops
 
 ### Future: Automated Tests
+
 - Unit tests for utilities (validation, redirects)
 - Integration tests for auth flow
 - E2E tests for critical paths
@@ -488,6 +517,7 @@ export const myServerFn = createServerFn({ method: 'GET' }).handler(
 ## Common Pitfalls
 
 ### ❌ Using Server Functions for Mutations
+
 ```typescript
 // WRONG - server can't set browser cookies
 export const loginServerFn = createServerFn().handler(async (data) => {
@@ -496,6 +526,7 @@ export const loginServerFn = createServerFn().handler(async (data) => {
 ```
 
 ✅ **Correct:**
+
 ```typescript
 // RIGHT - client function sets cookies in browser
 export async function loginFn(data) {
@@ -504,12 +535,14 @@ export async function loginFn(data) {
 ```
 
 ### ❌ Forgetting Cookie Forwarding in SSR
+
 ```typescript
 // WRONG - cookies not forwarded
 const res = await fetch(`${BACKEND_URL}/api/...`) // No cookies!
 ```
 
 ✅ **Correct:**
+
 ```typescript
 // RIGHT - forward cookies from browser request
 const cookieHeader = req?.headers.get('cookie')
@@ -519,6 +552,7 @@ const res = await fetch(`${BACKEND_URL}/api/...`, {
 ```
 
 ### ❌ Not Invalidating Router After Auth Change
+
 ```typescript
 // WRONG - stale user data
 await loginFn(data)
@@ -526,6 +560,7 @@ router.navigate('/dashboard') // Still shows old user!
 ```
 
 ✅ **Correct:**
+
 ```typescript
 // RIGHT - refresh user data
 await loginFn(data)

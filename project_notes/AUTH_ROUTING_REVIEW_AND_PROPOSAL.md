@@ -5,6 +5,7 @@
 This document reviews the current authentication routing implementation and proposes best-practice TanStack Start patterns for Login + Register UX aligned with the Django session+CSRF backend contract.
 
 **Current Implementation Strengths:**
+
 - ✅ Root `beforeLoad` provides user to all routes (shared UI sync)
 - ✅ `_authed` layout acts as authentication gate with SSR redirect
 - ✅ Server function (`getCurrentUserFn`) as single source of truth
@@ -13,6 +14,7 @@ This document reviews the current authentication routing implementation and prop
 - ✅ Direct browser→Django calls for login/logout (proper cookie handling)
 
 **Areas for Improvement:**
+
 - ⚠️ Missing Register route implementation
 - ⚠️ CSRF token handling duplicated across routes
 - ⚠️ Form submission patterns could use TanStack Router's new form APIs
@@ -91,12 +93,12 @@ beforeLoad: async ({ location, context }) => {
 // ❌ Client-side only fetch
 async function onSubmit(e: React.FormEvent) {
   e.preventDefault()
-  
+
   // Step 1: Get CSRF token
   const csrfRes = await fetch('/api/v2/auth/csrf/', {
     credentials: 'include',
   })
-  
+
   // Step 2: Login
   const loginRes = await fetch('/api/v2/auth/login/', {
     method: 'POST',
@@ -107,13 +109,14 @@ async function onSubmit(e: React.FormEvent) {
     credentials: 'include',
     body: JSON.stringify({ identifier: email, password }),
   })
-  
+
   // ❌ Manual navigation
   router.navigate({ to: destination, replace: true })
 }
 ```
 
 **Problems:**
+
 1. ❌ Client-side fetch doesn't work with SSR
 2. ❌ Manual router.invalidate() calls in authEvents instead of route dependencies
 3. ❌ No progressive enhancement (requires JS)
@@ -155,7 +158,7 @@ interface CsrfResponse {
 export const getCsrfTokenFn = createServerFn({ method: 'GET' }).handler(
   async (ctx) => {
     try {
-      const req: Request | undefined = 
+      const req: Request | undefined =
         (ctx as any)?.request || (ctx as any)?.context?.request
       const cookieHeader = req?.headers.get('cookie')
 
@@ -190,11 +193,12 @@ export const getCsrfTokenFn = createServerFn({ method: 'GET' }).handler(
       console.error('[CSRF] Failed to get token:', error)
       throw error
     }
-  }
+  },
 )
 ```
 
 **Benefits:**
+
 - ✅ Runs on server (SSR-compatible)
 - ✅ Forwards cookies properly
 - ✅ Single place to handle CSRF logic
@@ -243,7 +247,7 @@ interface ApiResponse<T> {
 export const getCurrentUserFn = createServerFn({ method: 'GET' }).handler(
   async (ctx) => {
     try {
-      const req: Request | undefined = 
+      const req: Request | undefined =
         (ctx as any)?.request || (ctx as any)?.context?.request
       const cookieHeader = req?.headers.get('cookie')
 
@@ -262,14 +266,14 @@ export const getCurrentUserFn = createServerFn({ method: 'GET' }).handler(
       const contentType = res.headers.get('content-type') || ''
       if (!contentType.includes('application/json')) return null
 
-      const data: ApiResponse<{ user: User; authenticated: boolean }> = 
+      const data: ApiResponse<{ user: User; authenticated: boolean }> =
         await res.json()
 
       return data.success && data.data?.user ? data.data.user : null
     } catch {
       return null
     }
-  }
+  },
 )
 
 /**
@@ -303,8 +307,7 @@ export const loginFn = createServerFn({ method: 'POST' })
         throw new Error('Failed to get CSRF token')
       }
 
-      const csrfData: ApiResponse<{ csrf_token: string }> = 
-        await csrfRes.json()
+      const csrfData: ApiResponse<{ csrf_token: string }> = await csrfRes.json()
       const csrfToken = csrfData.data?.csrf_token
 
       if (!csrfToken) {
@@ -320,7 +323,7 @@ export const loginFn = createServerFn({ method: 'POST' })
         'Content-Type': 'application/json',
         'X-CSRFToken': csrfToken,
       }
-      
+
       if (sessionCookie) {
         loginHeaders['Cookie'] = sessionCookie
       }
@@ -373,22 +376,24 @@ export const loginFn = createServerFn({ method: 'POST' })
  * Register server function
  */
 export const registerFn = createServerFn({ method: 'POST' })
-  .validator((data: {
-    email?: string | null
-    phone?: string | null
-    password: string
-    password_confirm: string
-    first_name: string
-    last_name: string
-  }) => {
-    if (!data.email && !data.phone) {
-      throw new Error('Either email or phone is required')
-    }
-    if (data.password !== data.password_confirm) {
-      throw new Error('Passwords do not match')
-    }
-    return data
-  })
+  .validator(
+    (data: {
+      email?: string | null
+      phone?: string | null
+      password: string
+      password_confirm: string
+      first_name: string
+      last_name: string
+    }) => {
+      if (!data.email && !data.phone) {
+        throw new Error('Either email or phone is required')
+      }
+      if (data.password !== data.password_confirm) {
+        throw new Error('Passwords do not match')
+      }
+      return data
+    },
+  )
   .handler(async ({ data, context }) => {
     try {
       const ctx = context as any
@@ -410,8 +415,7 @@ export const registerFn = createServerFn({ method: 'POST' })
         throw new Error('Failed to get CSRF token')
       }
 
-      const csrfData: ApiResponse<{ csrf_token: string }> = 
-        await csrfRes.json()
+      const csrfData: ApiResponse<{ csrf_token: string }> = await csrfRes.json()
       const csrfToken = csrfData.data?.csrf_token
 
       if (!csrfToken) {
@@ -426,30 +430,26 @@ export const registerFn = createServerFn({ method: 'POST' })
         'Content-Type': 'application/json',
         'X-CSRFToken': csrfToken,
       }
-      
+
       if (sessionCookie) {
         registerHeaders['Cookie'] = sessionCookie
       }
 
-      const registerRes = await fetch(
-        `${BACKEND_URL}/api/v2/auth/register/`,
-        {
-          method: 'POST',
-          headers: registerHeaders,
-          body: JSON.stringify({
-            email: data.email,
-            phone: data.phone,
-            password: data.password,
-            password_confirm: data.password_confirm,
-            first_name: data.first_name,
-            last_name: data.last_name,
-          }),
-          credentials: 'include',
-        }
-      )
+      const registerRes = await fetch(`${BACKEND_URL}/api/v2/auth/register/`, {
+        method: 'POST',
+        headers: registerHeaders,
+        body: JSON.stringify({
+          email: data.email,
+          phone: data.phone,
+          password: data.password,
+          password_confirm: data.password_confirm,
+          first_name: data.first_name,
+          last_name: data.last_name,
+        }),
+        credentials: 'include',
+      })
 
-      const registerData: ApiResponse<{ user: User }> = 
-        await registerRes.json()
+      const registerData: ApiResponse<{ user: User }> = await registerRes.json()
 
       if (!registerRes.ok) {
         return {
@@ -489,7 +489,7 @@ export const registerFn = createServerFn({ method: 'POST' })
 export const logoutFn = createServerFn({ method: 'POST' }).handler(
   async (ctx) => {
     try {
-      const req: Request | undefined = 
+      const req: Request | undefined =
         (ctx as any)?.request || (ctx as any)?.context?.request
       const cookieHeader = req?.headers.get('cookie')
 
@@ -508,8 +508,7 @@ export const logoutFn = createServerFn({ method: 'POST' }).handler(
         throw new Error('Failed to get CSRF token')
       }
 
-      const csrfData: ApiResponse<{ csrf_token: string }> = 
-        await csrfRes.json()
+      const csrfData: ApiResponse<{ csrf_token: string }> = await csrfRes.json()
       const csrfToken = csrfData.data?.csrf_token
 
       if (!csrfToken) {
@@ -524,7 +523,7 @@ export const logoutFn = createServerFn({ method: 'POST' }).handler(
         'Content-Type': 'application/json',
         'X-CSRFToken': csrfToken,
       }
-      
+
       if (sessionCookie) {
         logoutHeaders['Cookie'] = sessionCookie
       }
@@ -552,7 +551,7 @@ export const logoutFn = createServerFn({ method: 'POST' }).handler(
         message: 'Logout failed',
       }
     }
-  }
+  },
 )
 ```
 
@@ -633,7 +632,7 @@ function LoginPage() {
       <div className="w-full max-w-md">
         <div className="bg-card border border-border rounded-lg shadow-lg p-8">
           <h2 className="text-foreground text-2xl font-bold mb-6">Login</h2>
-          
+
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
               <label className="block text-foreground font-medium mb-2">
@@ -696,6 +695,7 @@ function LoginPage() {
 ```
 
 **Key Improvements:**
+
 - ✅ Uses server function (`loginFn`) instead of direct fetch
 - ✅ SSR-compatible (server function runs on server)
 - ✅ Proper cookie forwarding handled by server function
@@ -954,7 +954,7 @@ function LogoutPage() {
         }
 
         setStatus('done')
-        
+
         // Use replace instead of navigate to prevent back button issues
         window.location.replace('/login')
       } catch (err: any) {
@@ -1119,6 +1119,7 @@ Tab A: User logs out
 ## Testing Checklist
 
 ### Login Flow
+
 - [ ] Login with email + password
 - [ ] Login with phone + password
 - [ ] Login with invalid credentials shows error
@@ -1128,6 +1129,7 @@ Tab A: User logs out
 - [ ] Login works with SSR (server-side authentication check)
 
 ### Register Flow
+
 - [ ] Register with email only
 - [ ] Register with phone only
 - [ ] Register with both email and phone
@@ -1139,24 +1141,28 @@ Tab A: User logs out
 - [ ] Registration redirects to dashboard (or `?from` parameter)
 
 ### Logout Flow
+
 - [ ] Logout clears session cookie
 - [ ] Logout redirects to login page
 - [ ] Logout invalidates all tabs
 - [ ] Logout from protected page redirects
 
 ### Protected Routes
+
 - [ ] Accessing /dashboard when logged out redirects to /login
 - [ ] Accessing /dashboard when logged in shows content
 - [ ] Protected route includes `?from` parameter for post-login redirect
 - [ ] Root beforeLoad provides user to all routes
 
 ### Cross-Tab Sync
+
 - [ ] Login in Tab A updates Tab B
 - [ ] Logout in Tab A redirects Tab B (if on protected route)
 - [ ] Tab focus revalidates auth state
 - [ ] Tab visibility change revalidates auth state
 
 ### SSR
+
 - [ ] Protected routes redirect on server (no flash of protected content)
 - [ ] Public routes accessible without authentication
 - [ ] Cookies forwarded correctly from browser to server to Django
@@ -1173,7 +1179,7 @@ Tab A: User logs out
 async function login() {
   // Client-side fetch
   const res = await fetch('/api/v2/auth/login/', { ... })
-  
+
   // Then calling server function
   await router.invalidate() // This re-runs getCurrentUserFn (server)
 }
@@ -1191,6 +1197,7 @@ localStorage.setItem('user', JSON.stringify(user))
 ```
 
 **Why it's bad:**
+
 - Doesn't work with SSR
 - Can become stale
 - Adds unnecessary client-side state
@@ -1203,7 +1210,7 @@ localStorage.setItem('user', JSON.stringify(user))
 // BAD: Fetching in component
 function MyComponent() {
   const [user, setUser] = useState(null)
-  
+
   useEffect(() => {
     getCurrentUserFn().then(setUser)
   }, [])
@@ -1230,7 +1237,7 @@ function MyComponent() {
 ### What's Working Well ?
 
 1. **Root beforeLoad pattern** - Single source of truth for user state
-2. **Protected layout (_authed)** - SSR-friendly authentication gate
+2. **Protected layout (\_authed)** - SSR-friendly authentication gate
 3. **Cross-tab synchronization** - BroadcastChannel with localStorage fallback
 4. **Safe redirects** - Open redirect prevention built-in
 5. **Server functions** - getCurrentUserFn properly forwards cookies
@@ -1260,6 +1267,7 @@ function MyComponent() {
 5. **Review any specific auth flow** in more detail?
 
 Or do you have questions about:
+
 - How server functions handle cookies in TanStack Start?
 - The difference between eforeLoad and loader?
 - Cross-tab synchronization implementation details?

@@ -33,14 +33,16 @@ This document provides a complete reference of all API endpoints used by the fro
 **Rate Limit:** 5 requests/minute per IP
 
 **Request:**
+
 ```json
 {
-  "identifier": "string",  // Email OR phone number
+  "identifier": "string", // Email OR phone number
   "password": "string"
 }
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -77,6 +79,7 @@ This document provides a complete reference of all API endpoints used by the fro
 ```
 
 **Success Response - Requires Verification (200):**
+
 ```json
 {
   "success": true,
@@ -91,6 +94,7 @@ This document provides a complete reference of all API endpoints used by the fro
 ```
 
 **Error Response (401):**
+
 ```json
 {
   "success": false,
@@ -103,6 +107,7 @@ This document provides a complete reference of all API endpoints used by the fro
 ```
 
 **Error Response - Account Locked (423):**
+
 ```json
 {
   "success": false,
@@ -127,18 +132,20 @@ This document provides a complete reference of all API endpoints used by the fro
 **Rate Limit:** 5 requests/hour per IP
 
 **Request:**
+
 ```json
 {
-  "email": "string | null",       // Required if phone not provided
-  "phone": "string | null",       // Required if email not provided (format: +224620123456)
-  "password": "string",           // Min 8 chars, 1 uppercase, 1 lowercase, 1 digit
-  "password_confirm": "string",   // Must match password
-  "first_name": "string",         // 2-50 characters
-  "last_name": "string"           // 2-50 characters
+  "email": "string | null", // Required if phone not provided
+  "phone": "string | null", // Required if email not provided (format: +224620123456)
+  "password": "string", // Min 8 chars, 1 uppercase, 1 lowercase, 1 digit
+  "password_confirm": "string", // Must match password
+  "first_name": "string", // 2-50 characters
+  "last_name": "string" // 2-50 characters
 }
 ```
 
 **Success Response (201):**
+
 ```json
 {
   "success": true,
@@ -162,12 +169,13 @@ This document provides a complete reference of all API endpoints used by the fro
       "refresh": "eyJ..."
     },
     "requires_verification": true,
-    "verification_sent_to": "email"  // or "phone" or null
+    "verification_sent_to": "email" // or "phone" or null
   }
 }
 ```
 
 **Error Response (400):**
+
 ```json
 {
   "success": false,
@@ -191,18 +199,21 @@ This document provides a complete reference of all API endpoints used by the fro
 **Auth Required:** Yes
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Request Body:**
+
 ```json
 {
-  "refresh": "string"  // Refresh token to blacklist
+  "refresh": "string" // Refresh token to blacklist
 }
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -222,25 +233,28 @@ Authorization: Bearer <access_token>
 **Auth Required:** No
 
 **Request:**
+
 ```json
 {
-  "refresh": "string"  // Current refresh token
+  "refresh": "string" // Current refresh token
 }
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Token rafraîchi",
   "data": {
     "access": "eyJ...",
-    "refresh": "eyJ..."  // New refresh token (rotation)
+    "refresh": "eyJ..." // New refresh token (rotation)
   }
 }
 ```
 
 **Error Response (401):**
+
 ```json
 {
   "success": false,
@@ -253,6 +267,7 @@ Authorization: Bearer <access_token>
 ```
 
 **Implementation Notes:**
+
 - Token rotation is enabled - each refresh invalidates the old refresh token
 - 30-second grace period to handle race conditions (multiple tabs)
 - If old token used after grace period → return `AUTH_TOKEN_REUSE_DETECTED` error
@@ -268,11 +283,13 @@ Authorization: Bearer <access_token>
 **Auth Required:** Yes
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -288,7 +305,7 @@ Authorization: Bearer <access_token>
     "full_name": "Mamadou Diallo",
     "backup_phone": "+224621000000",
     "backup_phone_owner": "Papa",
-    
+
     "verification": {
       "is_verified": true,
       "email_verified": true,
@@ -296,7 +313,7 @@ Authorization: Bearer <access_token>
       "phone_verified": false,
       "phone_verified_at": null
     },
-    
+
     "security": {
       "score": 65,
       "level": "medium",
@@ -308,13 +325,13 @@ Authorization: Bearer <access_token>
         "Ajoutez une 3ème question de sécurité"
       ]
     },
-    
+
     "profiles": {
       "has_student": true,
       "has_teacher": false,
       "has_school_admin": false
     },
-    
+
     "date_joined": "2024-01-10T08:00:00Z",
     "last_login": "2024-01-20T14:30:00Z"
   }
@@ -330,11 +347,13 @@ Authorization: Bearer <access_token>
 **Auth Required:** Yes
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Request Body:** (all fields optional)
+
 ```json
 {
   "first_name": "string",
@@ -345,11 +364,14 @@ Authorization: Bearer <access_token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Profil mis à jour",
-  "data": { /* Same structure as GET /me/ */ }
+  "data": {
+    /* Same structure as GET /me/ */
+  }
 }
 ```
 
@@ -362,19 +384,22 @@ Authorization: Bearer <access_token>
 **Auth Required:** Yes
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "string",
-  "current_password": "string"  // Required for security
+  "current_password": "string" // Required for security
 }
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -396,19 +421,22 @@ Authorization: Bearer <access_token>
 **Auth Required:** Yes
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "phone": "string",
-  "current_password": "string"  // Required for security
+  "current_password": "string" // Required for security
 }
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -432,11 +460,13 @@ Authorization: Bearer <access_token>
 **Auth Required:** Yes
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "current_password": "string",
@@ -446,6 +476,7 @@ Authorization: Bearer <access_token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -460,6 +491,7 @@ Authorization: Bearer <access_token>
 ```
 
 **Error Response (400):**
+
 ```json
 {
   "success": false,
@@ -481,13 +513,15 @@ Authorization: Bearer <access_token>
 **Rate Limit:** 3 requests/hour per IP
 
 **Request Body:**
+
 ```json
 {
-  "identifier": "string"  // Email OR phone number
+  "identifier": "string" // Email OR phone number
 }
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -510,6 +544,7 @@ Authorization: Bearer <access_token>
 **Auth Required:** No
 
 **Request Body:**
+
 ```json
 {
   "identifier": "string",
@@ -520,6 +555,7 @@ Authorization: Bearer <access_token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -531,6 +567,7 @@ Authorization: Bearer <access_token>
 ```
 
 **Error Response (400):**
+
 ```json
 {
   "success": false,
@@ -553,11 +590,13 @@ Authorization: Bearer <access_token>
 **Auth Required:** Yes
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -590,18 +629,21 @@ Authorization: Bearer <access_token>
 **Rate Limit:** 3 requests/minute, 5 requests/day
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Request Body:**
+
 ```json
 {
-  "type": "email | phone"  // Which contact to verify
+  "type": "email | phone" // Which contact to verify
 }
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -611,12 +653,13 @@ Authorization: Bearer <access_token>
     "masked": "u***@example.com",
     "expires_in": 600,
     "can_resend_in": 60,
-    "dev_code": "123456"  // DEV ONLY - if SMS_SHOW_CODE_IN_RESPONSE=True
+    "dev_code": "123456" // DEV ONLY - if SMS_SHOW_CODE_IN_RESPONSE=True
   }
 }
 ```
 
 **Error Response - No Contact (400):**
+
 ```json
 {
   "success": false,
@@ -629,6 +672,7 @@ Authorization: Bearer <access_token>
 ```
 
 **Error Response - Rate Limited (429):**
+
 ```json
 {
   "success": false,
@@ -651,19 +695,22 @@ Authorization: Bearer <access_token>
 **Auth Required:** Yes
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "type": "email | phone",
-  "code": "string"  // 6-digit code
+  "code": "string" // 6-digit code
 }
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -681,6 +728,7 @@ Authorization: Bearer <access_token>
 ```
 
 **Error Response (400):**
+
 ```json
 {
   "success": false,
@@ -705,6 +753,7 @@ Authorization: Bearer <access_token>
 **Auth Required:** No
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -732,11 +781,13 @@ Authorization: Bearer <access_token>
 **Auth Required:** Yes
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -766,11 +817,13 @@ Authorization: Bearer <access_token>
 **Auth Required:** Yes
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "questions": [
@@ -783,7 +836,7 @@ Authorization: Bearer <access_token>
       "answer": "string"
     },
     {
-      "question": "string",  // Optional 3rd question
+      "question": "string", // Optional 3rd question
       "answer": "string"
     }
   ]
@@ -791,6 +844,7 @@ Authorization: Bearer <access_token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -814,9 +868,10 @@ Authorization: Bearer <access_token>
 **Auth Required:** No
 
 **Request Body:**
+
 ```json
 {
-  "identifier": "string",  // Email or phone
+  "identifier": "string", // Email or phone
   "answers": [
     {
       "order": 1,
@@ -831,6 +886,7 @@ Authorization: Bearer <access_token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -843,6 +899,7 @@ Authorization: Bearer <access_token>
 ```
 
 **Error Response (400):**
+
 ```json
 {
   "success": false,
@@ -867,6 +924,7 @@ Authorization: Bearer <access_token>
 **Auth Required:** No
 
 **Success Response (200):**
+
 ```json
 {
   "status": "healthy",
@@ -881,6 +939,7 @@ Authorization: Bearer <access_token>
 ```
 
 **Error Response (503):**
+
 ```json
 {
   "status": "unhealthy",
@@ -901,15 +960,19 @@ Authorization: Bearer <access_token>
 All endpoints follow a consistent response format:
 
 ### Success Response
+
 ```json
 {
   "success": true,
   "message": "string | null",
-  "data": { /* endpoint-specific data */ }
+  "data": {
+    /* endpoint-specific data */
+  }
 }
 ```
 
 ### Error Response
+
 ```json
 {
   "success": false,
@@ -925,38 +988,39 @@ All endpoints follow a consistent response format:
 
 ## 9. Error Codes
 
-| Code | HTTP Status | Description | Frontend Action |
-|------|-------------|-------------|-----------------|
-| `AUTH_INVALID_CREDENTIALS` | 401 | Wrong email/password | Show error message |
-| `AUTH_TOKEN_INVALID` | 401 | JWT invalid/expired | Try refresh, then logout |
-| `AUTH_TOKEN_REUSE_DETECTED` | 401 | Security violation | Force logout immediately |
-| `AUTH_ACCOUNT_LOCKED` | 423 | Too many failed attempts | Show lockout message with timer |
-| `AUTH_ACCOUNT_INACTIVE` | 403 | Account disabled | Show contact admin message |
-| `VALIDATION_ERROR` | 400 | Input validation failed | Show field-specific errors |
-| `PASSWORD_INVALID_CURRENT` | 400 | Current password wrong | Show error on current password field |
-| `PASSWORD_RESET_INVALID` | 400 | Reset code invalid/expired | Show error, offer resend |
-| `VERIFY_NO_CONTACT` | 400 | No email/phone configured | Prompt to add contact |
-| `VERIFY_COOLDOWN` | 429 | Resend too soon | Show countdown timer |
-| `VERIFY_CODE_INVALID` | 400 | Wrong verification code | Show attempts remaining |
-| `SECURITY_ANSWERS_INVALID` | 400 | Wrong security answers | Show attempts remaining |
-| `SERVER_ERROR` | 500 | Internal server error | Show generic error |
+| Code                        | HTTP Status | Description                | Frontend Action                      |
+| --------------------------- | ----------- | -------------------------- | ------------------------------------ |
+| `AUTH_INVALID_CREDENTIALS`  | 401         | Wrong email/password       | Show error message                   |
+| `AUTH_TOKEN_INVALID`        | 401         | JWT invalid/expired        | Try refresh, then logout             |
+| `AUTH_TOKEN_REUSE_DETECTED` | 401         | Security violation         | Force logout immediately             |
+| `AUTH_ACCOUNT_LOCKED`       | 423         | Too many failed attempts   | Show lockout message with timer      |
+| `AUTH_ACCOUNT_INACTIVE`     | 403         | Account disabled           | Show contact admin message           |
+| `VALIDATION_ERROR`          | 400         | Input validation failed    | Show field-specific errors           |
+| `PASSWORD_INVALID_CURRENT`  | 400         | Current password wrong     | Show error on current password field |
+| `PASSWORD_RESET_INVALID`    | 400         | Reset code invalid/expired | Show error, offer resend             |
+| `VERIFY_NO_CONTACT`         | 400         | No email/phone configured  | Prompt to add contact                |
+| `VERIFY_COOLDOWN`           | 429         | Resend too soon            | Show countdown timer                 |
+| `VERIFY_CODE_INVALID`       | 400         | Wrong verification code    | Show attempts remaining              |
+| `SECURITY_ANSWERS_INVALID`  | 400         | Wrong security answers     | Show attempts remaining              |
+| `SERVER_ERROR`              | 500         | Internal server error      | Show generic error                   |
 
 ---
 
 ## 10. Rate Limiting
 
-| Endpoint | Limit | Scope |
-|----------|-------|-------|
-| `POST /api/auth/login/` | 5/minute | Per IP |
-| `POST /api/auth/register/` | 5/hour | Per IP |
-| `POST /api/auth/password/reset/` | 3/hour | Per IP |
-| `POST /api/auth/password/reset/confirm/` | 5/hour | Per token |
-| `POST /api/auth/password/change/` | 5/hour | Per user |
-| `POST /api/auth/verify/send/` | 3/minute, 5/day | Per user |
-| `POST /api/auth/refresh/` | 30/15min | Per user |
-| `POST /api/auth/logout/` | 10/15min | Per user |
+| Endpoint                                 | Limit           | Scope     |
+| ---------------------------------------- | --------------- | --------- |
+| `POST /api/auth/login/`                  | 5/minute        | Per IP    |
+| `POST /api/auth/register/`               | 5/hour          | Per IP    |
+| `POST /api/auth/password/reset/`         | 3/hour          | Per IP    |
+| `POST /api/auth/password/reset/confirm/` | 5/hour          | Per token |
+| `POST /api/auth/password/change/`        | 5/hour          | Per user  |
+| `POST /api/auth/verify/send/`            | 3/minute, 5/day | Per user  |
+| `POST /api/auth/refresh/`                | 30/15min        | Per user  |
+| `POST /api/auth/logout/`                 | 10/15min        | Per user  |
 
 ### Account Lockout
+
 - After 10 failed login attempts: Lock account for **30 minutes**
 - Send email notification to user
 - Admin portal can unlock accounts early
@@ -965,53 +1029,55 @@ All endpoints follow a consistent response format:
 
 ## Endpoint Summary Table
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/api/auth/login/` | No | User login |
-| POST | `/api/auth/register/` | No | User registration |
-| POST | `/api/auth/logout/` | Yes | User logout |
-| POST | `/api/auth/refresh/` | No | Refresh access token |
-| GET | `/api/auth/me/` | Yes | Get user profile |
-| PATCH | `/api/auth/me/` | Yes | Update user profile |
-| POST | `/api/auth/me/email/` | Yes | Change email |
-| POST | `/api/auth/me/phone/` | Yes | Change phone |
-| POST | `/api/auth/password/change/` | Yes | Change password |
-| POST | `/api/auth/password/reset/` | No | Request password reset |
-| POST | `/api/auth/password/reset/confirm/` | No | Confirm password reset |
-| GET | `/api/auth/verify/status/` | Yes | Get verification status |
-| POST | `/api/auth/verify/send/` | Yes | Send verification code |
-| POST | `/api/auth/verify/confirm/` | Yes | Confirm verification |
-| GET | `/api/auth/security-questions/` | No | Get predefined questions |
-| GET | `/api/auth/security-questions/mine/` | Yes | Get user's questions |
-| POST | `/api/auth/security-questions/setup/` | Yes | Setup security questions |
-| POST | `/api/auth/security-questions/verify/` | No | Verify answers for recovery |
-| GET | `/api/health/` | No | Health check |
+| Method | Endpoint                               | Auth | Description                 |
+| ------ | -------------------------------------- | ---- | --------------------------- |
+| POST   | `/api/auth/login/`                     | No   | User login                  |
+| POST   | `/api/auth/register/`                  | No   | User registration           |
+| POST   | `/api/auth/logout/`                    | Yes  | User logout                 |
+| POST   | `/api/auth/refresh/`                   | No   | Refresh access token        |
+| GET    | `/api/auth/me/`                        | Yes  | Get user profile            |
+| PATCH  | `/api/auth/me/`                        | Yes  | Update user profile         |
+| POST   | `/api/auth/me/email/`                  | Yes  | Change email                |
+| POST   | `/api/auth/me/phone/`                  | Yes  | Change phone                |
+| POST   | `/api/auth/password/change/`           | Yes  | Change password             |
+| POST   | `/api/auth/password/reset/`            | No   | Request password reset      |
+| POST   | `/api/auth/password/reset/confirm/`    | No   | Confirm password reset      |
+| GET    | `/api/auth/verify/status/`             | Yes  | Get verification status     |
+| POST   | `/api/auth/verify/send/`               | Yes  | Send verification code      |
+| POST   | `/api/auth/verify/confirm/`            | Yes  | Confirm verification        |
+| GET    | `/api/auth/security-questions/`        | No   | Get predefined questions    |
+| GET    | `/api/auth/security-questions/mine/`   | Yes  | Get user's questions        |
+| POST   | `/api/auth/security-questions/setup/`  | Yes  | Setup security questions    |
+| POST   | `/api/auth/security-questions/verify/` | No   | Verify answers for recovery |
+| GET    | `/api/health/`                         | No   | Health check                |
 
 ---
 
 ## Token Configuration
 
-| Token Type | Lifetime | Notes |
-|------------|----------|-------|
-| Access Token | 15 minutes | Short-lived, stored in memory |
-| Refresh Token (Student/Teacher) | 14 days | HTTP-only cookie |
-| Refresh Token (Parent) | 7 days | Less frequent access |
-| Refresh Token (Admin) | 24 hours | Higher security |
-| Password Reset Code | 10 minutes | Sent via email/SMS |
-| Verification Code | 10 minutes | 6-digit code |
-| Security Question Reset Token | 10 minutes | After successful verification |
+| Token Type                      | Lifetime   | Notes                         |
+| ------------------------------- | ---------- | ----------------------------- |
+| Access Token                    | 15 minutes | Short-lived, stored in memory |
+| Refresh Token (Student/Teacher) | 14 days    | HTTP-only cookie              |
+| Refresh Token (Parent)          | 7 days     | Less frequent access          |
+| Refresh Token (Admin)           | 24 hours   | Higher security               |
+| Password Reset Code             | 10 minutes | Sent via email/SMS            |
+| Verification Code               | 10 minutes | 6-digit code                  |
+| Security Question Reset Token   | 10 minutes | After successful verification |
 
 ---
 
 ## CORS Configuration
 
 **Allowed Origins (Production):**
+
 ```
 https://app.school.edu
 https://www.school.edu
 ```
 
 **Required Headers:**
+
 ```
 Access-Control-Allow-Credentials: true
 Access-Control-Allow-Headers: Authorization, Content-Type

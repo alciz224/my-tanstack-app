@@ -16,16 +16,18 @@ export const Route = createFileRoute('/logout')({
 function LogoutPage() {
   const { t } = useTranslation()
   const router = useRouter()
-  const [status, setStatus] = React.useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+  const [status, setStatus] = React.useState<
+    'idle' | 'loading' | 'done' | 'error'
+  >('idle')
   const [error, setError] = React.useState<string | null>(null)
 
   React.useEffect(() => {
     let isMounted = true
 
-    ; (async () => {
+    ;(async () => {
       if (!isMounted) return
       setStatus('loading')
-      
+
       try {
         // Call logout on backend (clears session cookies)
         const result = await logoutFn()
@@ -44,11 +46,12 @@ function LogoutPage() {
         // Show success toast
         toast.success(
           t('auth.logoutSuccess') || 'Logged out',
-          t('auth.logoutSuccessMessage') || 'You have been logged out successfully.'
+          t('auth.logoutSuccessMessage') ||
+            'You have been logged out successfully.',
         )
 
         // Small delay to show success state
-        await new Promise(resolve => setTimeout(resolve, 800))
+        await new Promise((resolve) => setTimeout(resolve, 800))
 
         if (!isMounted) return
 
@@ -75,18 +78,34 @@ function LogoutPage() {
         <div className="bg-card border border-border rounded-lg shadow-lg p-8 text-center animate-scale-in">
           {status === 'loading' && (
             <div className="animate-fade-in">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent mb-4" role="status" aria-label="Logging out"></div>
+              <div
+                className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent mb-4"
+                role="status"
+                aria-label="Logging out"
+              ></div>
               <p className="text-foreground">{t('auth.loggingOut')}</p>
             </div>
           )}
           {status === 'done' && (
             <div className="animate-scale-in">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-                <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-8 h-8 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </div>
-              <p className="text-foreground font-semibold">{t('auth.logoutSuccess') || 'Logged out successfully'}</p>
+              <p className="text-foreground font-semibold">
+                {t('auth.logoutSuccess') || 'Logged out successfully'}
+              </p>
             </div>
           )}
           {status === 'error' && (
@@ -94,7 +113,7 @@ function LogoutPage() {
               <p className="font-semibold mb-2">{t('errors.logoutFailed')}</p>
               <p className="text-sm">{error}</p>
               <button
-                onClick={() => window.location.href = '/login'}
+                onClick={() => (window.location.href = '/login')}
                 className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 {t('nav.signIn') || 'Go to Login'}

@@ -1,10 +1,10 @@
 /**
  * Cross-tab auth event synchronization
- * 
+ *
  * Allows tabs to broadcast auth events (login/logout) to each other so that:
  * - Logout in one tab can invalidate/redirect other tabs
  * - Login in one tab can refresh other tabs
- * 
+ *
  * Uses BroadcastChannel (modern) with localStorage fallback (older browsers).
  */
 
@@ -41,7 +41,9 @@ function initializeChannel() {
         notifyListeners(event)
       }
     } catch (err) {
-      console.warn('[authEvents] BroadcastChannel failed, using localStorage fallback')
+      console.warn(
+        '[authEvents] BroadcastChannel failed, using localStorage fallback',
+      )
       channel = null
     }
   }
@@ -75,7 +77,7 @@ function notifyListeners(event: AuthEvent) {
 
 /**
  * Emit an auth event to all other tabs
- * 
+ *
  * @param type - The event type ('login' or 'logout')
  */
 export function emitAuthEvent(type: AuthEventType) {
@@ -89,20 +91,15 @@ export function emitAuthEvent(type: AuthEventType) {
   // Notify local listeners immediately (same tab)
   notifyListeners(event)
 
-  // Send via BroadcastChannel if available
+  // Send via BroadcastChannel if available (cross-tab sync)
   if (channel) {
     channel.postMessage(event)
-  } else {
-    // Fallback: write to localStorage to trigger 'storage' event in other tabs
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(event))
-    // Optionally remove immediately to keep storage clean
-    localStorage.removeItem(STORAGE_KEY)
   }
 }
 
 /**
  * Subscribe to auth events from other tabs
- * 
+ *
  * @param listener - Callback invoked when an auth event is received
  * @returns Unsubscribe function
  */

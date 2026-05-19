@@ -35,7 +35,10 @@ export function FormField({
       </label>
       {children}
       {error && (
-        <p id={errorId} className="text-sm text-destructive flex items-center gap-1">
+        <p
+          id={errorId}
+          className="text-sm text-destructive flex items-center gap-1"
+        >
           <svg
             className="w-4 h-4"
             fill="none"

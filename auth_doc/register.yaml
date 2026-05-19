@@ -13,75 +13,70 @@ Request:
     last_name: string # 2-50 chars
 
 Response Success (201):
-  {
-    "success": true,
-    "message": "Compte créé avec succès",
-    "data":
-      {
-        "user":
+  { 'success': true, 'message': 'Compte créé avec succès', 'data': {
+        'user':
           {
-            "id": "uuid",
-            "email": "user@example.com",
-            "email_masked": "u***@example.com",
-            "phone": "+224620123456",
-            "phone_masked": "+224 6XX-XXX-456",
-            "first_name": "Mamadou",
-            "last_name": "Diallo",
-            "full_name": "Mamadou Diallo",
-            "backup_phone": null,
-            "backup_phone_owner": null,
+            'id': 'uuid',
+            'email': 'user@example.com',
+            'email_masked': 'u***@example.com',
+            'phone': '+224620123456',
+            'phone_masked': '+224 6XX-XXX-456',
+            'first_name': 'Mamadou',
+            'last_name': 'Diallo',
+            'full_name': 'Mamadou Diallo',
+            'backup_phone': null,
+            'backup_phone_owner': null,
 
-            "verification":
+            'verification':
               {
-                "is_verified": false,
-                "email_verified": false,
-                "email_verified_at": null,
-                "phone_verified": false,
-                "phone_verified_at": null,
+                'is_verified': false,
+                'email_verified': false,
+                'email_verified_at': null,
+                'phone_verified': false,
+                'phone_verified_at': null,
               },
 
-            "security":
+            'security':
               {
-                "score": 25,
-                "level": "low",
-                "has_security_questions": false,
-                "security_questions_count": 0,
-                "has_backup_phone": false,
-                "suggestions":
+                'score': 25,
+                'level': 'low',
+                'has_security_questions': false,
+                'security_questions_count': 0,
+                'has_backup_phone': false,
+                'suggestions':
                   [
-                    "Vérifiez votre email ou téléphone",
-                    "Configurez des questions de sécurité",
-                    "Ajoutez un numéro de secours",
+                    'Vérifiez votre email ou téléphone',
+                    'Configurez des questions de sécurité',
+                    'Ajoutez un numéro de secours',
                   ],
               },
 
-            "profiles":
+            'profiles':
               {
-                "has_student": false,
-                "has_teacher": false,
-                "has_school_admin": false,
+                'has_student': false,
+                'has_teacher': false,
+                'has_school_admin': false,
               },
 
-            "date_joined": "2024-01-20T14:30:00Z",
-            "last_login": "2024-01-20T14:30:00Z",
+            'date_joined': '2024-01-20T14:30:00Z',
+            'last_login': '2024-01-20T14:30:00Z',
           },
-        "tokens": { "access": "eyJ...", "refresh": "eyJ..." },
-        "requires_verification": true,
-        "verification_sent_to": "email", # ou "phone" ou null
-      },
-  }
+        'tokens': { 'access': 'eyJ...', 'refresh': 'eyJ...' },
+        'requires_verification': true,
+        'verification_sent_to': 'email', # ou "phone" ou null
+      } }
 
 Response Error (400):
   {
-    "success": false,
-    "message": "Erreur de validation",
-    "error":
+    'success': false,
+    'message': 'Erreur de validation',
+    'error':
       {
-        "code": "VALIDATION_ERROR",
-        "details":
+        'code': 'VALIDATION_ERROR',
+        'details':
           {
-            "email": ["Cet email est déjà utilisé"],
-            "password": ["Le mot de passe doit contenir au moins 8 caractères"],
+            'email': ['Cet email est déjà utilisé'],
+            'password': ['Le mot de passe doit contenir au moins 8 caractères'],
           },
       },
   }

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Auth - Select Role
-  version: "1.0"
+  version: '1.0'
   description: |
     Set the active role for the current authenticated session.
 
@@ -50,7 +50,7 @@ paths:
                 value:
                   role: school_admin
       responses:
-        "200":
+        '200':
           description: Role selected successfully
           headers:
             Set-Cookie:
@@ -97,7 +97,7 @@ paths:
                     data:
                       role: school_admin
 
-        "400":
+        '400':
           description: Invalid request (e.g., missing/invalid role)
           content:
             application/json:
@@ -127,9 +127,9 @@ paths:
                       code: invalid_role
                       details:
                         role:
-                          - "Role must be one of: student, teacher, parent, admin, school_admin, super_admin"
+                          - 'Role must be one of: student, teacher, parent, admin, school_admin, super_admin'
 
-        "401":
+        '401':
           description: Not authenticated
           content:
             application/json:
@@ -152,7 +152,7 @@ paths:
                     success: false
                     message: Authentication required.
 
-        "403":
+        '403':
           description: Role is not permitted for this user
           content:
             application/json:
@@ -182,7 +182,7 @@ paths:
                       code: role_not_allowed
                       details:
                         role:
-                          - "You do not have access to this role"
+                          - 'You do not have access to this role'
 
 components:
   securitySchemes:
