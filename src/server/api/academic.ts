@@ -11,7 +11,6 @@
  */
 
 import { createServerFn } from '@tanstack/react-start'
-import { getAcademicService } from '@/server/data/academic/factory'
 
 // ============================================================================
 // Academic Years
@@ -22,7 +21,7 @@ import { getAcademicService } from '@/server/data/academic/factory'
  */
 export const getAcademicYearsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getAcademicService().getAcademicYears()
+    return (await import('@/server/data/academic/factory')).getAcademicService().getAcademicYears()
   },
 )
 
@@ -62,49 +61,49 @@ export const getCurrentAcademicYearFn = createServerFn({
 
 export const getCyclesFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getAcademicService().getCycles()
+    return (await import('@/server/data/academic/factory')).getAcademicService().getCycles()
   },
 )
 
 export const getLevelsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getAcademicService().getLevels()
+    return (await import('@/server/data/academic/factory')).getAcademicService().getLevels()
   },
 )
 
 export const getTracksFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getAcademicService().getTracks()
+    return (await import('@/server/data/academic/factory')).getAcademicService().getTracks()
   },
 )
 
 export const getSubjectsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getAcademicService().getSubjects()
+    return (await import('@/server/data/academic/factory')).getAcademicService().getSubjects()
   },
 )
 
 export const getPeriodsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getAcademicService().getTermTypes()
+    return (await import('@/server/data/academic/factory')).getAcademicService().getTermTypes()
   },
 )
 
 export const getTermTypesFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getAcademicService().getTermTypes()
+    return (await import('@/server/data/academic/factory')).getAcademicService().getTermTypes()
   },
 )
 
 export const getTermsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getAcademicService().getTerms()
+    return (await import('@/server/data/academic/factory')).getAcademicService().getTerms()
   },
 )
 
 export const getAssessmentTypesFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getAcademicService().getAssessmentTypes()
+    return (await import('@/server/data/academic/factory')).getAcademicService().getAssessmentTypes()
   },
 )
 

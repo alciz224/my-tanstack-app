@@ -1,26 +1,25 @@
 import { createServerFn } from '@tanstack/react-start'
-import { getGeographyService } from '@/server/data/geography/factory'
 
 export const getCountriesFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getGeographyService().getCountries()
+    return (await import('@/server/data/geography/factory')).getGeographyService().getCountries()
   },
 )
 
 export const getRegionsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getGeographyService().getRegions()
+    return (await import('@/server/data/geography/factory')).getGeographyService().getRegions()
   },
 )
 
 export const getAdministrativeUnitsFn = createServerFn({
   method: 'GET',
 }).handler(async () => {
-  return getGeographyService().getAdministrativeUnits()
+  return (await import('@/server/data/geography/factory')).getGeographyService().getAdministrativeUnits()
 })
 
 export const getLocalitiesFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return getGeographyService().getLocalities()
+    return (await import('@/server/data/geography/factory')).getGeographyService().getLocalities()
   },
 )

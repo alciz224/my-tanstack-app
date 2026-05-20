@@ -1,22 +1,21 @@
 import { createServerFn } from '@tanstack/react-start'
 import type { StudentsFilter } from '@/server/data/students/types'
 import type { Student } from '@/server/data/students/mocks'
-import { getStudentsService } from '@/server/data/students/factory'
 
 export type { Student }
 
 export const getStudentsFn = createServerFn({ method: 'GET' })
   .inputValidator((d: unknown) => d as StudentsFilter | undefined)
   .handler(async ({ data: filter }): Promise<Array<Student>> => {
-    // Per skill pattern: call getStudentsService() inside handler, never at module top-level
-    const service = getStudentsService()
+    // Per skill pattern: call (await import('@/server/data/students/factory')).getStudentsService() inside handler, never at module top-level
+    const service = (await import('@/server/data/students/factory')).getStudentsService()
     return service.getStudents(filter ?? undefined)
   })
 
 export const getStudentByIdFn = createServerFn({ method: 'GET' })
   .inputValidator((id: string) => id)
   .handler(async ({ data: id }): Promise<Student | undefined> => {
-    return getStudentsService().getStudentById(id)
+    return (await import('@/server/data/students/factory')).getStudentsService().getStudentById(id)
   })
 
 export const findSimilarStudentsFn = createServerFn({ method: 'GET' })
@@ -31,7 +30,7 @@ export const findSimilarStudentsFn = createServerFn({ method: 'GET' })
     const filter: StudentsFilter = currentYear
       ? { academic_year: currentYear }
       : {}
-    const allStudents = await getStudentsService().getStudents(filter)
+    const allStudents = await (await import('@/server/data/students/factory')).getStudentsService().getStudents(filter)
 
     const searchLower = (firstName || '').toLowerCase().trim()
     const lastSearchLower = (lastName || '').toLowerCase().trim()

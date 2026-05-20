@@ -5,12 +5,11 @@
  */
 
 import { createServerFn } from '@tanstack/react-start'
-import { getStudentAssessmentService } from '@/server/data/student-assessments/factory'
 
 export const getStudentAssessmentsFn = createServerFn({ method: 'GET' })
   .inputValidator((assessmentSubjectId: string) => assessmentSubjectId)
   .handler(async ({ data: assessmentSubjectId }) => {
-    return getStudentAssessmentService().getStudentAssessments(
+    return (await import('@/server/data/student-assessments/factory')).getStudentAssessmentService().getStudentAssessments(
       assessmentSubjectId,
     )
   })
@@ -18,7 +17,7 @@ export const getStudentAssessmentsFn = createServerFn({ method: 'GET' })
 export const getStudentAssessmentFn = createServerFn({ method: 'GET' })
   .inputValidator((id: string) => id)
   .handler(async ({ data: id }) => {
-    return getStudentAssessmentService().getStudentAssessment(id)
+    return (await import('@/server/data/student-assessments/factory')).getStudentAssessmentService().getStudentAssessment(id)
   })
 
 export const getStudentAssessmentsByEnrollmentFn = createServerFn({
@@ -26,7 +25,7 @@ export const getStudentAssessmentsByEnrollmentFn = createServerFn({
 })
   .inputValidator((enrollmentId: string) => enrollmentId)
   .handler(async ({ data: enrollmentId }) => {
-    return getStudentAssessmentService().getStudentAssessmentsByEnrollment(
+    return (await import('@/server/data/student-assessments/factory')).getStudentAssessmentService().getStudentAssessmentsByEnrollment(
       enrollmentId,
     )
   })

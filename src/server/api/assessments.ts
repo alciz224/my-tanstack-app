@@ -6,50 +6,49 @@ import type {
   GradeEntryData,
   StudentAssessment,
 } from '@/server/data/assessments/types'
-import { getAssessmentsService } from '@/server/data/assessments/factory'
 
 export const getAssessmentsFn = createServerFn({ method: 'GET' })
   .inputValidator((filter: AssessmentsFilter | undefined) => filter)
   .handler(async ({ data: filter }): Promise<Array<Assessment>> => {
-    return getAssessmentsService().getAssessments(filter)
+    return (await import('@/server/data/assessments/factory')).getAssessmentsService().getAssessments(filter)
   })
 
 export const getAssessmentByIdFn = createServerFn({ method: 'GET' })
   .inputValidator((id: string) => id)
   .handler(async ({ data: id }): Promise<Assessment | undefined> => {
-    return getAssessmentsService().getAssessmentById(id)
+    return (await import('@/server/data/assessments/factory')).getAssessmentsService().getAssessmentById(id)
   })
 
 export const createAssessmentFn = createServerFn({ method: 'POST' })
   .inputValidator((data: Omit<Assessment, 'id'>) => data)
   .handler(async ({ data }): Promise<Assessment> => {
-    return getAssessmentsService().createAssessment(data)
+    return (await import('@/server/data/assessments/factory')).getAssessmentsService().createAssessment(data)
   })
 
 export const updateAssessmentFn = createServerFn({ method: 'POST' })
   .inputValidator((data: { id: string; updates: Partial<Assessment> }) => data)
   .handler(async ({ data: { id, updates } }): Promise<Assessment> => {
-    return getAssessmentsService().updateAssessment(id, updates)
+    return (await import('@/server/data/assessments/factory')).getAssessmentsService().updateAssessment(id, updates)
   })
 
 export const getAssessmentSubjectsFn = createServerFn({ method: 'GET' })
   .inputValidator((assessmentId: string) => assessmentId)
   .handler(
     async ({ data: assessmentId }): Promise<Array<AssessmentSubject>> => {
-      return getAssessmentsService().getAssessmentSubjects(assessmentId)
+      return (await import('@/server/data/assessments/factory')).getAssessmentsService().getAssessmentSubjects(assessmentId)
     },
   )
 
 export const getAssessmentSubjectByIdFn = createServerFn({ method: 'GET' })
   .inputValidator((id: string) => id)
   .handler(async ({ data: id }): Promise<AssessmentSubject | undefined> => {
-    return getAssessmentsService().getAssessmentSubjectById(id)
+    return (await import('@/server/data/assessments/factory')).getAssessmentsService().getAssessmentSubjectById(id)
   })
 
 export const createAssessmentSubjectFn = createServerFn({ method: 'POST' })
   .inputValidator((data: Omit<AssessmentSubject, 'id'>) => data)
   .handler(async ({ data }): Promise<AssessmentSubject> => {
-    return getAssessmentsService().createAssessmentSubject(data)
+    return (await import('@/server/data/assessments/factory')).getAssessmentsService().createAssessmentSubject(data)
   })
 
 export const updateAssessmentSubjectFn = createServerFn({ method: 'POST' })
@@ -57,7 +56,7 @@ export const updateAssessmentSubjectFn = createServerFn({ method: 'POST' })
     (data: { id: string; updates: Partial<AssessmentSubject> }) => data,
   )
   .handler(async ({ data: { id, updates } }): Promise<AssessmentSubject> => {
-    return getAssessmentsService().updateAssessmentSubject(id, updates)
+    return (await import('@/server/data/assessments/factory')).getAssessmentsService().updateAssessmentSubject(id, updates)
   })
 
 export const getStudentAssessmentsFn = createServerFn({ method: 'GET' })
@@ -66,14 +65,14 @@ export const getStudentAssessmentsFn = createServerFn({ method: 'GET' })
     async ({
       data: assessmentSubjectId,
     }): Promise<Array<StudentAssessment>> => {
-      return getAssessmentsService().getStudentAssessments(assessmentSubjectId)
+      return (await import('@/server/data/assessments/factory')).getAssessmentsService().getStudentAssessments(assessmentSubjectId)
     },
   )
 
 export const getGradeEntryDataFn = createServerFn({ method: 'GET' })
   .inputValidator((assessmentSubjectId: string) => assessmentSubjectId)
   .handler(async ({ data: assessmentSubjectId }): Promise<GradeEntryData> => {
-    return getAssessmentsService().getGradeEntryData(assessmentSubjectId)
+    return (await import('@/server/data/assessments/factory')).getAssessmentsService().getGradeEntryData(assessmentSubjectId)
   })
 
 export const updateStudentAssessmentFn = createServerFn({ method: 'POST' })
@@ -81,7 +80,7 @@ export const updateStudentAssessmentFn = createServerFn({ method: 'POST' })
     (data: { id: string; updates: Partial<StudentAssessment> }) => data,
   )
   .handler(async ({ data: { id, updates } }): Promise<StudentAssessment> => {
-    return getAssessmentsService().updateStudentAssessment(id, updates)
+    return (await import('@/server/data/assessments/factory')).getAssessmentsService().updateStudentAssessment(id, updates)
   })
 
 export const bulkUpdateStudentAssessmentsFn = createServerFn({ method: 'POST' })
@@ -89,5 +88,5 @@ export const bulkUpdateStudentAssessmentsFn = createServerFn({ method: 'POST' })
     (data: Array<{ id: string; updates: Partial<StudentAssessment> }>) => data,
   )
   .handler(async ({ data: updates }): Promise<Array<StudentAssessment>> => {
-    return getAssessmentsService().bulkUpdateStudentAssessments(updates)
+    return (await import('@/server/data/assessments/factory')).getAssessmentsService().bulkUpdateStudentAssessments(updates)
   })
