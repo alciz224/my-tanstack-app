@@ -77,22 +77,26 @@ function SchoolAdminDashboard() {
           Actions Rapides
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <ActionButton
+          <ActionLink
+            to="/school-admin/students"
             title="Gestion des élèves"
             description="Inscrire, modifier ou archiver des élèves"
             icon={Users}
           />
-          <ActionButton
+          <ActionLink
+            to="/school-admin/teachers"
             title="Gestion du personnel"
             description="Enseignants et personnel administratif"
             icon={Users}
           />
-          <ActionButton
+          <ActionLink
+            to="/school-admin/schedule"
             title="Emplois du temps"
             description="Créer et gérer les horaires"
             icon={Calendar}
           />
-          <ActionButton
+          <ActionLink
+            to="/school-admin/reports"
             title="Rapports"
             description="Statistiques et analyses"
             icon={FileText}
@@ -103,7 +107,8 @@ function SchoolAdminDashboard() {
             description="Paramètres de l'établissement et années scolaires"
             icon={Settings}
           />
-          <ActionButton
+          <ActionLink
+            to="/school-admin/students/pre-register"
             title="Inscriptions"
             description="Gérer les nouvelles inscriptions"
             icon={Building2}

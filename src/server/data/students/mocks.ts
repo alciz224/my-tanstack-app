@@ -364,4 +364,3 @@ export const MOCK_STUDENTS: Array<Student> = [
   },
 ]
 
-export type { Student } from './types'

@@ -130,7 +130,8 @@ function ActionMenu({ student: _student }: { student: Student }) {
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-full mt-1 z-20 w-44 bg-card border border-border rounded-lg shadow-lg py-1 animate-scale-in">
             <Link
-              to={`/school-admin/students/${_student.id}`}
+              to="/school-admin/students/$studentId"
+              params={{ studentId: _student.id }}
               className="flex items-center gap-2 w-full px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
             >
               <Eye className="w-4 h-4" /> Voir le profil
@@ -158,7 +159,8 @@ function StudentCard({ student }: { student: Student }) {
       </div>
       <div>
         <Link
-          to={`/school-admin/students/${student.id}`}
+          to="/school-admin/students/$studentId"
+          params={{ studentId: student.id }}
           className="font-bold text-foreground text-base hover:text-primary transition-colors leading-tight"
         >
           {student.full_name}
@@ -274,8 +276,7 @@ function StudentsPage() {
   const [genderFilter, setGenderFilter] = useState('')
 
   // Student card preview
-  const [selectedStudentForCard, setSelectedStudentForCard] =
-    useState<Student | null>(null)
+  const [showCardPreview, setShowCardPreview] = useState(false)
 
   // Cascade reset: when cycle changes, reset dependent filters
   const handleCycleChange = (v: string) => {
@@ -402,16 +403,11 @@ function StudentsPage() {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => {
-              const activeStudent = students.find(
-                (s) => s.enrollment_status === 'ACTIVE',
-              )
-              if (activeStudent) setSelectedStudentForCard(activeStudent)
-            }}
+            onClick={() => setShowCardPreview(true)}
             className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium transition-colors hover:bg-secondary/80 btn-shine hover-scale"
           >
             <CreditCard className="w-5 h-5" />
-            Prévisualiser carte
+            Prévisualiser cartes
           </button>
           <Link
             to="/school-admin/students/assign"
@@ -606,7 +602,8 @@ function StudentsPage() {
                         <StudentAvatar student={student} size="sm" />
                         <div>
                           <Link
-                            to={`/school-admin/students/${student.id}`}
+                            to="/school-admin/students/$studentId"
+                            params={{ studentId: student.id }}
                             className="font-semibold text-foreground text-sm hover:text-primary hover:underline transition-colors"
                           >
                             {student.full_name}
@@ -642,7 +639,7 @@ function StudentsPage() {
                       <GenderBadge gender={student.gender} />
                     </td>
                     <td className="px-4 py-3">
-                      <StatusBadge status={student.status} />
+                      <StatusBadge status={student.enrollment_status} />
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">
                       {student.parent_name ?? '—'}
@@ -663,10 +660,11 @@ function StudentsPage() {
       )}
 
       {/* Student Card Preview Modal */}
-      {selectedStudentForCard && (
+      {showCardPreview && (
         <StudentCardPreview
-          student={selectedStudentForCard}
-          onClose={() => setSelectedStudentForCard(null)}
+          students={students}
+          onClose={() => setShowCardPreview(false)}
+          initialClass={classFilter || undefined}
         />
       )}
     </div>

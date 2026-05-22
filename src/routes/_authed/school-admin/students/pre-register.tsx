@@ -5,7 +5,6 @@ import {
   Briefcase,
   CheckCircle2,
   ChevronRight,
-  Save,
   Upload,
   User,
   Users,

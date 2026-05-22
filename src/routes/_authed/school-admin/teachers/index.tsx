@@ -3,6 +3,7 @@ import { useState, useTransition } from 'react'
 import {
   ArrowRightLeft,
   Briefcase,
+  CalendarDays,
   Filter,
   MoreVertical,
   Plus,
@@ -152,6 +153,13 @@ function TeachersList() {
                         title="Affectations"
                       >
                         <Briefcase className="w-4 h-4" />
+                      </Link>
+                      <Link
+                        to={`/school-admin/teachers/${syTeacher.id}/workload`}
+                        className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors"
+                        title="Emploi du temps"
+                      >
+                        <CalendarDays className="w-4 h-4" />
                       </Link>
                       {syTeacher.status === 'ACTIVE' && (
                         <button

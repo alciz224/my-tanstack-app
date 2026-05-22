@@ -46,7 +46,17 @@ export class ApiStudentsAdapter implements StudentsDataAdapter {
 
   async getStudentById(id: string): Promise<Student | undefined> {
     try {
-      return await this.fetchApi<Student>(`/students/${id}/`)
+      const { getCookies } = await import('@tanstack/react-start/server')
+      const cookies = getCookies()
+      const cookieHeader = Object.entries(cookies)
+        .map(([k, v]) => `${k}=${v}`)
+        .join('; ')
+      
+      const baseUrl = import.meta.env.BACKEND_URL ?? 'http://localhost:8000'
+      const url = `${baseUrl}/api/v2/school-admin/students/${id}/`
+      const res = await fetch(url, { headers: { cookie: cookieHeader } })
+      if (!res.ok) return undefined
+      return await res.json()
     } catch (e) {
       return undefined
     }

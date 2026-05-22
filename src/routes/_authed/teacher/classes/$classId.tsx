@@ -30,7 +30,7 @@ export const Route = createFileRoute('/_authed/teacher/classes/$classId')({
     const classInfo = classes.find((c) => c.assignment_id === params.classId)
 
     const students = classInfo
-      ? await getStudentsFn({ class_name: classInfo.name })
+      ? await getStudentsFn({ data: { class_name: classInfo.name } })
       : []
 
     return { classInfo, students, assignmentId: params.classId }
@@ -74,7 +74,7 @@ function ClassDetailPage() {
     queryKey: ['students', 'class', liveClassInfo?.name],
     queryFn: async () => {
       if (!liveClassInfo?.name) return []
-      return getStudents({ class_name: liveClassInfo.name })
+      return getStudents({ data: { class_name: liveClassInfo.name } })
     },
     initialData: students,
     enabled: !!liveClassInfo?.name,

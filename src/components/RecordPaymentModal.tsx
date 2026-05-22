@@ -47,7 +47,7 @@ export function RecordPaymentModal({
   const handleSearch = async () => {
     if (!searchQuery.trim()) return
     try {
-      const students = await getStudentsFn({ search: searchQuery })
+      const students = await getStudentsFn({ data: { search: searchQuery } })
       if (students.length > 0) {
         const student = students[0]
         setSelectedStudent({

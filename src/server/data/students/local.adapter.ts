@@ -22,7 +22,7 @@ export class LocalStudentsAdapter implements StudentsDataAdapter {
       result = result.filter(
         (s) =>
           s.full_name.toLowerCase().includes(q) ||
-          s.matricule.toLowerCase().includes(q) ||
+          s.annual_identifier.toLowerCase().includes(q) ||
           s.parent_name?.toLowerCase().includes(q),
       )
     }
@@ -33,7 +33,7 @@ export class LocalStudentsAdapter implements StudentsDataAdapter {
     if (filter.level) result = result.filter((s) => s.level === filter.level)
     if (filter.class_name)
       result = result.filter((s) => s.class_name === filter.class_name)
-    if (filter.status) result = result.filter((s) => s.status === filter.status)
+    if (filter.status) result = result.filter((s) => s.enrollment_status === filter.status)
     if (filter.gender) result = result.filter((s) => s.gender === filter.gender)
 
     return result
