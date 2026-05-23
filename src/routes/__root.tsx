@@ -6,19 +6,16 @@ import {
 } from '@tanstack/react-router'
 import * as React from 'react'
 import { QueryClientProvider } from '@tanstack/react-query'
-
-const ReactQueryDevtools = import.meta.env.DEV
-  ? React.lazy(() =>
-      import('@tanstack/react-query-devtools').then((res) => ({
-        default: res.ReactQueryDevtools,
-      }))
-    )
-  : () => null
-
 import appCss from '../styles.css?url'
-
 import type { RouterContext } from '@/router'
 import type { RouteContext } from '@/types/router'
+
+
+
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { ToastContainer } from '@/components/Toast'
+
+
 import { subscribeAuthEvents } from '@/auth/authEvents'
 import { safeRedirectPath } from '@/auth/redirects'
 import { isCurrentRouteProtected } from '@/auth/routeProtection'
@@ -30,8 +27,6 @@ import {
 } from '@/server/data/auth/local.adapter'
 import { mockUser } from '@/server/data/auth/mocks'
 
-import { ErrorBoundary } from '@/components/ErrorBoundary'
-import { ToastContainer } from '@/components/Toast'
 
 /**
  * Root route - provides auth context to all child routes
@@ -217,12 +212,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           </div>
           <ToastContainer />
           <Scripts />
-          {/* React Query Devtools - only in development */}
-          {import.meta.env.DEV && (
-            <React.Suspense fallback={null}>
-              <ReactQueryDevtools initialIsOpen={false} />
-            </React.Suspense>
-          )}
+
         </body>
       </html>
     </QueryClientProvider>
