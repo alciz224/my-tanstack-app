@@ -18,7 +18,9 @@ import type { ApiResponse } from '@/types/api'
  * Backend base URL (server-side only)
  * Used by server functions to call Django directly
  */
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
+function getBackendUrl(): string {
+  return process.env.BACKEND_URL || 'http://localhost:8000'
+}
 
 /**
  * Extract cookie header from server function context
@@ -121,7 +123,7 @@ export async function serverFetch<T>(
     }
 
     // Make request to Django backend
-    const res = await fetch(`${BACKEND_URL}${endpoint}`, {
+    const res = await fetch(`${getBackendUrl()}${endpoint}`, {
       ...options,
       headers,
       credentials: 'include',
@@ -231,7 +233,7 @@ export async function serverMutate<T>(
     }
 
     // Make request to Django backend
-    const res = await fetch(`${BACKEND_URL}${endpoint}`, {
+    const res = await fetch(`${getBackendUrl()}${endpoint}`, {
       ...options,
       headers,
       credentials: 'include',
