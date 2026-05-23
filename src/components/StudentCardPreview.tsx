@@ -32,123 +32,106 @@ function StudentIDCard({ student }: { student: Student }) {
       className="relative overflow-hidden rounded-xl shadow-lg bg-white border border-border"
       style={{ aspectRatio: '85.6 / 54' }}
     >
-      {/* Left accent bar */}
-      <div className="absolute top-0 left-0 bottom-0 w-[5px] bg-gradient-to-b from-primary via-primary/80 to-primary/60" />
-
-      {/* Subtle watermark pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.015]"
-        style={{
-          backgroundImage: `repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 12px,
-            oklch(0.42 0.16 264) 12px,
-            oklch(0.42 0.16 264) 13px
-          )`,
-        }}
-      />
-
-      {/* Top edge accent */}
-      <div className="absolute top-0 left-[5px] right-0 h-[2px] bg-gradient-to-r from-primary/40 via-primary/20 to-transparent" />
-
-      {/* Card content */}
-      <div className="relative h-full flex flex-col p-3 pl-[10px]">
-        {/* Header: School name */}
-        <div className="flex items-center gap-1.5 mb-1.5">
-          <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <CreditCard className="w-3 h-3 text-primary" />
+      {/* Blue header band */}
+      <div className="absolute top-0 left-0 right-0 h-[38%] bg-gradient-to-br from-sky-900 via-blue-800 to-indigo-900">
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              'repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,255,255,0.3) 8px, rgba(255,255,255,0.3) 9px)',
+          }}
+        />
+        <div className="relative h-full flex flex-col justify-between px-4 pt-2.5 pb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
+              <CreditCard className="w-3 h-3 text-white" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[8px] font-bold text-white uppercase tracking-[0.12em] leading-none truncate">
+                École d&apos;Excellence
+              </p>
+              <p className="text-[5px] text-blue-200 uppercase tracking-wider leading-none mt-0.5">
+                Carte d&apos;identité scolaire
+              </p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <p className="text-[7px] font-bold text-primary uppercase tracking-[0.15em] leading-none truncate">
-              École d&apos;Excellence
-            </p>
-            <p className="text-[5px] text-muted-foreground uppercase tracking-wider leading-none mt-0.5">
-              Carte d&apos;identité scolaire
-            </p>
-          </div>
-          <div className="ml-auto text-right flex-shrink-0">
-            <p className="text-[5px] text-muted-foreground uppercase tracking-wide">
+          <div className="self-end">
+            <p className="text-[5px] text-blue-200 uppercase tracking-wide">
               Année
             </p>
-            <p className="text-[6px] font-semibold text-foreground">
+            <p className="text-[7px] font-bold text-white">
               {student.academic_year}
             </p>
           </div>
         </div>
+      </div>
 
-        {/* Divider */}
-        <div className="h-px bg-gradient-to-r from-primary/20 via-border to-transparent mb-1.5" />
+      {/* Shadow transition */}
+      <div className="absolute top-[38%] left-0 right-0 h-3 bg-gradient-to-b from-blue-900/20 to-transparent z-10" />
 
-        {/* Main body: Photo + Info + QR */}
-        <div className="flex gap-2 flex-1 min-h-0">
-          {/* Photo */}
-          <div className="flex-shrink-0 flex flex-col items-center gap-1">
-            <div className="w-14 h-[68px] rounded-md overflow-hidden border border-border bg-muted shadow-sm">
-              <img
-                src={photoUrl}
-                alt={student.full_name}
-                className="w-full h-full object-cover"
-                crossOrigin="anonymous"
-              />
-            </div>
-          </div>
-
-          {/* Student Info */}
-          <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-            <div>
-              <p className="text-[9px] font-bold text-foreground leading-tight truncate">
-                {student.last_name.toUpperCase()}
-              </p>
-              <p className="text-[8px] font-medium text-muted-foreground leading-tight truncate">
-                {student.first_name}
-              </p>
-            </div>
-
-            <div className="space-y-[1px] mt-0.5">
-              <InfoRow label="Matricule" value={student.annual_identifier} />
-              <InfoRow label="Classe" value={student.class_name} />
-              <InfoRow label="Niveau" value={student.level} />
-              <InfoRow
-                label="Né(e) le"
-                value={new Date(student.date_of_birth).toLocaleDateString(
-                  'fr-FR',
-                )}
-              />
-              <InfoRow
-                label="Genre"
-                value={student.gender === 'M' ? 'Masculin' : 'Féminin'}
-              />
-            </div>
-          </div>
-
-          {/* QR Code */}
-          <div className="flex-shrink-0 flex flex-col items-center justify-center">
-            <div className="bg-white rounded border border-border/50 p-[3px] shadow-sm">
-              <QRCodeSVG value={qrData} size={40} level="L" />
-            </div>
-            <p className="text-[4px] text-muted-foreground/60 uppercase tracking-[0.1em] mt-0.5">
-              Scan
-            </p>
+      {/* Body */}
+      <div className="absolute bottom-0 left-0 right-0 h-[62%] px-4 pt-2 pb-3 flex gap-2.5">
+        {/* Photo */}
+        <div className="-mt-4 flex-shrink-0 z-20">
+          <div className="w-[52px] h-[62px] rounded-md overflow-hidden border-2 border-white shadow-md bg-muted">
+            <img
+              src={photoUrl}
+              alt={student.full_name}
+              className="w-full h-full object-cover"
+              crossOrigin="anonymous"
+            />
           </div>
         </div>
 
-        {/* Bottom strip */}
-        <div className="mt-1.5 -mx-3 -mb-3 px-3 py-[5px] bg-primary/5 border-t border-primary/10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <div className="w-[18px] h-[12px] rounded-[2px] bg-gradient-to-br from-primary/40 to-primary/20 border border-primary/30 flex items-center justify-center">
-                <span className="text-[5px] font-bold text-primary/60">GE</span>
-              </div>
-              <p className="text-[5px] font-medium text-muted-foreground/70 uppercase tracking-[0.15em]">
-                République de Guinée
-              </p>
-            </div>
-            <p className="text-[6px] font-mono font-semibold text-primary/70 tracking-wider">
-              {student.annual_identifier}
-            </p>
+        {/* Info */}
+        <div className="flex-1 min-w-0 z-20">
+          <p className="text-[9px] font-bold text-foreground leading-tight truncate">
+            {student.last_name.toUpperCase()}
+          </p>
+          <p className="text-[7px] text-muted-foreground leading-tight truncate">
+            {student.first_name}
+          </p>
+          <div className="space-y-px mt-1">
+            <InfoRow label="Matricule" value={student.annual_identifier} />
+            <InfoRow label="Classe" value={student.class_name} />
+            <InfoRow label="Niveau" value={student.level} />
+            <InfoRow
+              label="Né(e) le"
+              value={new Date(student.date_of_birth).toLocaleDateString(
+                'fr-FR',
+              )}
+            />
+            <InfoRow
+              label="Genre"
+              value={student.gender === 'M' ? 'Masculin' : 'Féminin'}
+            />
           </div>
         </div>
+
+        {/* QR */}
+        <div className="flex-shrink-0 flex flex-col items-center justify-center z-20">
+          <div className="bg-white rounded border border-border/50 p-[2px] shadow-sm">
+            <QRCodeSVG value={qrData} size={34} level="L" />
+          </div>
+          <p className="text-[4px] text-muted-foreground/60 uppercase tracking-[0.1em] mt-0.5">
+            Scan
+          </p>
+        </div>
+      </div>
+
+      {/* Bottom strip */}
+      <div className="absolute bottom-0 left-0 right-0 h-5 bg-gradient-to-r from-sky-900 via-blue-800 to-indigo-900 px-3 flex items-center justify-between z-10">
+        <div className="flex items-center gap-1.5">
+          <div className="w-4 h-[10px] rounded-sm bg-white/15 border border-white/25 flex items-center justify-center">
+            <span className="text-[4px] font-bold text-white/80">GE</span>
+          </div>
+          <span className="text-[4.5px] font-medium text-blue-200 uppercase tracking-[0.12em] leading-none">
+            République de Guinée
+          </span>
+        </div>
+        <span className="text-[5px] font-mono font-semibold text-white/70 tracking-wider">
+          {student.annual_identifier}
+        </span>
       </div>
     </div>
   )
