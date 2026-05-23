@@ -29,62 +29,62 @@ function StudentIDCard({ student }: { student: Student }) {
 
   return (
     <div
-      className="relative overflow-hidden rounded-xl shadow-lg border border-border/50"
+      className="relative overflow-hidden rounded-xl shadow-lg bg-white border border-border"
       style={{ aspectRatio: '85.6 / 54' }}
     >
-      {/* Card background with gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1a365d] via-[#1e4976] to-[#2a5a8e]" />
+      {/* Left accent bar */}
+      <div className="absolute top-0 left-0 bottom-0 w-[5px] bg-gradient-to-b from-primary via-primary/80 to-primary/60" />
 
-      {/* Subtle pattern overlay */}
+      {/* Subtle watermark pattern */}
       <div
-        className="absolute inset-0 opacity-[0.05]"
+        className="absolute inset-0 opacity-[0.015]"
         style={{
           backgroundImage: `repeating-linear-gradient(
             45deg,
             transparent,
-            transparent 10px,
-            rgba(255,255,255,0.1) 10px,
-            rgba(255,255,255,0.1) 11px
+            transparent 12px,
+            oklch(0.42 0.16 264) 12px,
+            oklch(0.42 0.16 264) 13px
           )`,
         }}
       />
 
-      {/* Gold accent strip at top */}
-      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400" />
+      {/* Top edge accent */}
+      <div className="absolute top-0 left-[5px] right-0 h-[2px] bg-gradient-to-r from-primary/40 via-primary/20 to-transparent" />
 
       {/* Card content */}
-      <div className="relative h-full flex flex-col p-3">
+      <div className="relative h-full flex flex-col p-3 pl-[10px]">
         {/* Header: School name */}
         <div className="flex items-center gap-1.5 mb-1.5">
-          <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-            <CreditCard className="w-3 h-3 text-amber-300" />
+          <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <CreditCard className="w-3 h-3 text-primary" />
           </div>
           <div className="min-w-0">
-            <p className="text-[7px] font-bold text-amber-300 uppercase tracking-[0.15em] leading-none truncate">
+            <p className="text-[7px] font-bold text-primary uppercase tracking-[0.15em] leading-none truncate">
               École d&apos;Excellence
             </p>
-            <p className="text-[5px] text-white/60 uppercase tracking-wider leading-none mt-0.5">
+            <p className="text-[5px] text-muted-foreground uppercase tracking-wider leading-none mt-0.5">
               Carte d&apos;identité scolaire
             </p>
           </div>
           <div className="ml-auto text-right flex-shrink-0">
-            <p className="text-[5px] text-white/50 uppercase tracking-wide">
+            <p className="text-[5px] text-muted-foreground uppercase tracking-wide">
               Année
             </p>
-            <p className="text-[6px] font-semibold text-white/80">
+            <p className="text-[6px] font-semibold text-foreground">
               {student.academic_year}
             </p>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-1.5" />
+        <div className="h-px bg-gradient-to-r from-primary/20 via-border to-transparent mb-1.5" />
 
         {/* Main body: Photo + Info + QR */}
         <div className="flex gap-2 flex-1 min-h-0">
           {/* Photo */}
           <div className="flex-shrink-0 flex flex-col items-center gap-1">
-            <div className="w-14 h-[68px] rounded-md overflow-hidden border border-white/30 bg-white/10 shadow-inner">
+            <div className="w-14 h-[68px] rounded-md overflow-hidden border border-border bg-muted shadow-sm">
               <img
                 src={photoUrl}
                 alt={student.full_name}
@@ -97,15 +97,15 @@ function StudentIDCard({ student }: { student: Student }) {
           {/* Student Info */}
           <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
             <div>
-              <p className="text-[9px] font-bold text-white leading-tight truncate">
+              <p className="text-[9px] font-bold text-foreground leading-tight truncate">
                 {student.last_name.toUpperCase()}
               </p>
-              <p className="text-[8px] font-medium text-white/90 leading-tight truncate">
+              <p className="text-[8px] font-medium text-muted-foreground leading-tight truncate">
                 {student.first_name}
               </p>
             </div>
 
-            <div className="space-y-0.5 mt-1">
+            <div className="space-y-[1px] mt-0.5">
               <InfoRow label="Matricule" value={student.annual_identifier} />
               <InfoRow label="Classe" value={student.class_name} />
               <InfoRow label="Niveau" value={student.level} />
@@ -123,20 +123,28 @@ function StudentIDCard({ student }: { student: Student }) {
           </div>
 
           {/* QR Code */}
-          <div className="flex-shrink-0 flex flex-col items-center justify-end">
-            <div className="bg-white rounded p-1">
-              <QRCodeSVG value={qrData} size={38} level="L" />
+          <div className="flex-shrink-0 flex flex-col items-center justify-center">
+            <div className="bg-white rounded border border-border/50 p-[3px] shadow-sm">
+              <QRCodeSVG value={qrData} size={40} level="L" />
             </div>
+            <p className="text-[4px] text-muted-foreground/60 uppercase tracking-[0.1em] mt-0.5">
+              Scan
+            </p>
           </div>
         </div>
 
-        {/* Bottom gold strip with matricule */}
-        <div className="mt-1.5 -mx-3 -mb-3 px-3 py-1 bg-gradient-to-r from-amber-500/90 via-amber-400/90 to-yellow-400/90">
+        {/* Bottom strip */}
+        <div className="mt-1.5 -mx-3 -mb-3 px-3 py-[5px] bg-primary/5 border-t border-primary/10">
           <div className="flex items-center justify-between">
-            <p className="text-[5px] font-bold text-[#1a365d] uppercase tracking-[0.2em]">
-              République de Guinée
-            </p>
-            <p className="text-[6px] font-mono font-bold text-[#1a365d] tracking-wider">
+            <div className="flex items-center gap-1.5">
+              <div className="w-[18px] h-[12px] rounded-[2px] bg-gradient-to-br from-primary/40 to-primary/20 border border-primary/30 flex items-center justify-center">
+                <span className="text-[5px] font-bold text-primary/60">GE</span>
+              </div>
+              <p className="text-[5px] font-medium text-muted-foreground/70 uppercase tracking-[0.15em]">
+                République de Guinée
+              </p>
+            </div>
+            <p className="text-[6px] font-mono font-semibold text-primary/70 tracking-wider">
               {student.annual_identifier}
             </p>
           </div>
@@ -149,10 +157,10 @@ function StudentIDCard({ student }: { student: Student }) {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex gap-1 items-baseline">
-      <span className="text-[5px] text-white/50 uppercase tracking-wide flex-shrink-0 w-10">
+      <span className="text-[5px] text-muted-foreground/60 uppercase tracking-wide flex-shrink-0 w-10">
         {label}
       </span>
-      <span className="text-[6px] font-semibold text-white/90 truncate">
+      <span className="text-[6px] font-semibold text-foreground truncate">
         {value}
       </span>
     </div>
