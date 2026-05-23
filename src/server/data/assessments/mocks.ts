@@ -46,6 +46,7 @@ export const mockAssessments: Array<Assessment> = [
 ]
 
 export const mockAssessmentSubjects: Array<AssessmentSubject> = [
+  // 6ème A - Maths
   {
     id: 'asub-1',
     assessment_id: 'ass-1',
@@ -61,12 +62,13 @@ export const mockAssessmentSubjects: Array<AssessmentSubject> = [
     classroom_name: '6ème A',
     teacher_name: 'Mamadou Diallo',
   },
+  // 6ème A - Français
   {
     id: 'asub-2',
     assessment_id: 'ass-1',
-    school_year_level_subject_id: 'syls-2',
+    school_year_level_subject_id: 'syls-3',
     classroom_id: 'c1',
-    teacher_assignment_id: 'ta-2',
+    teacher_assignment_id: 'ta-3',
     name: 'Français - Dictée et Grammaire',
     exam_date: '2024-10-17',
     max_score: 20,
@@ -76,12 +78,45 @@ export const mockAssessmentSubjects: Array<AssessmentSubject> = [
     classroom_name: '6ème A',
     teacher_name: 'Aïssatou Bah',
   },
+  // 6ème B - Maths
+  {
+    id: 'asub-4',
+    assessment_id: 'ass-1',
+    school_year_level_subject_id: 'syls-1',
+    classroom_id: 'c2',
+    teacher_assignment_id: 'ta-8',
+    name: 'Mathématiques - Nombres et Calculs',
+    exam_date: '2024-10-16',
+    max_score: 20,
+    coefficient: 3,
+    status: 'PUBLISHED',
+    subject_name: 'Mathématiques',
+    classroom_name: '6ème B',
+    teacher_name: 'Mohamed Camara',
+  },
+  // 6ème B - Français
+  {
+    id: 'asub-5',
+    assessment_id: 'ass-1',
+    school_year_level_subject_id: 'syls-3',
+    classroom_id: 'c2',
+    teacher_assignment_id: 'ta-9',
+    name: 'Français - Lecture et Compréhension',
+    exam_date: '2024-10-17',
+    max_score: 20,
+    coefficient: 3,
+    status: 'PUBLISHED',
+    subject_name: 'Français',
+    classroom_name: '6ème B',
+    teacher_name: 'Mariam Barry',
+  },
+  // 5ème A - Maths
   {
     id: 'asub-3',
     assessment_id: 'ass-3',
-    school_year_level_subject_id: 'syls-10',
-    classroom_id: 'c2',
-    teacher_assignment_id: 'ta-1',
+    school_year_level_subject_id: 'syls-2',
+    classroom_id: 'c3',
+    teacher_assignment_id: 'ta-2',
     name: 'Mathématiques - Géométrie',
     exam_date: '2024-11-18',
     max_score: 20,
@@ -91,31 +126,143 @@ export const mockAssessmentSubjects: Array<AssessmentSubject> = [
     classroom_name: '5ème A',
     teacher_name: 'Mamadou Diallo',
   },
+  // 5ème B - Maths
+  {
+    id: 'asub-6',
+    assessment_id: 'ass-3',
+    school_year_level_subject_id: 'syls-2',
+    classroom_id: 'c4',
+    teacher_assignment_id: 'ta-10',
+    name: 'Mathématiques - Fractions',
+    exam_date: '2024-11-18',
+    max_score: 20,
+    coefficient: 4,
+    status: 'DRAFT',
+    subject_name: 'Mathématiques',
+    classroom_name: '5ème B',
+    teacher_name: 'Fatoumata Touré',
+  },
+  // 3ème A - Physique
+  {
+    id: 'asub-7',
+    assessment_id: 'ass-3',
+    school_year_level_subject_id: 'syls-4',
+    classroom_id: 'c7',
+    teacher_assignment_id: 'ta-4',
+    name: 'Physique - Mécanique',
+    exam_date: '2024-11-20',
+    max_score: 20,
+    coefficient: 4,
+    status: 'PUBLISHED',
+    subject_name: 'Physique',
+    classroom_name: '3ème A',
+    teacher_name: 'Abdoulaye Konaté',
+  },
+  // 3ème B - Physique
+  {
+    id: 'asub-8',
+    assessment_id: 'ass-3',
+    school_year_level_subject_id: 'syls-4',
+    classroom_id: 'c8',
+    teacher_assignment_id: 'ta-11',
+    name: 'Physique - Électricité',
+    exam_date: '2024-11-20',
+    max_score: 20,
+    coefficient: 4,
+    status: 'DRAFT',
+    subject_name: 'Physique',
+    classroom_name: '3ème B',
+    teacher_name: 'Moussa Sy',
+  },
+  // Terminale A - Philosophie
+  {
+    id: 'asub-9',
+    assessment_id: 'ass-3',
+    school_year_level_subject_id: 'syls-7',
+    classroom_id: 'c13',
+    teacher_assignment_id: 'ta-7',
+    name: 'Philosophie - Dissertation',
+    exam_date: '2024-11-22',
+    max_score: 20,
+    coefficient: 4,
+    status: 'PUBLISHED',
+    subject_name: 'Philosophie',
+    classroom_name: 'Terminale A',
+    teacher_name: 'Mariam Barry',
+  },
+  // 4ème A - Maths
+  {
+    id: 'asub-10',
+    assessment_id: 'ass-3',
+    school_year_level_subject_id: 'syls-1',
+    classroom_id: 'c5',
+    teacher_assignment_id: 'ta-12',
+    name: 'Mathématiques - Problèmes',
+    exam_date: '2024-11-19',
+    max_score: 20,
+    coefficient: 3,
+    status: 'DRAFT',
+    subject_name: 'Mathématiques',
+    classroom_name: '4ème A',
+    teacher_name: 'Kadiatou Diallo',
+  },
+  // 2nde A - Histoire-Géo
+  {
+    id: 'asub-11',
+    assessment_id: 'ass-3',
+    school_year_level_subject_id: 'syls-5',
+    classroom_id: 'c9',
+    teacher_assignment_id: 'ta-5',
+    name: 'Histoire-Géo - Civilisations',
+    exam_date: '2024-11-21',
+    max_score: 20,
+    coefficient: 2,
+    status: 'PUBLISHED',
+    subject_name: 'Histoire-Géographie',
+    classroom_name: '2nde A',
+    teacher_name: 'Fatoumata Touré',
+  },
+  // 1ère A - Anglais
+  {
+    id: 'asub-12',
+    assessment_id: 'ass-3',
+    school_year_level_subject_id: 'syls-6',
+    classroom_id: 'c11',
+    teacher_assignment_id: 'ta-6',
+    name: 'Anglais - Grammar and Writing',
+    exam_date: '2024-11-21',
+    max_score: 20,
+    coefficient: 2,
+    status: 'PUBLISHED',
+    subject_name: 'Anglais',
+    classroom_name: '1ère A',
+    teacher_name: 'Ousmane Sow',
+  },
+]
+
+const STUDENT_NAMES = [
+  { last: 'Barry', first: 'Mamadou' },
+  { last: 'Camara', first: 'Fatoumata' },
+  { last: 'Diallo', first: 'Alpha' },
+  { last: 'Sylla', first: 'Mariama' },
+  { last: 'Kéita', first: 'Moussa' },
+  { last: 'Bangoura', first: 'Moussa' },
+  { last: 'Soumah', first: 'Mamadou' },
+  { last: 'Touré', first: 'Ibrahim' },
+  { last: 'Camara', first: 'Kadiatou' },
+  { last: 'Baldé', first: 'Oumar' },
+  { last: 'Fofana', first: 'Aminata' },
+  { last: 'Condé', first: 'Moussa' },
+  { last: 'Doumbouya', first: 'Mamadou' },
+  { last: 'Yansané', first: 'Aïssatou' },
+  { last: 'Koulibaly', first: 'Abdou' },
 ]
 
 const generateStudentAssessments = (
   assessmentSubjectId: string,
   classroomId: string,
 ): Array<StudentAssessment> => {
-  const studentNames = [
-    { last: 'Barry', first: 'Mamadou' },
-    { last: 'Camara', first: 'Fatoumata' },
-    { last: 'Diallo', first: 'Alpha' },
-    { last: 'Sylla', first: 'Mariama' },
-    { last: 'Kéita', first: 'Moussa' },
-    { last: 'Bangoura', first: 'Moussa' },
-    { last: 'Soumah', first: 'Mamadou' },
-    { last: 'Touré', first: 'Ibrahim' },
-    { last: 'Camara', first: 'Kadiatou' },
-    { last: 'Baldé', first: 'Oumar' },
-    { last: 'Fofana', first: 'Aminata' },
-    { last: 'Condé', first: 'Moussa' },
-    { last: 'Doumbouya', first: 'Mamadou' },
-    { last: 'Yansané', first: 'Aïssatou' },
-    { last: 'Koulibaly', first: 'Abdou' },
-  ]
-
-  return studentNames.map((student, index) => {
+  return STUDENT_NAMES.map((student, index) => {
     const isAbsent = index === 3
     const isExcused = index === 8
     const hasScore = !isAbsent && !isExcused
@@ -143,7 +290,15 @@ const generateStudentAssessments = (
 
 export const mockStudentAssessments: Array<StudentAssessment> = [
   ...generateStudentAssessments('asub-1', 'c1'),
-  ...generateStudentAssessments('asub-3', 'c2'),
+  ...generateStudentAssessments('asub-4', 'c2'),
+  ...generateStudentAssessments('asub-3', 'c3'),
+  ...generateStudentAssessments('asub-6', 'c4'),
+  ...generateStudentAssessments('asub-10', 'c5'),
+  ...generateStudentAssessments('asub-7', 'c7'),
+  ...generateStudentAssessments('asub-8', 'c8'),
+  ...generateStudentAssessments('asub-11', 'c9'),
+  ...generateStudentAssessments('asub-12', 'c11'),
+  ...generateStudentAssessments('asub-9', 'c13'),
 ]
 
 export function getStudentAssessmentsBySubject(

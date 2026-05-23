@@ -177,6 +177,25 @@ export const mockSchoolFees: Array<SchoolFee> = [
     due_date: '2024-10-15',
     is_mandatory: true,
   },
+  // Primaire - 4ème
+  {
+    id: 'FEE-2024-014',
+    school_year_id: 'sy-2',
+    school_year_level_id: 'syl-3',
+    fee_type_id: 'FTYP-001',
+    amount: 100000,
+    due_date: '2024-09-15',
+    is_mandatory: true,
+  },
+  {
+    id: 'FEE-2024-015',
+    school_year_id: 'sy-2',
+    school_year_level_id: 'syl-3',
+    fee_type_id: 'FTYP-002',
+    amount: 250000,
+    due_date: '2024-10-15',
+    is_mandatory: true,
+  },
   // Collège - 3ème (includes BEPC)
   {
     id: 'FEE-2024-008',
@@ -203,6 +222,44 @@ export const mockSchoolFees: Array<SchoolFee> = [
     fee_type_id: 'FTYP-006',
     amount: 100000,
     due_date: '2025-03-01',
+    is_mandatory: true,
+  },
+  // Lycée - 2nde
+  {
+    id: 'FEE-2024-016',
+    school_year_id: 'sy-2',
+    school_year_level_id: 'syl-5',
+    fee_type_id: 'FTYP-001',
+    amount: 150000,
+    due_date: '2024-09-15',
+    is_mandatory: true,
+  },
+  {
+    id: 'FEE-2024-017',
+    school_year_id: 'sy-2',
+    school_year_level_id: 'syl-5',
+    fee_type_id: 'FTYP-002',
+    amount: 400000,
+    due_date: '2024-10-15',
+    is_mandatory: true,
+  },
+  // Lycée - 1ère
+  {
+    id: 'FEE-2024-018',
+    school_year_id: 'sy-2',
+    school_year_level_id: 'syl-6',
+    fee_type_id: 'FTYP-001',
+    amount: 150000,
+    due_date: '2024-09-15',
+    is_mandatory: true,
+  },
+  {
+    id: 'FEE-2024-019',
+    school_year_id: 'sy-2',
+    school_year_level_id: 'syl-6',
+    fee_type_id: 'FTYP-002',
+    amount: 400000,
+    due_date: '2024-10-15',
     is_mandatory: true,
   },
   // Lycée - Terminale (includes BAC)
@@ -235,168 +292,146 @@ export const mockSchoolFees: Array<SchoolFee> = [
   },
 ]
 
-// Sample student payments
-export const mockStudentPayments: Array<StudentPayment> = [
-  {
-    id: 'PAY-2024-001',
-    student_enrollment_id: 'ENR-2024-001',
-    school_fee_id: 'FEE-2024-001',
-    amount_paid: 100000,
-    payment_date: '2024-09-10',
-    payment_method: 'CASH',
-    collected_by: 'admin-1',
-    created_at: '2024-09-10T10:00:00Z',
-  },
-  {
-    id: 'PAY-2024-002',
-    student_enrollment_id: 'ENR-2024-001',
-    school_fee_id: 'FEE-2024-002',
-    amount_paid: 250000,
-    payment_date: '2024-10-12',
-    payment_method: 'BANK_TRANSFER',
-    reference_number: 'TRF-001',
-    created_at: '2024-10-12T14:30:00Z',
-  },
-  {
-    id: 'PAY-2024-003',
-    student_enrollment_id: 'ENR-2024-002',
-    school_fee_id: 'FEE-2024-001',
-    amount_paid: 50000,
-    payment_date: '2024-09-14',
-    payment_method: 'MOBILE_MONEY',
-    reference_number: 'OM-123456',
-    created_at: '2024-09-14T09:15:00Z',
-  },
-  {
-    id: 'PAY-2024-004',
-    student_enrollment_id: 'ENR-2024-002',
-    school_fee_id: 'FEE-2024-002',
-    amount_paid: 100000,
-    payment_date: '2024-10-20',
-    payment_method: 'CASH',
-    created_at: '2024-10-20T11:00:00Z',
-  },
-  {
-    id: 'PAY-2024-005',
-    student_enrollment_id: 'ENR-2024-003',
-    school_fee_id: 'FEE-2024-008',
-    amount_paid: 150000,
-    payment_date: '2024-09-05',
-    payment_method: 'BANK_TRANSFER',
-    reference_number: 'TRF-002',
-    created_at: '2024-09-05T16:00:00Z',
-  },
-  {
-    id: 'PAY-2024-006',
-    student_enrollment_id: 'ENR-2024-004',
-    school_fee_id: 'FEE-2024-011',
-    amount_paid: 200000,
-    payment_date: '2024-09-08',
-    payment_method: 'CASH',
-    created_at: '2024-09-08T10:30:00Z',
-  },
+const CLASSROOM_FEES_IDS: Record<string, Array<string>> = {
+  'c1': ['FEE-2024-001', 'FEE-2024-002', 'FEE-2024-005'],
+  'c2': ['FEE-2024-001', 'FEE-2024-002', 'FEE-2024-005'],
+  'c3': ['FEE-2024-006', 'FEE-2024-007'],
+  'c4': ['FEE-2024-006', 'FEE-2024-007'],
+  'c5': ['FEE-2024-014', 'FEE-2024-015'],
+  'c7': ['FEE-2024-008', 'FEE-2024-009', 'FEE-2024-010'],
+  'c8': ['FEE-2024-008', 'FEE-2024-009', 'FEE-2024-010'],
+  'c9': ['FEE-2024-016', 'FEE-2024-017'],
+  'c11': ['FEE-2024-018', 'FEE-2024-019'],
+  'c13': ['FEE-2024-011', 'FEE-2024-012', 'FEE-2024-013'],
+}
+
+const PAYMENT_METHODS: Array<string> = ['CASH', 'BANK_TRANSFER', 'MOBILE_MONEY', 'CHECK']
+const STUDENT_NAMES: Array<string> = [
+  'Alpha Oumar Diallo', 'Aïcha Bah', 'Moussa Camara', 'Fatou Touré',
+  'Mamadou Sow', 'Mariam Barry', 'Souleymane Konaté', 'Kadiatou Diallo',
+  'Ibrahim Barry', 'Mamadou Bangoura', 'Oumar Baldé', 'Moussa Condé',
+  'Abdou Koulibaly', 'Mamadou Doumbouya', 'Lansana Conté', 'Sékou Touré',
+  'Alpha Condé', 'Mamadou Yansané', 'Ousmane Soumah', 'Mamadou Sano',
 ]
+
+// Generate student payments for all classrooms
+function generateStudentPayments(): Array<StudentPayment> {
+  const payments: Array<StudentPayment> = []
+  let payCounter = 1
+  let enrCounter = 1
+
+  for (const [classroomId, feeIds] of Object.entries(CLASSROOM_FEES_IDS)) {
+    for (let i = 1; i <= 15; i++) {
+      const enrollmentId = `ENR-2024-${String(enrCounter).padStart(3, '0')}`
+
+      // Pay some, but not all fees (realistic partial payment)
+      const feesToPay = feeIds.filter(() => Math.random() < 0.6)
+
+      for (const feeId of feesToPay) {
+        const fee = mockSchoolFees.find((f) => f.id === feeId)
+        if (!fee) continue
+
+        const payPercent = 0.3 + Math.random() * 0.7
+        const amountPaid = Math.round(fee.amount * payPercent / 1000) * 1000
+        const paymentMethod = PAYMENT_METHODS[Math.floor(Math.random() * PAYMENT_METHODS.length)]
+
+        payments.push({
+          id: `PAY-2024-${String(payCounter).padStart(3, '0')}`,
+          student_enrollment_id: enrollmentId,
+          school_fee_id: feeId,
+          amount_paid: amountPaid,
+          payment_date: `2024-09-${String(5 + Math.floor(Math.random() * 20)).padStart(2, '0')}`,
+          payment_method: paymentMethod,
+          reference_number: paymentMethod === 'BANK_TRANSFER' ? `TRF-${String(payCounter).padStart(3, '0')}` : paymentMethod === 'MOBILE_MONEY' ? `OM-${String(100000 + payCounter)}` : undefined,
+          collected_by: 'admin-1',
+          created_at: `2024-09-${String(5 + Math.floor(Math.random() * 20)).padStart(2, '0')}T10:00:00Z`,
+        })
+        payCounter++
+      }
+
+      enrCounter++
+    }
+  }
+
+  return payments
+}
+
+export const mockStudentPayments: Array<StudentPayment> = generateStudentPayments()
+
+const LEVEL_TOTAL_FEES: Record<string, number> = {
+  'syl-1': 750000,
+  'syl-2': 350000,
+  'syl-3': 350000,
+  'syl-4': 650000,
+  'syl-5': 550000,
+  'syl-6': 550000,
+  'syl-7': 850000,
+}
+
+const CLASSROOM_LEVEL_MAP: Record<string, { sylId: string; className: string; level: string }> = {
+  'c1': { sylId: 'syl-1', className: '6ème A', level: '6ème' },
+  'c2': { sylId: 'syl-1', className: '6ème B', level: '6ème' },
+  'c3': { sylId: 'syl-2', className: '5ème A', level: '5ème' },
+  'c4': { sylId: 'syl-2', className: '5ème B', level: '5ème' },
+  'c5': { sylId: 'syl-3', className: '4ème A', level: '4ème' },
+  'c7': { sylId: 'syl-4', className: '3ème A', level: '3ème' },
+  'c8': { sylId: 'syl-4', className: '3ème B', level: '3ème' },
+  'c9': { sylId: 'syl-5', className: '2nde A', level: '2nde' },
+  'c11': { sylId: 'syl-6', className: '1ère A', level: '1ère' },
+  'c13': { sylId: 'syl-7', className: 'Terminale A', level: 'Terminale' },
+}
 
 export function generateFeeSummaries(): Array<FeeSummary> {
   const summaries: Array<FeeSummary> = []
+  const statuses: Array<'PAID' | 'PARTIAL' | 'OVERDUE' | 'PENDING'> = ['PAID', 'PARTIAL', 'OVERDUE', 'PENDING']
+  let studentIndex = 0
 
-  // For each student, calculate their fee summary
-  const students = [
-    {
-      id: 'ENR-2024-001',
-      name: 'Alpha Diallo',
-      class: '6ème A',
-      level: '6ème',
-      total_due: 850000,
-      total_paid: 350000,
-      status: 'PARTIAL' as PaymentStatus,
-      last_payment: '2024-10-12',
-    },
-    {
-      id: 'ENR-2024-002',
-      name: 'Aïcha Bah',
-      class: '6ème A',
-      level: '6ème',
-      total_due: 850000,
-      total_paid: 150000,
-      status: 'OVERDUE' as PaymentStatus,
-      last_payment: '2024-10-20',
-    },
-    {
-      id: 'ENR-2024-003',
-      name: 'Mamadou Sow',
-      class: '3ème A',
-      level: '3ème',
-      total_due: 650000,
-      total_paid: 150000,
-      status: 'PARTIAL' as PaymentStatus,
-      last_payment: '2024-09-05',
-    },
-    {
-      id: 'ENR-2024-004',
-      name: 'Fatou Touré',
-      class: 'Terminale A',
-      level: 'Terminale',
-      total_due: 850000,
-      total_paid: 200000,
-      status: 'PARTIAL' as PaymentStatus,
-      last_payment: '2024-09-08',
-    },
-    {
-      id: 'ENR-2024-005',
-      name: 'Boubacar Diallo',
-      class: '6ème B',
-      level: '6ème',
-      total_due: 850000,
-      total_paid: 850000,
-      status: 'PAID' as PaymentStatus,
-      last_payment: '2024-09-12',
-    },
-    {
-      id: 'ENR-2024-006',
-      name: 'Mariam Camara',
-      class: '5ème A',
-      level: '5ème',
-      total_due: 850000,
-      total_paid: 0,
-      status: 'PENDING' as PaymentStatus,
-      last_payment: null,
-    },
-    {
-      id: 'ENR-2024-007',
-      name: 'Souleymane Barry',
-      class: '3ème B',
-      level: '3ème',
-      total_due: 650000,
-      total_paid: 650000,
-      status: 'PAID' as PaymentStatus,
-      last_payment: '2024-09-15',
-    },
-    {
-      id: 'ENR-2024-008',
-      name: 'Kadiatou Diallo',
-      class: 'Terminale S',
-      level: 'Terminale',
-      total_due: 850000,
-      total_paid: 500000,
-      status: 'PARTIAL' as PaymentStatus,
-      last_payment: '2024-11-01',
-    },
-  ]
+  for (const [classroomId, info] of Object.entries(CLASSROOM_LEVEL_MAP)) {
+    const totalDue = LEVEL_TOTAL_FEES[info.sylId] || 500000
 
-  students.forEach((s) => {
-    summaries.push({
-      student_id: s.id,
-      student_name: s.name,
-      class_name: s.class,
-      level: s.level,
-      total_due: s.total_due,
-      total_paid: s.total_paid,
-      balance: s.total_due - s.total_paid,
-      status: s.status,
-      last_payment_date: s.last_payment,
-    })
-  })
+    for (let i = 1; i <= 15; i++) {
+      const enrNum = studentIndex + 1
+      const enrollmentId = `ENR-2024-${String(enrNum).padStart(3, '0')}`
+      const nameIndex = studentIndex % STUDENT_NAMES.length
+      const statusRoll = Math.random()
+
+      let status: 'PAID' | 'PARTIAL' | 'OVERDUE' | 'PENDING'
+      let totalPaid: number
+      let lastPayment: string | null
+
+      if (statusRoll < 0.2) {
+        status = 'PAID'
+        totalPaid = totalDue
+        lastPayment = `2024-09-${String(5 + Math.floor(Math.random() * 10)).padStart(2, '0')}`
+      } else if (statusRoll < 0.55) {
+        status = 'PARTIAL'
+        totalPaid = Math.round(totalDue * (0.2 + Math.random() * 0.5) / 1000) * 1000
+        lastPayment = `2024-${Math.random() < 0.5 ? '09' : '10'}-${String(5 + Math.floor(Math.random() * 20)).padStart(2, '0')}`
+      } else if (statusRoll < 0.8) {
+        status = 'OVERDUE'
+        totalPaid = Math.round(totalDue * (0.1 + Math.random() * 0.2) / 1000) * 1000
+        lastPayment = `2024-09-${String(5 + Math.floor(Math.random() * 10)).padStart(2, '0')}`
+      } else {
+        status = 'PENDING'
+        totalPaid = 0
+        lastPayment = null
+      }
+
+      summaries.push({
+        student_id: enrollmentId,
+        student_name: STUDENT_NAMES[nameIndex],
+        class_name: info.className,
+        level: info.level,
+        total_due: totalDue,
+        total_paid: totalPaid,
+        balance: totalDue - totalPaid,
+        status,
+        last_payment_date: lastPayment,
+      })
+
+      studentIndex++
+    }
+  }
 
   return summaries
 }
