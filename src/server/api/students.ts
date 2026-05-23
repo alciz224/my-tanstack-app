@@ -15,6 +15,7 @@ export interface PublicStudent {
   class_name: string
   enrollment_status: EnrollmentStatus
   parent_phone?: string | null
+  school_name?: string | null
   school_phone?: string | null
   school_email?: string | null
 }
@@ -30,6 +31,7 @@ export const getPublicStudentCardInfoFn = createServerFn({ method: 'GET' })
 
     // For now we use the first school's info as default for mock data
     // In a real multi-tenant app, we would look up the school associated with the student
+    const schoolName = "École d'Excellence"
     const schoolPhone = '+224 622 12 34 56'
     const schoolEmail = 'contact@excellence.edu.gn'
 
@@ -44,6 +46,7 @@ export const getPublicStudentCardInfoFn = createServerFn({ method: 'GET' })
       class_name: student.class_name,
       enrollment_status: student.enrollment_status,
       parent_phone: student.parent_phone,
+      school_name: schoolName,
       school_phone: schoolPhone,
       school_email: schoolEmail,
     }

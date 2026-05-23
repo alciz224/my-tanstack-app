@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   Phone,
   Mail,
+  Home,
 } from 'lucide-react'
 import { getPublicStudentCardInfoFn } from '@/server/api/students'
 import { generateStudentAvatar } from '@/lib/utils'
@@ -103,6 +104,20 @@ function VerifyStudentPage() {
               </p>
 
               <div className="space-y-4 text-left">
+                <div className="bg-muted/40 rounded-xl p-4 flex items-center gap-4 border border-border/50">
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                    <Home className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase font-semibold">
+                      Établissement
+                    </p>
+                    <p className="font-bold text-foreground">
+                      {student.school_name}
+                    </p>
+                  </div>
+                </div>
+
                 <div className="bg-muted/40 rounded-xl p-4 flex items-center gap-4 border border-border/50">
                   <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
                     <GraduationCap className="w-5 h-5" />
