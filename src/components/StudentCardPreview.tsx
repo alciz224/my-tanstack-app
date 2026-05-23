@@ -18,7 +18,7 @@ function getStudentPhotoUrl(student: Student): string {
 }
 
 // ── Single ID Card ────────────────────────────────────────────────────────
-function StudentIDCard({ student }: { student: Student }) {
+export function StudentIDCard({ student }: { student: Student }) {
   const photoUrl = getStudentPhotoUrl(student)
 
   // Use the verification URL for the QR code

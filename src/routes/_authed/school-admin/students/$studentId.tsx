@@ -6,6 +6,8 @@ import {
   Calendar,
   CheckCircle2,
   ChevronRight,
+  CreditCard,
+  Download,
   Edit,
   ExternalLink,
   FileText,
@@ -14,6 +16,7 @@ import {
   Mail,
   MapPin,
   Phone,
+  Printer,
   Star,
   Trash2,
   TrendingUp,
@@ -29,6 +32,7 @@ import { getReportCardsFn } from '@/server/api/reports'
 import { getStudentAssessmentsByEnrollmentFn } from '@/server/api/student-assessments'
 import type { ReportCard } from '@/server/data/reports/types'
 import type { StudentAssessment } from '@/server/data/student-assessments/types'
+import { StudentIDCard } from '@/components/StudentCardPreview'
 
 export const Route = createFileRoute(
   '/_authed/school-admin/students/$studentId',
@@ -103,7 +107,7 @@ const AVAILABLE_CLASSROOMS = [
   { id: 'c4', name: '5ème B', level: '5ème', capacity: 35, enrolled: 29 },
 ]
 
-type ModalType = 'none' | 'transfer' | 'status'
+type ModalType = 'none' | 'transfer' | 'status' | 'id-card'
 
 function StudentDetailPage() {
   const { student, reportCards, assessments } = Route.useLoaderData()
@@ -670,6 +674,15 @@ function StudentDetailPage() {
                 </button>
               )}
               <button
+                onClick={() => setModal('id-card')}
+                className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted text-sm font-medium transition-colors border border-transparent hover:border-border"
+              >
+                <span className="flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-indigo-500" /> Carte d'identité
+                </span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </button>
+              <button
                 onClick={() => setModal('status')}
                 className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted text-sm font-medium transition-colors border border-transparent hover:border-border"
               >
@@ -904,6 +917,60 @@ function StudentDetailPage() {
                   <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                 )}
                 Confirmer le transfert
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ID CARD MODAL */}
+      {modal === 'id-card' && (
+        <>
+          <div
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
+            onClick={() => setModal('none')}
+          />
+          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-card border border-border rounded-xl shadow-xl z-50 animate-scale-in">
+            <div className="flex items-center justify-between p-5 border-b border-border">
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-primary" /> Carte d'identité
+              </h2>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => window.print()}
+                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  title="Imprimer"
+                >
+                  <Printer className="w-5 h-5" />
+                </button>
+                <button
+                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  title="Télécharger PDF"
+                >
+                  <Download className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setModal('none')}
+                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="p-8 flex justify-center bg-muted/30">
+              <div className="w-full max-w-[400px]">
+                <StudentIDCard student={student as any} />
+              </div>
+            </div>
+            <div className="p-5 border-t border-border flex justify-between items-center bg-card">
+              <p className="text-xs text-muted-foreground">
+                Format standard ISO 7810 ID-1 (85.60 × 53.98 mm)
+              </p>
+              <button
+                onClick={() => setModal('none')}
+                className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              >
+                Fermer
               </button>
             </div>
           </div>
