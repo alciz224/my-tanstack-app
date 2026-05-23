@@ -1,8 +1,25 @@
 import type { StudentAssessment } from './types'
 
-const CLASSROOMS = ['c1', 'c2', 'c3', 'c4', 'c5', 'c7', 'c8', 'c9', 'c11', 'c13']
-const SCORES = [14.5, 16, 12, 18, 10, 15, 13.5, 11, 17, 9, 14, 12.5, 16.5, 10.5, 13]
-const STATUSES: Array<'VALIDATED' | 'SUBMITTED' | 'DRAFT'> = ['VALIDATED', 'SUBMITTED', 'DRAFT']
+const CLASSROOMS = [
+  'c1',
+  'c2',
+  'c3',
+  'c4',
+  'c5',
+  'c7',
+  'c8',
+  'c9',
+  'c11',
+  'c13',
+]
+const SCORES = [
+  14.5, 16, 12, 18, 10, 15, 13.5, 11, 17, 9, 14, 12.5, 16.5, 10.5, 13,
+]
+const STATUSES: Array<'VALIDATED' | 'SUBMITTED' | 'DRAFT'> = [
+  'VALIDATED',
+  'SUBMITTED',
+  'DRAFT',
+]
 
 function generateStudentAssessments(): Array<StudentAssessment> {
   const results: Array<StudentAssessment> = []
@@ -24,7 +41,11 @@ function generateStudentAssessments(): Array<StudentAssessment> {
         status: isAbsent ? 'SUBMITTED' : pick(STATUSES),
         is_absent: isAbsent,
         is_excused: isExcused,
-        remark: isAbsent ? 'Absent maladie' : isExcused ? 'Certificat médical fourni' : undefined,
+        remark: isAbsent
+          ? 'Absent maladie'
+          : isExcused
+            ? 'Certificat médical fourni'
+            : undefined,
       })
     }
   }
@@ -36,6 +57,7 @@ function pick<T>(arr: Array<T>): T {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
-export const mockStudentAssessments: Array<StudentAssessment> = generateStudentAssessments()
+export const mockStudentAssessments: Array<StudentAssessment> =
+  generateStudentAssessments()
 
 export type { StudentAssessment } from './types'

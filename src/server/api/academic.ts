@@ -21,7 +21,9 @@ import { createServerFn } from '@tanstack/react-start'
  */
 export const getAcademicYearsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return (await import('@/server/data/academic/factory')).getAcademicService().getAcademicYears()
+    return (await import('@/server/data/academic/factory'))
+      .getAcademicService()
+      .getAcademicYears()
   },
 )
 
@@ -61,49 +63,65 @@ export const getCurrentAcademicYearFn = createServerFn({
 
 export const getCyclesFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return (await import('@/server/data/academic/factory')).getAcademicService().getCycles()
+    return (await import('@/server/data/academic/factory'))
+      .getAcademicService()
+      .getCycles()
   },
 )
 
 export const getLevelsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return (await import('@/server/data/academic/factory')).getAcademicService().getLevels()
+    return (await import('@/server/data/academic/factory'))
+      .getAcademicService()
+      .getLevels()
   },
 )
 
 export const getTracksFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return (await import('@/server/data/academic/factory')).getAcademicService().getTracks()
+    return (await import('@/server/data/academic/factory'))
+      .getAcademicService()
+      .getTracks()
   },
 )
 
 export const getSubjectsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return (await import('@/server/data/academic/factory')).getAcademicService().getSubjects()
+    return (await import('@/server/data/academic/factory'))
+      .getAcademicService()
+      .getSubjects()
   },
 )
 
 export const getPeriodsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return (await import('@/server/data/academic/factory')).getAcademicService().getTermTypes()
+    return (await import('@/server/data/academic/factory'))
+      .getAcademicService()
+      .getTermTypes()
   },
 )
 
 export const getTermTypesFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return (await import('@/server/data/academic/factory')).getAcademicService().getTermTypes()
+    return (await import('@/server/data/academic/factory'))
+      .getAcademicService()
+      .getTermTypes()
   },
 )
 
 export const getTermsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return (await import('@/server/data/academic/factory')).getAcademicService().getTerms()
+    return (await import('@/server/data/academic/factory'))
+      .getAcademicService()
+      .getTerms()
   },
 )
 
 export const getAssessmentTypesFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return (await import('@/server/data/academic/factory')).getAcademicService().getAssessmentTypes()
+    return (await import('@/server/data/academic/factory'))
+      .getAcademicService()
+      .getAssessmentTypes()
   },
 )
 

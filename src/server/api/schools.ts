@@ -62,7 +62,8 @@ export const getSchoolYearLevelsFn = createServerFn({ method: 'GET' })
   .inputValidator((schoolYearCycleId: string) => schoolYearCycleId)
   .handler(
     async ({ data: schoolYearCycleId }): Promise<Array<SchoolYearLevel>> => {
-      const { getSchoolsService } = await import('@/server/data/schools/factory')
+      const { getSchoolsService } =
+        await import('@/server/data/schools/factory')
       return getSchoolsService().getSchoolYearLevels(schoolYearCycleId)
     },
   )
@@ -73,7 +74,8 @@ export const getSchoolYearLevelSubjectsFn = createServerFn({ method: 'GET' })
     async ({
       data: schoolYearLevelId,
     }): Promise<Array<SchoolYearLevelSubject>> => {
-      const { getSchoolsService } = await import('@/server/data/schools/factory')
+      const { getSchoolsService } =
+        await import('@/server/data/schools/factory')
       return getSchoolsService().getSchoolYearLevelSubjects(schoolYearLevelId)
     },
   )
@@ -105,7 +107,8 @@ export const createClassroomFn = createServerFn({ method: 'POST' })
         room_number?: string
       }
     }): Promise<Classroom> => {
-      const { getSchoolsService } = await import('@/server/data/schools/factory')
+      const { getSchoolsService } =
+        await import('@/server/data/schools/factory')
       return getSchoolsService().createClassroom({
         school_year_level_id: data.schoolYearLevelId,
         name: data.name,

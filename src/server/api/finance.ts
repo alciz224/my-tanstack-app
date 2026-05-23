@@ -9,14 +9,18 @@ import type {
 
 export const getFeeTypesFn = createServerFn({ method: 'GET' }).handler(
   async (): Promise<Array<FeeType>> => {
-    return (await import('@/server/data/finance/factory')).getFinanceService().getFeeTypes()
+    return (await import('@/server/data/finance/factory'))
+      .getFinanceService()
+      .getFeeTypes()
   },
 )
 
 export const getSchoolFeesFn = createServerFn({ method: 'GET' })
   .inputValidator((schoolYearId: string) => schoolYearId)
   .handler(async ({ data }): Promise<Array<SchoolFee>> => {
-    return (await import('@/server/data/finance/factory')).getFinanceService().getSchoolFees(data)
+    return (await import('@/server/data/finance/factory'))
+      .getFinanceService()
+      .getSchoolFees(data)
   })
 
 export const createSchoolFeeFn = createServerFn({ method: 'POST' })
@@ -31,13 +35,17 @@ export const createSchoolFeeFn = createServerFn({ method: 'POST' })
     }) => data,
   )
   .handler(async ({ data }): Promise<SchoolFee> => {
-    return (await import('@/server/data/finance/factory')).getFinanceService().createSchoolFee(data)
+    return (await import('@/server/data/finance/factory'))
+      .getFinanceService()
+      .createSchoolFee(data)
   })
 
 export const getStudentPaymentsFn = createServerFn({ method: 'GET' })
   .inputValidator((studentEnrollmentId: string) => studentEnrollmentId)
   .handler(async ({ data }): Promise<Array<StudentPayment>> => {
-    return (await import('@/server/data/finance/factory')).getFinanceService().getStudentPayments(data)
+    return (await import('@/server/data/finance/factory'))
+      .getFinanceService()
+      .getStudentPayments(data)
   })
 
 export const createPaymentFn = createServerFn({ method: 'POST' })
@@ -52,9 +60,9 @@ export const createPaymentFn = createServerFn({ method: 'POST' })
     }) => data,
   )
   .handler(async ({ data }): Promise<StudentPayment> => {
-    return (await import('@/server/data/finance/factory')).getFinanceService().createPayment(
-      data as Omit<StudentPayment, 'id' | 'created_at'>,
-    )
+    return (await import('@/server/data/finance/factory'))
+      .getFinanceService()
+      .createPayment(data as Omit<StudentPayment, 'id' | 'created_at'>)
   })
 
 export const getFeeSummariesFn = createServerFn({ method: 'GET' })
@@ -62,14 +70,15 @@ export const getFeeSummariesFn = createServerFn({ method: 'GET' })
     (data: { schoolYearId: string; classroomId?: string }) => data,
   )
   .handler(async ({ data }): Promise<Array<FeeSummary>> => {
-    return (await import('@/server/data/finance/factory')).getFinanceService().getFeeSummaries(
-      data.schoolYearId,
-      data.classroomId,
-    )
+    return (await import('@/server/data/finance/factory'))
+      .getFinanceService()
+      .getFeeSummaries(data.schoolYearId, data.classroomId)
   })
 
 export const getFinanceStatsFn = createServerFn({ method: 'GET' })
   .inputValidator((schoolYearId: string) => schoolYearId)
   .handler(async ({ data }): Promise<FinanceStats> => {
-    return (await import('@/server/data/finance/factory')).getFinanceService().getFinanceStats(data)
+    return (await import('@/server/data/finance/factory'))
+      .getFinanceService()
+      .getFinanceStats(data)
   })

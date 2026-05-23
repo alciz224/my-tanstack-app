@@ -214,6 +214,12 @@ const navSections: Array<NavSection> = [
         icon: <FileText className="w-5 h-5" />,
         enabled: true,
       },
+      {
+        label: 'Bulletins',
+        to: '/school-admin/reports/report-cards',
+        icon: <FileText className="w-5 h-5" />,
+        enabled: true,
+      },
     ],
   },
   {

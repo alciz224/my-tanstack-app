@@ -1,21 +1,70 @@
 import { createServerFn } from '@tanstack/react-start'
 import type { StudentsFilter } from '@/server/data/students/types'
-import type { Student } from '@/server/data/students/mocks'
+import type { EnrollmentStatus, Student } from '@/server/data/students/mocks'
 
 export type { Student }
+
+export interface PublicStudent {
+  id: string
+  annual_identifier: string
+  full_name: string
+  photo_url: string | null
+  academic_year: string
+  cycle: string
+  level: string
+  class_name: string
+  enrollment_status: EnrollmentStatus
+  parent_phone?: string | null
+  school_phone?: string | null
+  school_email?: string | null
+}
+
+export const getPublicStudentCardInfoFn = createServerFn({ method: 'GET' })
+  .inputValidator((id: string) => id)
+  .handler(async ({ data: id }): Promise<PublicStudent | undefined> => {
+    const student = await (await import('@/server/data/students/factory'))
+      .getStudentsService()
+      .getStudentById(id)
+
+    if (!student) return undefined
+
+    // For now we use the first school's info as default for mock data
+    // In a real multi-tenant app, we would look up the school associated with the student
+    const schoolPhone = '+224 622 12 34 56'
+    const schoolEmail = 'contact@excellence.edu.gn'
+
+    return {
+      id: student.id,
+      annual_identifier: student.annual_identifier,
+      full_name: student.full_name,
+      photo_url: student.photo_url,
+      academic_year: student.academic_year,
+      cycle: student.cycle,
+      level: student.level,
+      class_name: student.class_name,
+      enrollment_status: student.enrollment_status,
+      parent_phone: student.parent_phone,
+      school_phone: schoolPhone,
+      school_email: schoolEmail,
+    }
+  })
 
 export const getStudentsFn = createServerFn({ method: 'GET' })
   .inputValidator((d: unknown) => d as StudentsFilter | undefined)
   .handler(async ({ data: filter }): Promise<Array<Student>> => {
     // Per skill pattern: call (await import('@/server/data/students/factory')).getStudentsService() inside handler, never at module top-level
-    const service = (await import('@/server/data/students/factory')).getStudentsService()
+    const service = (
+      await import('@/server/data/students/factory')
+    ).getStudentsService()
     return service.getStudents(filter ?? undefined)
   })
 
 export const getStudentByIdFn = createServerFn({ method: 'GET' })
   .inputValidator((id: string) => id)
   .handler(async ({ data: id }): Promise<Student | undefined> => {
-    return (await import('@/server/data/students/factory')).getStudentsService().getStudentById(id)
+    return (await import('@/server/data/students/factory'))
+      .getStudentsService()
+      .getStudentById(id)
   })
 
 export const findSimilarStudentsFn = createServerFn({ method: 'GET' })
@@ -30,7 +79,9 @@ export const findSimilarStudentsFn = createServerFn({ method: 'GET' })
     const filter: StudentsFilter = currentYear
       ? { academic_year: currentYear }
       : {}
-    const allStudents = await (await import('@/server/data/students/factory')).getStudentsService().getStudents(filter)
+    const allStudents = await (await import('@/server/data/students/factory'))
+      .getStudentsService()
+      .getStudents(filter)
 
     const searchLower = (firstName || '').toLowerCase().trim()
     const lastSearchLower = (lastName || '').toLowerCase().trim()

@@ -280,7 +280,11 @@ const ADDRESSES_BY_LOCALITY: Record<string, Array<string>> = {
   Kindia: ['Kindia Centre', 'Kindia, Quartier Commerce', 'Kindia, Friguiagbé'],
   Labé: ['Labé, Quartier Lidé', 'Labé, Centre', 'Labé, Missira'],
   Boké: ['Boké, Quartier Minier', 'Boké Ville', 'Boké, Centre'],
-  Nzérékoré: ['Nzérékoré, Quartier Plateau', 'Nzérékoré Centre', 'Nzérékoré, Belle-Vue'],
+  Nzérékoré: [
+    'Nzérékoré, Quartier Plateau',
+    'Nzérékoré Centre',
+    'Nzérékoré, Belle-Vue',
+  ],
   Kankan: ['Kankan, Quartier Commerce', 'Kankan Centre', 'Kankan, Djélibakoro'],
   Mamou: ['Mamou Centre', 'Mamou, Quartier Marché'],
 }
@@ -326,9 +330,7 @@ const LEVEL_CONFIG: Array<{
     cycle: 'Primaire',
     option: 'Général',
     sylId: 'syl-3',
-    classrooms: [
-      { id: 'c5', name: '4ème A' },
-    ],
+    classrooms: [{ id: 'c5', name: '4ème A' }],
     baseBirthYear: 2009,
   },
   {
@@ -349,9 +351,7 @@ const LEVEL_CONFIG: Array<{
     cycle: 'Secondaire',
     option: 'Sciences',
     sylId: 'syl-5',
-    classrooms: [
-      { id: 'c9', name: '2nde A' },
-    ],
+    classrooms: [{ id: 'c9', name: '2nde A' }],
     baseBirthYear: 2007,
   },
   {
@@ -360,9 +360,7 @@ const LEVEL_CONFIG: Array<{
     cycle: 'Secondaire',
     option: 'Sciences',
     sylId: 'syl-6',
-    classrooms: [
-      { id: 'c11', name: '1ère A' },
-    ],
+    classrooms: [{ id: 'c11', name: '1ère A' }],
     baseBirthYear: 2006,
   },
   {
@@ -371,9 +369,7 @@ const LEVEL_CONFIG: Array<{
     cycle: 'Secondaire',
     option: 'Mathématiques',
     sylId: 'syl-7',
-    classrooms: [
-      { id: 'c13', name: 'Terminale A' },
-    ],
+    classrooms: [{ id: 'c13', name: 'Terminale A' }],
     baseBirthYear: 2005,
   },
 ]
@@ -402,16 +398,16 @@ const PHONES: Array<string> = [
 ]
 
 const PREV_CLASSROOMS: Record<string, { id: string; name: string }> = {
-  'c1': { id: 'p-c1', name: 'CM2 A' },
-  'c2': { id: 'p-c2', name: 'CM2 B' },
-  'c3': { id: 'p-c3', name: 'CM1 A' },
-  'c4': { id: 'p-c4', name: 'CM1 B' },
-  'c5': { id: 'p-c5', name: 'CE2 A' },
-  'c7': { id: 'p-c7', name: '4ème - A' },
-  'c8': { id: 'p-c8', name: '4ème - B' },
-  'c9': { id: 'p-c9', name: '3ème B' },
-  'c11': { id: 'p-c11', name: '2nde B' },
-  'c13': { id: 'p-c13', name: '1ère B' },
+  c1: { id: 'p-c1', name: 'CM2 A' },
+  c2: { id: 'p-c2', name: 'CM2 B' },
+  c3: { id: 'p-c3', name: 'CM1 A' },
+  c4: { id: 'p-c4', name: 'CM1 B' },
+  c5: { id: 'p-c5', name: 'CE2 A' },
+  c7: { id: 'p-c7', name: '4ème - A' },
+  c8: { id: 'p-c8', name: '4ème - B' },
+  c9: { id: 'p-c9', name: '3ème B' },
+  c11: { id: 'p-c11', name: '2nde B' },
+  c13: { id: 'p-c13', name: '1ère B' },
 }
 
 function pick<T>(arr: Array<T>): T {
@@ -433,7 +429,7 @@ function generateDOB(baseYear: number, gender: 'M' | 'F'): string {
 }
 
 function generateStudentsForLevel(
-  config: typeof LEVEL_CONFIG[0],
+  config: (typeof LEVEL_CONFIG)[0],
   startIndex: number,
   maleNames: Array<[string, string]>,
   femaleNames: Array<[string, string]>,
@@ -487,7 +483,12 @@ function generateStudentsForLevel(
         transfer_reason: isDropped ? 'Déménagement familial' : null,
         parent_name: `${parentPrefix} ${last}`,
         parent_phone: phone,
-        parent_email: `${last.toLowerCase().replace(/[éèêë]/g, 'e')}.${first.toLowerCase().replace(/[éèêë]/g, 'e').split(' ')[0]}@gmail.com`,
+        parent_email: `${last.toLowerCase().replace(/[éèêë]/g, 'e')}.${
+          first
+            .toLowerCase()
+            .replace(/[éèêë]/g, 'e')
+            .split(' ')[0]
+        }@gmail.com`,
       })
     }
 
@@ -526,10 +527,17 @@ function generateStudentsForLevel(
         enrollment_date: generateEnrollmentDate('2024-2025'),
         start_date: isDropped ? null : '2024-09-01',
         end_date: isDropped ? '2025-02-20' : null,
-        transfer_reason: isDropped ? 'Redoublement dans autre établissement' : null,
+        transfer_reason: isDropped
+          ? 'Redoublement dans autre établissement'
+          : null,
         parent_name: `${parentPrefix} ${last}`,
         parent_phone: phone,
-        parent_email: `${last.toLowerCase().replace(/[éèêë]/g, 'e')}.${first.toLowerCase().replace(/[éèêë]/g, 'e').split(' ')[0]}@gmail.com`,
+        parent_email: `${last.toLowerCase().replace(/[éèêë]/g, 'e')}.${
+          first
+            .toLowerCase()
+            .replace(/[éèêë]/g, 'e')
+            .split(' ')[0]
+        }@gmail.com`,
       })
     }
   }
@@ -545,7 +553,12 @@ function generateAllStudents(): Array<Student> {
   const femaleNames = [...GUINEAN_FEMALE_NAMES]
 
   for (const config of LEVEL_CONFIG) {
-    const generated = generateStudentsForLevel(config, idx, maleNames, femaleNames)
+    const generated = generateStudentsForLevel(
+      config,
+      idx,
+      maleNames,
+      femaleNames,
+    )
     idx += generated.length
     students.push(...generated)
   }

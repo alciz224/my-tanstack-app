@@ -81,7 +81,6 @@ export async function serverAction<T>(
   }
 }
 
-
 /**
  * Create a simple mutation server function
  *

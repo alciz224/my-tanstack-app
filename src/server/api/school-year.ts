@@ -14,13 +14,17 @@ import { createServerFn } from '@tanstack/react-start'
 export const getSchoolYearsFn = createServerFn({ method: 'GET' })
   .inputValidator((input: { schoolId?: string }) => input)
   .handler(async ({ data }) => {
-    return (await import('@/server/data/school-year/factory')).getSchoolYearService().getSchoolYears(data?.schoolId)
+    return (await import('@/server/data/school-year/factory'))
+      .getSchoolYearService()
+      .getSchoolYears(data?.schoolId)
   })
 
 export const getSchoolYearFn = createServerFn({ method: 'GET' })
   .inputValidator((id: string) => id)
   .handler(async ({ data: id }) => {
-    return (await import('@/server/data/school-year/factory')).getSchoolYearService().getSchoolYear(id)
+    return (await import('@/server/data/school-year/factory'))
+      .getSchoolYearService()
+      .getSchoolYear(id)
   })
 
 // ============================================================================
@@ -30,7 +34,9 @@ export const getSchoolYearFn = createServerFn({ method: 'GET' })
 export const getSchoolYearCyclesFn = createServerFn({ method: 'GET' })
   .inputValidator((schoolYearId: string) => schoolYearId)
   .handler(async ({ data: schoolYearId }) => {
-    return (await import('@/server/data/school-year/factory')).getSchoolYearService().getSchoolYearCycles(schoolYearId)
+    return (await import('@/server/data/school-year/factory'))
+      .getSchoolYearService()
+      .getSchoolYearCycles(schoolYearId)
   })
 
 // ============================================================================
@@ -40,7 +46,9 @@ export const getSchoolYearCyclesFn = createServerFn({ method: 'GET' })
 export const getSchoolYearLevelsFn = createServerFn({ method: 'GET' })
   .inputValidator((schoolYearCycleId: string) => schoolYearCycleId)
   .handler(async ({ data: schoolYearCycleId }) => {
-    return (await import('@/server/data/school-year/factory')).getSchoolYearService().getSchoolYearLevels(schoolYearCycleId)
+    return (await import('@/server/data/school-year/factory'))
+      .getSchoolYearService()
+      .getSchoolYearLevels(schoolYearCycleId)
   })
 
 // ============================================================================
@@ -50,7 +58,9 @@ export const getSchoolYearLevelsFn = createServerFn({ method: 'GET' })
 export const getSchoolYearLevelSubjectsFn = createServerFn({ method: 'GET' })
   .inputValidator((schoolYearLevelId: string) => schoolYearLevelId)
   .handler(async ({ data: schoolYearLevelId }) => {
-    return (await import('@/server/data/school-year/factory')).getSchoolYearService().getSchoolYearLevelSubjects(schoolYearLevelId)
+    return (await import('@/server/data/school-year/factory'))
+      .getSchoolYearService()
+      .getSchoolYearLevelSubjects(schoolYearLevelId)
   })
 
 // ============================================================================
@@ -60,7 +70,9 @@ export const getSchoolYearLevelSubjectsFn = createServerFn({ method: 'GET' })
 export const getClassroomsFn = createServerFn({ method: 'GET' })
   .inputValidator((schoolYearLevelId: string) => schoolYearLevelId)
   .handler(async ({ data: schoolYearLevelId }) => {
-    return (await import('@/server/data/school-year/factory')).getSchoolYearService().getClassrooms(schoolYearLevelId)
+    return (await import('@/server/data/school-year/factory'))
+      .getSchoolYearService()
+      .getClassrooms(schoolYearLevelId)
   })
 
 // ============================================================================
@@ -70,5 +82,7 @@ export const getClassroomsFn = createServerFn({ method: 'GET' })
 export const getTimeSlotsFn = createServerFn({ method: 'GET' })
   .inputValidator((schoolYearCycleId: string) => schoolYearCycleId)
   .handler(async ({ data: schoolYearCycleId }) => {
-    return (await import('@/server/data/school-year/factory')).getSchoolYearService().getTimeSlots(schoolYearCycleId)
+    return (await import('@/server/data/school-year/factory'))
+      .getSchoolYearService()
+      .getTimeSlots(schoolYearCycleId)
   })

@@ -10,11 +10,8 @@ import appCss from '../styles.css?url'
 import type { RouterContext } from '@/router'
 import type { RouteContext } from '@/types/router'
 
-
-
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { ToastContainer } from '@/components/Toast'
-
 
 import { subscribeAuthEvents } from '@/auth/authEvents'
 import { safeRedirectPath } from '@/auth/redirects'
@@ -26,7 +23,6 @@ import {
   setSessionUser,
 } from '@/server/data/auth/local.adapter'
 import { mockUser } from '@/server/data/auth/mocks'
-
 
 /**
  * Root route - provides auth context to all child routes
@@ -212,7 +208,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           </div>
           <ToastContainer />
           <Scripts />
-
         </body>
       </html>
     </QueryClientProvider>

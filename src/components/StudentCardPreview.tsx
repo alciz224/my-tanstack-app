@@ -20,20 +20,22 @@ function getStudentPhotoUrl(student: Student): string {
 // ── Single ID Card ────────────────────────────────────────────────────────
 function StudentIDCard({ student }: { student: Student }) {
   const photoUrl = getStudentPhotoUrl(student)
-  const qrData = JSON.stringify({
-    id: student.id,
-    matricule: student.annual_identifier,
-    name: student.full_name,
-    class: student.class_name,
-  })
+
+  // Use the verification URL for the QR code
+  const verificationUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/verify-student/${student.id}`
+      : `/verify-student/${student.id}`
+
+  const qrData = verificationUrl
 
   return (
     <div
-      className="relative overflow-hidden rounded-xl shadow-lg bg-white border border-border"
+      className="relative overflow-hidden rounded-xl shadow-lg bg-white border border-gray-200"
       style={{ aspectRatio: '85.6 / 54' }}
     >
       {/* Blue header band */}
-      <div className="absolute top-0 left-0 right-0 h-[38%] bg-gradient-to-br from-sky-900 via-blue-800 to-indigo-900">
+      <div className="absolute top-0 left-0 right-0 h-[30%] bg-gradient-to-br from-sky-900 via-blue-800 to-indigo-900">
         <div
           className="absolute inset-0 opacity-[0.04]"
           style={{
@@ -53,6 +55,9 @@ function StudentIDCard({ student }: { student: Student }) {
               <p className="text-[5px] text-blue-200 uppercase tracking-wider leading-none mt-0.5">
                 Carte d&apos;identité scolaire
               </p>
+              <p className="text-[4px] text-blue-100/60 lowercase leading-none mt-1 truncate">
+                contact@excellence.edu.gn
+              </p>
             </div>
           </div>
           <div className="self-end">
@@ -67,13 +72,13 @@ function StudentIDCard({ student }: { student: Student }) {
       </div>
 
       {/* Shadow transition */}
-      <div className="absolute top-[38%] left-0 right-0 h-3 bg-gradient-to-b from-blue-900/20 to-transparent z-10" />
+      <div className="absolute top-[30%] left-0 right-0 h-3 bg-gradient-to-b from-blue-900/20 to-transparent z-10" />
 
       {/* Body */}
-      <div className="absolute bottom-0 left-0 right-0 h-[62%] px-4 pt-2 pb-3 flex gap-2.5">
+      <div className="absolute bottom-0 left-0 right-0 h-[70%] px-4 pt-2 pb-3 flex gap-2.5">
         {/* Photo */}
-        <div className="-mt-4 flex-shrink-0 z-20">
-          <div className="w-[52px] h-[62px] rounded-md overflow-hidden border-2 border-white shadow-md bg-muted">
+        <div className="-mt-6 flex-shrink-0 z-20">
+          <div className="w-[64px] h-[78px] rounded-md overflow-hidden border-2 border-white shadow-md bg-gray-100">
             <img
               src={photoUrl}
               alt={student.full_name}
@@ -85,10 +90,10 @@ function StudentIDCard({ student }: { student: Student }) {
 
         {/* Info */}
         <div className="flex-1 min-w-0 z-20">
-          <p className="text-[9px] font-bold text-foreground leading-tight truncate">
+          <p className="text-[9px] font-bold text-gray-900 leading-tight truncate">
             {student.last_name.toUpperCase()}
           </p>
-          <p className="text-[7px] text-muted-foreground leading-tight truncate">
+          <p className="text-[7px] text-gray-600 leading-tight truncate">
             {student.first_name}
           </p>
           <div className="space-y-px mt-1">
@@ -101,19 +106,18 @@ function StudentIDCard({ student }: { student: Student }) {
                 'fr-FR',
               )}
             />
-            <InfoRow
-              label="Genre"
-              value={student.gender === 'M' ? 'Masculin' : 'Féminin'}
-            />
+            <div className="my-0.5 border-t border-gray-100" />
+            <InfoRow label="Tuteur" value={student.parent_phone || 'N/A'} />
+            <InfoRow label="École Tél" value="+224 622 12 34 56" />
           </div>
         </div>
 
         {/* QR */}
         <div className="flex-shrink-0 flex flex-col items-center justify-center z-20">
-          <div className="bg-white rounded border border-border/50 p-[2px] shadow-sm">
+          <div className="bg-white rounded border border-gray-200/50 p-[2px] shadow-sm">
             <QRCodeSVG value={qrData} size={34} level="L" />
           </div>
-          <p className="text-[4px] text-muted-foreground/60 uppercase tracking-[0.1em] mt-0.5">
+          <p className="text-[4px] text-gray-400 uppercase tracking-[0.1em] mt-0.5">
             Scan
           </p>
         </div>
@@ -140,10 +144,10 @@ function StudentIDCard({ student }: { student: Student }) {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex gap-1 items-baseline">
-      <span className="text-[5px] text-muted-foreground/60 uppercase tracking-wide flex-shrink-0 w-10">
+      <span className="text-[5px] text-gray-400 uppercase tracking-wide flex-shrink-0 w-10">
         {label}
       </span>
-      <span className="text-[6px] font-semibold text-foreground truncate">
+      <span className="text-[6px] font-semibold text-gray-900 truncate">
         {value}
       </span>
     </div>
@@ -158,7 +162,9 @@ export function StudentCardPreview({
 }: StudentCardPreviewProps) {
   // Derive unique class names
   const classes = useMemo(() => {
-    const unique = [...new Set(students.map((s) => s.class_name).filter(Boolean))]
+    const unique = [
+      ...new Set(students.map((s) => s.class_name).filter(Boolean)),
+    ]
     return unique.sort()
   }, [students])
 

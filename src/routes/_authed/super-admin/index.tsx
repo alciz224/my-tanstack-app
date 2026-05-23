@@ -34,8 +34,8 @@ function SuperAdminDashboard() {
           </div>
         </div>
         <p className="text-white/80">
-          Gestion complète de la plateforme GuiSchool - Accès à tous les systèmes
-          et données
+          Gestion complète de la plateforme GuiSchool - Accès à tous les
+          systèmes et données
         </p>
       </div>
 

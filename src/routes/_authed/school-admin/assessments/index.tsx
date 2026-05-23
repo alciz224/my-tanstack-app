@@ -216,6 +216,12 @@ function AssessmentsPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          <Link
+            to="/school-admin/reports/report-cards"
+            className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg font-medium hover:bg-muted/80 transition-colors"
+          >
+            <FileText className="w-5 h-5" /> Voir les Bulletins
+          </Link>
           <button
             onClick={handleOpenCreate}
             className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors btn-shine hover-scale"

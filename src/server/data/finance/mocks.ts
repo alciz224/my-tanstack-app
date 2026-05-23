@@ -293,25 +293,45 @@ export const mockSchoolFees: Array<SchoolFee> = [
 ]
 
 const CLASSROOM_FEES_IDS: Record<string, Array<string>> = {
-  'c1': ['FEE-2024-001', 'FEE-2024-002', 'FEE-2024-005'],
-  'c2': ['FEE-2024-001', 'FEE-2024-002', 'FEE-2024-005'],
-  'c3': ['FEE-2024-006', 'FEE-2024-007'],
-  'c4': ['FEE-2024-006', 'FEE-2024-007'],
-  'c5': ['FEE-2024-014', 'FEE-2024-015'],
-  'c7': ['FEE-2024-008', 'FEE-2024-009', 'FEE-2024-010'],
-  'c8': ['FEE-2024-008', 'FEE-2024-009', 'FEE-2024-010'],
-  'c9': ['FEE-2024-016', 'FEE-2024-017'],
-  'c11': ['FEE-2024-018', 'FEE-2024-019'],
-  'c13': ['FEE-2024-011', 'FEE-2024-012', 'FEE-2024-013'],
+  c1: ['FEE-2024-001', 'FEE-2024-002', 'FEE-2024-005'],
+  c2: ['FEE-2024-001', 'FEE-2024-002', 'FEE-2024-005'],
+  c3: ['FEE-2024-006', 'FEE-2024-007'],
+  c4: ['FEE-2024-006', 'FEE-2024-007'],
+  c5: ['FEE-2024-014', 'FEE-2024-015'],
+  c7: ['FEE-2024-008', 'FEE-2024-009', 'FEE-2024-010'],
+  c8: ['FEE-2024-008', 'FEE-2024-009', 'FEE-2024-010'],
+  c9: ['FEE-2024-016', 'FEE-2024-017'],
+  c11: ['FEE-2024-018', 'FEE-2024-019'],
+  c13: ['FEE-2024-011', 'FEE-2024-012', 'FEE-2024-013'],
 }
 
-const PAYMENT_METHODS: Array<string> = ['CASH', 'BANK_TRANSFER', 'MOBILE_MONEY', 'CHECK']
+const PAYMENT_METHODS: Array<string> = [
+  'CASH',
+  'BANK_TRANSFER',
+  'MOBILE_MONEY',
+  'CHECK',
+]
 const STUDENT_NAMES: Array<string> = [
-  'Alpha Oumar Diallo', 'Aïcha Bah', 'Moussa Camara', 'Fatou Touré',
-  'Mamadou Sow', 'Mariam Barry', 'Souleymane Konaté', 'Kadiatou Diallo',
-  'Ibrahim Barry', 'Mamadou Bangoura', 'Oumar Baldé', 'Moussa Condé',
-  'Abdou Koulibaly', 'Mamadou Doumbouya', 'Lansana Conté', 'Sékou Touré',
-  'Alpha Condé', 'Mamadou Yansané', 'Ousmane Soumah', 'Mamadou Sano',
+  'Alpha Oumar Diallo',
+  'Aïcha Bah',
+  'Moussa Camara',
+  'Fatou Touré',
+  'Mamadou Sow',
+  'Mariam Barry',
+  'Souleymane Konaté',
+  'Kadiatou Diallo',
+  'Ibrahim Barry',
+  'Mamadou Bangoura',
+  'Oumar Baldé',
+  'Moussa Condé',
+  'Abdou Koulibaly',
+  'Mamadou Doumbouya',
+  'Lansana Conté',
+  'Sékou Touré',
+  'Alpha Condé',
+  'Mamadou Yansané',
+  'Ousmane Soumah',
+  'Mamadou Sano',
 ]
 
 // Generate student payments for all classrooms
@@ -332,8 +352,9 @@ function generateStudentPayments(): Array<StudentPayment> {
         if (!fee) continue
 
         const payPercent = 0.3 + Math.random() * 0.7
-        const amountPaid = Math.round(fee.amount * payPercent / 1000) * 1000
-        const paymentMethod = PAYMENT_METHODS[Math.floor(Math.random() * PAYMENT_METHODS.length)]
+        const amountPaid = Math.round((fee.amount * payPercent) / 1000) * 1000
+        const paymentMethod =
+          PAYMENT_METHODS[Math.floor(Math.random() * PAYMENT_METHODS.length)]
 
         payments.push({
           id: `PAY-2024-${String(payCounter).padStart(3, '0')}`,
@@ -342,7 +363,12 @@ function generateStudentPayments(): Array<StudentPayment> {
           amount_paid: amountPaid,
           payment_date: `2024-09-${String(5 + Math.floor(Math.random() * 20)).padStart(2, '0')}`,
           payment_method: paymentMethod,
-          reference_number: paymentMethod === 'BANK_TRANSFER' ? `TRF-${String(payCounter).padStart(3, '0')}` : paymentMethod === 'MOBILE_MONEY' ? `OM-${String(100000 + payCounter)}` : undefined,
+          reference_number:
+            paymentMethod === 'BANK_TRANSFER'
+              ? `TRF-${String(payCounter).padStart(3, '0')}`
+              : paymentMethod === 'MOBILE_MONEY'
+                ? `OM-${String(100000 + payCounter)}`
+                : undefined,
           collected_by: 'admin-1',
           created_at: `2024-09-${String(5 + Math.floor(Math.random() * 20)).padStart(2, '0')}T10:00:00Z`,
         })
@@ -356,7 +382,8 @@ function generateStudentPayments(): Array<StudentPayment> {
   return payments
 }
 
-export const mockStudentPayments: Array<StudentPayment> = generateStudentPayments()
+export const mockStudentPayments: Array<StudentPayment> =
+  generateStudentPayments()
 
 const LEVEL_TOTAL_FEES: Record<string, number> = {
   'syl-1': 750000,
@@ -368,22 +395,30 @@ const LEVEL_TOTAL_FEES: Record<string, number> = {
   'syl-7': 850000,
 }
 
-const CLASSROOM_LEVEL_MAP: Record<string, { sylId: string; className: string; level: string }> = {
-  'c1': { sylId: 'syl-1', className: '6ème A', level: '6ème' },
-  'c2': { sylId: 'syl-1', className: '6ème B', level: '6ème' },
-  'c3': { sylId: 'syl-2', className: '5ème A', level: '5ème' },
-  'c4': { sylId: 'syl-2', className: '5ème B', level: '5ème' },
-  'c5': { sylId: 'syl-3', className: '4ème A', level: '4ème' },
-  'c7': { sylId: 'syl-4', className: '3ème A', level: '3ème' },
-  'c8': { sylId: 'syl-4', className: '3ème B', level: '3ème' },
-  'c9': { sylId: 'syl-5', className: '2nde A', level: '2nde' },
-  'c11': { sylId: 'syl-6', className: '1ère A', level: '1ère' },
-  'c13': { sylId: 'syl-7', className: 'Terminale A', level: 'Terminale' },
+const CLASSROOM_LEVEL_MAP: Record<
+  string,
+  { sylId: string; className: string; level: string }
+> = {
+  c1: { sylId: 'syl-1', className: '6ème A', level: '6ème' },
+  c2: { sylId: 'syl-1', className: '6ème B', level: '6ème' },
+  c3: { sylId: 'syl-2', className: '5ème A', level: '5ème' },
+  c4: { sylId: 'syl-2', className: '5ème B', level: '5ème' },
+  c5: { sylId: 'syl-3', className: '4ème A', level: '4ème' },
+  c7: { sylId: 'syl-4', className: '3ème A', level: '3ème' },
+  c8: { sylId: 'syl-4', className: '3ème B', level: '3ème' },
+  c9: { sylId: 'syl-5', className: '2nde A', level: '2nde' },
+  c11: { sylId: 'syl-6', className: '1ère A', level: '1ère' },
+  c13: { sylId: 'syl-7', className: 'Terminale A', level: 'Terminale' },
 }
 
 export function generateFeeSummaries(): Array<FeeSummary> {
   const summaries: Array<FeeSummary> = []
-  const statuses: Array<'PAID' | 'PARTIAL' | 'OVERDUE' | 'PENDING'> = ['PAID', 'PARTIAL', 'OVERDUE', 'PENDING']
+  const statuses: Array<'PAID' | 'PARTIAL' | 'OVERDUE' | 'PENDING'> = [
+    'PAID',
+    'PARTIAL',
+    'OVERDUE',
+    'PENDING',
+  ]
   let studentIndex = 0
 
   for (const [classroomId, info] of Object.entries(CLASSROOM_LEVEL_MAP)) {
@@ -405,11 +440,13 @@ export function generateFeeSummaries(): Array<FeeSummary> {
         lastPayment = `2024-09-${String(5 + Math.floor(Math.random() * 10)).padStart(2, '0')}`
       } else if (statusRoll < 0.55) {
         status = 'PARTIAL'
-        totalPaid = Math.round(totalDue * (0.2 + Math.random() * 0.5) / 1000) * 1000
+        totalPaid =
+          Math.round((totalDue * (0.2 + Math.random() * 0.5)) / 1000) * 1000
         lastPayment = `2024-${Math.random() < 0.5 ? '09' : '10'}-${String(5 + Math.floor(Math.random() * 20)).padStart(2, '0')}`
       } else if (statusRoll < 0.8) {
         status = 'OVERDUE'
-        totalPaid = Math.round(totalDue * (0.1 + Math.random() * 0.2) / 1000) * 1000
+        totalPaid =
+          Math.round((totalDue * (0.1 + Math.random() * 0.2)) / 1000) * 1000
         lastPayment = `2024-09-${String(5 + Math.floor(Math.random() * 10)).padStart(2, '0')}`
       } else {
         status = 'PENDING'

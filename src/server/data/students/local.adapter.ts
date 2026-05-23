@@ -33,7 +33,8 @@ export class LocalStudentsAdapter implements StudentsDataAdapter {
     if (filter.level) result = result.filter((s) => s.level === filter.level)
     if (filter.class_name)
       result = result.filter((s) => s.class_name === filter.class_name)
-    if (filter.status) result = result.filter((s) => s.enrollment_status === filter.status)
+    if (filter.status)
+      result = result.filter((s) => s.enrollment_status === filter.status)
     if (filter.gender) result = result.filter((s) => s.gender === filter.gender)
 
     return result

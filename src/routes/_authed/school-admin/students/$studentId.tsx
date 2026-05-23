@@ -40,8 +40,12 @@ export const Route = createFileRoute(
 
     // Load report cards & assessments in parallel, silently ignore errors
     const [reportCards, assessments] = await Promise.all([
-      getReportCardsFn({ data: { student_enrollment_id: params.studentId } }).catch(() => [] as ReportCard[]),
-      getStudentAssessmentsByEnrollmentFn({ data: params.studentId }).catch(() => [] as StudentAssessment[]),
+      getReportCardsFn({
+        data: { student_enrollment_id: params.studentId },
+      }).catch(() => [] as ReportCard[]),
+      getStudentAssessmentsByEnrollmentFn({ data: params.studentId }).catch(
+        () => [] as StudentAssessment[],
+      ),
     ])
 
     return { student, reportCards, assessments }
@@ -108,10 +112,14 @@ function StudentDetailPage() {
     'overview' | 'academic' | 'assessments'
   >('overview')
   const [modal, setModal] = useState<ModalType>('none')
-  const [transferType, setTransferType] = useState<'INTERNAL' | 'EXTERNAL'>('INTERNAL')
+  const [transferType, setTransferType] = useState<'INTERNAL' | 'EXTERNAL'>(
+    'INTERNAL',
+  )
   const [selectedClassroom, setSelectedClassroom] = useState('')
   const [transferReason, setTransferReason] = useState('')
-  const [newStatus, setNewStatus] = useState<EnrollmentStatus>(student.enrollment_status)
+  const [newStatus, setNewStatus] = useState<EnrollmentStatus>(
+    student.enrollment_status,
+  )
   const [isPending, startTransition] = useTransition()
 
   const sameLevel = AVAILABLE_CLASSROOMS.filter(
@@ -137,20 +145,27 @@ function StudentDetailPage() {
   }
 
   // Group report cards by term
-  const termGroups = reportCards.reduce<Record<string, ReportCard[]>>((acc, rc) => {
-    const key = rc.term_name ?? 'Inconnu'
-    if (!acc[key]) acc[key] = []
-    acc[key].push(rc)
-    return acc
-  }, {})
+  const termGroups = reportCards.reduce<Record<string, ReportCard[]>>(
+    (acc, rc) => {
+      const key = rc.term_name ?? 'Inconnu'
+      if (!acc[key]) acc[key] = []
+      acc[key].push(rc)
+      return acc
+    },
+    {},
+  )
 
   // Compute a simple average from assessments for display
   const validScores = assessments.filter(
-    (a) => a.normalized_score != null && !a.is_absent && a.status === 'VALIDATED',
+    (a) =>
+      a.normalized_score != null && !a.is_absent && a.status === 'VALIDATED',
   )
   const avgScore =
     validScores.length > 0
-      ? (validScores.reduce((sum, a) => sum + (a.normalized_score ?? 0), 0) / validScores.length).toFixed(2)
+      ? (
+          validScores.reduce((sum, a) => sum + (a.normalized_score ?? 0), 0) /
+          validScores.length
+        ).toFixed(2)
       : null
 
   return (
@@ -239,7 +254,10 @@ function StudentDetailPage() {
         {[
           { id: 'overview', label: 'Vue générale' },
           { id: 'academic', label: 'Parcours scolaire' },
-          { id: 'assessments', label: `Notes & Bulletins${reportCards.length > 0 ? ` (${reportCards.length})` : ''}` },
+          {
+            id: 'assessments',
+            label: `Notes & Bulletins${reportCards.length > 0 ? ` (${reportCards.length})` : ''}`,
+          },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -434,7 +452,8 @@ function StudentDetailPage() {
               {assessments.length > 0 && (
                 <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-primary" /> Notes Individuelles
+                    <TrendingUp className="w-5 h-5 text-primary" /> Notes
+                    Individuelles
                   </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
@@ -442,13 +461,20 @@ function StudentDetailPage() {
                         <tr className="text-muted-foreground">
                           <th className="pb-2 font-medium">Évaluation</th>
                           <th className="pb-2 font-medium text-center">Note</th>
-                          <th className="pb-2 font-medium text-center">Statut</th>
-                          <th className="pb-2 font-medium text-center">Absent</th>
+                          <th className="pb-2 font-medium text-center">
+                            Statut
+                          </th>
+                          <th className="pb-2 font-medium text-center">
+                            Absent
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border">
                         {assessments.map((a) => (
-                          <tr key={a.id} className="hover:bg-muted/30 transition-colors">
+                          <tr
+                            key={a.id}
+                            className="hover:bg-muted/30 transition-colors"
+                          >
                             <td className="py-3 text-foreground font-mono text-xs">
                               {a.assessment_subject_id}
                             </td>
@@ -462,7 +488,9 @@ function StudentDetailPage() {
                                   {a.normalized_score}/20
                                 </span>
                               ) : (
-                                <span className="text-muted-foreground">N/A</span>
+                                <span className="text-muted-foreground">
+                                  N/A
+                                </span>
                               )}
                             </td>
                             <td className="py-3 text-center">
@@ -477,10 +505,13 @@ function StudentDetailPage() {
                                         : 'bg-muted text-muted-foreground'
                                 }`}
                               >
-                                {a.status === 'VALIDATED' ? 'Validé'
-                                  : a.status === 'SUBMITTED' ? 'Soumis'
-                                  : a.status === 'CANCELLED' ? 'Annulé'
-                                  : 'Brouillon'}
+                                {a.status === 'VALIDATED'
+                                  ? 'Validé'
+                                  : a.status === 'SUBMITTED'
+                                    ? 'Soumis'
+                                    : a.status === 'CANCELLED'
+                                      ? 'Annulé'
+                                      : 'Brouillon'}
                               </span>
                             </td>
                             <td className="py-3 text-center">
@@ -489,7 +520,9 @@ function StudentDetailPage() {
                                   {a.is_excused ? 'Excusé' : 'Non excusé'}
                                 </span>
                               ) : (
-                                <span className="text-muted-foreground/40">—</span>
+                                <span className="text-muted-foreground/40">
+                                  —
+                                </span>
                               )}
                             </td>
                           </tr>
@@ -499,8 +532,12 @@ function StudentDetailPage() {
                   </div>
                   {avgScore && (
                     <div className="mt-4 p-3 bg-primary/5 rounded-lg border border-primary/20 flex items-center justify-between">
-                      <span className="text-sm font-medium">Moyenne générale (notes validées)</span>
-                      <span className="text-xl font-bold text-primary">{avgScore}/20</span>
+                      <span className="text-sm font-medium">
+                        Moyenne générale (notes validées)
+                      </span>
+                      <span className="text-xl font-bold text-primary">
+                        {avgScore}/20
+                      </span>
                     </div>
                   )}
                 </div>
@@ -536,13 +573,17 @@ function StudentDetailPage() {
                                   </p>
                                   <p className="text-xs text-muted-foreground">
                                     Généré le{' '}
-                                    {new Date(rc.generated_at).toLocaleDateString('fr-FR')}
+                                    {new Date(
+                                      rc.generated_at,
+                                    ).toLocaleDateString('fr-FR')}
                                   </p>
                                 </div>
                               </div>
                               <div className="flex items-center gap-3">
                                 {rc.average_score != null && (
-                                  <span className={`text-lg font-bold ${rc.average_score >= 10 ? 'text-green-600' : 'text-red-500'}`}>
+                                  <span
+                                    className={`text-lg font-bold ${rc.average_score >= 10 ? 'text-green-600' : 'text-red-500'}`}
+                                  >
                                     {rc.average_score}/20
                                   </span>
                                 )}
@@ -561,7 +602,11 @@ function StudentDetailPage() {
                                         : 'bg-muted text-muted-foreground'
                                   }`}
                                 >
-                                  {rc.status === 'LOCKED' ? '🔐 Verrouillé' : rc.status === 'FINAL' ? 'Final' : 'Brouillon'}
+                                  {rc.status === 'LOCKED'
+                                    ? '🔐 Verrouillé'
+                                    : rc.status === 'FINAL'
+                                      ? 'Final'
+                                      : 'Brouillon'}
                                 </span>
                                 <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                               </div>
@@ -576,9 +621,12 @@ function StudentDetailPage() {
                 assessments.length === 0 && (
                   <div className="bg-card border border-border rounded-xl p-12 shadow-sm text-center">
                     <BookOpen className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
-                    <h3 className="text-xl font-semibold mb-2">Aucune donnée disponible</h3>
+                    <h3 className="text-xl font-semibold mb-2">
+                      Aucune donnée disponible
+                    </h3>
                     <p className="text-muted-foreground max-w-md mx-auto">
-                      Les notes et bulletins apparaîtront ici dès que des évaluations seront validées pour cet élève.
+                      Les notes et bulletins apparaîtront ici dès que des
+                      évaluations seront validées pour cet élève.
                     </p>
                     <Link
                       to="/school-admin/assessments"
@@ -615,7 +663,8 @@ function StudentDetailPage() {
                   className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted text-sm font-medium transition-colors border border-transparent hover:border-border"
                 >
                   <span className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-purple-500" /> Transférer Élève
+                    <MapPin className="w-4 h-4 text-purple-500" /> Transférer
+                    Élève
                   </span>
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </button>
@@ -659,13 +708,17 @@ function StudentDetailPage() {
                 <span className="text-muted-foreground flex items-center gap-1.5">
                   <GraduationCap className="w-3.5 h-3.5" /> Cycle
                 </span>
-                <span className="font-medium text-foreground">{student.cycle}</span>
+                <span className="font-medium text-foreground">
+                  {student.cycle}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground flex items-center gap-1.5">
                   <BookOpen className="w-3.5 h-3.5" /> Filière
                 </span>
-                <span className="font-medium text-foreground">{student.option}</span>
+                <span className="font-medium text-foreground">
+                  {student.option}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground flex items-center gap-1.5">
@@ -678,7 +731,9 @@ function StudentDetailPage() {
                   <span className="text-muted-foreground flex items-center gap-1.5">
                     <Star className="w-3.5 h-3.5" /> Moyenne
                   </span>
-                  <span className={`font-bold ${Number(avgScore) >= 10 ? 'text-green-600' : 'text-red-500'}`}>
+                  <span
+                    className={`font-bold ${Number(avgScore) >= 10 ? 'text-green-600' : 'text-red-500'}`}
+                  >
                     {avgScore}/20
                   </span>
                 </div>
@@ -694,7 +749,8 @@ function StudentDetailPage() {
                 Élève non assigné
               </h3>
               <p className="text-xs text-warning/80">
-                Cet élève est pré-inscrit mais n'a pas encore été affecté à une classe.
+                Cet élève est pré-inscrit mais n'a pas encore été affecté à une
+                classe.
               </p>
               <Link
                 to="/school-admin/students/assign"
@@ -717,17 +773,25 @@ function StudentDetailPage() {
           <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-card border border-border rounded-xl shadow-xl z-50 animate-scale-in">
             <div className="flex items-center justify-between p-5 border-b border-border">
               <h2 className="text-lg font-bold flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-primary" /> Transférer {student.first_name}
+                <MapPin className="w-5 h-5 text-primary" /> Transférer{' '}
+                {student.first_name}
               </h2>
-              <button onClick={() => setModal('none')} className="p-1 rounded hover:bg-muted">
+              <button
+                onClick={() => setModal('none')}
+                className="p-1 rounded hover:bg-muted"
+              >
                 <X className="w-5 h-5 text-muted-foreground" />
               </button>
             </div>
             <div className="p-5 space-y-4">
               {/* Current class */}
               <div className="p-3 bg-muted/30 rounded-lg border border-border">
-                <p className="text-xs text-muted-foreground mb-1">Classe actuelle</p>
-                <p className="font-medium text-foreground">{student.class_name}</p>
+                <p className="text-xs text-muted-foreground mb-1">
+                  Classe actuelle
+                </p>
+                <p className="font-medium text-foreground">
+                  {student.class_name}
+                </p>
               </div>
 
               {/* Transfer type */}
@@ -761,7 +825,9 @@ function StudentDetailPage() {
                   {sameLevel.length > 0 ? (
                     <div className="space-y-2">
                       {sameLevel.map((cls) => {
-                        const fill = Math.round((cls.enrolled / cls.capacity) * 100)
+                        const fill = Math.round(
+                          (cls.enrolled / cls.capacity) * 100,
+                        )
                         return (
                           <label
                             key={cls.id}
@@ -856,19 +922,35 @@ function StudentDetailPage() {
               <h2 className="text-lg font-bold flex items-center gap-2">
                 <Edit className="w-5 h-5 text-primary" /> Changer le statut
               </h2>
-              <button onClick={() => setModal('none')} className="p-1 rounded hover:bg-muted">
+              <button
+                onClick={() => setModal('none')}
+                className="p-1 rounded hover:bg-muted"
+              >
                 <X className="w-5 h-5 text-muted-foreground" />
               </button>
             </div>
             <div className="p-5 space-y-3">
               <p className="text-sm text-muted-foreground">
-                Statut actuel : <StatusBadge status={student.enrollment_status} />
+                Statut actuel :{' '}
+                <StatusBadge status={student.enrollment_status} />
               </p>
               {(
                 [
-                  { value: 'ACTIVE', label: 'Actif', desc: 'L\'élève suit les cours normalement' },
-                  { value: 'COMPLETED', label: 'Terminé', desc: 'Cycle / année terminé(e)' },
-                  { value: 'DROPPED', label: 'Abandonné', desc: 'L\'élève a quitté l\'établissement' },
+                  {
+                    value: 'ACTIVE',
+                    label: 'Actif',
+                    desc: "L'élève suit les cours normalement",
+                  },
+                  {
+                    value: 'COMPLETED',
+                    label: 'Terminé',
+                    desc: 'Cycle / année terminé(e)',
+                  },
+                  {
+                    value: 'DROPPED',
+                    label: 'Abandonné',
+                    desc: "L'élève a quitté l'établissement",
+                  },
                 ] as const
               ).map((opt) => (
                 <label
@@ -888,7 +970,9 @@ function StudentDetailPage() {
                     className="mt-0.5"
                   />
                   <div>
-                    <p className="font-medium text-sm text-foreground">{opt.label}</p>
+                    <p className="font-medium text-sm text-foreground">
+                      {opt.label}
+                    </p>
                     <p className="text-xs text-muted-foreground">{opt.desc}</p>
                   </div>
                 </label>

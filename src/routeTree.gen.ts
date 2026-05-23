@@ -14,6 +14,7 @@ import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VerifyStudentStudentIdRouteImport } from './routes/verify-student.$studentId'
 import { Route as AuthedSelectPortalRouteImport } from './routes/_authed/select-portal'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
@@ -49,6 +50,7 @@ import { Route as AuthedSuperAdminAcademicYearsRouteImport } from './routes/_aut
 import { Route as AuthedStudentScheduleRouteImport } from './routes/_authed/student/schedule'
 import { Route as AuthedStudentReportCardsRouteImport } from './routes/_authed/student/report-cards'
 import { Route as AuthedStudentGradesRouteImport } from './routes/_authed/student/grades'
+import { Route as AuthedSchoolAdminReportsRouteImport } from './routes/_authed/school-admin/reports'
 import { Route as AuthedParentChildrenRouteImport } from './routes/_authed/parent/children'
 import { Route as AuthedAdminUsersRouteImport } from './routes/_authed/admin/users'
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
@@ -111,6 +113,11 @@ const AuthRoute = AuthRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyStudentStudentIdRoute = VerifyStudentStudentIdRouteImport.update({
+  id: '/verify-student/$studentId',
+  path: '/verify-student/$studentId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedSelectPortalRoute = AuthedSelectPortalRouteImport.update({
@@ -295,6 +302,12 @@ const AuthedStudentGradesRoute = AuthedStudentGradesRouteImport.update({
   path: '/grades',
   getParentRoute: () => AuthedStudentRouteRoute,
 } as any)
+const AuthedSchoolAdminReportsRoute =
+  AuthedSchoolAdminReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthedSchoolAdminRouteRoute,
+  } as any)
 const AuthedParentChildrenRoute = AuthedParentChildrenRouteImport.update({
   id: '/children',
   path: '/children',
@@ -354,9 +367,9 @@ const AuthedSchoolAdminScheduleIndexRoute =
   } as any)
 const AuthedSchoolAdminReportsIndexRoute =
   AuthedSchoolAdminReportsIndexRouteImport.update({
-    id: '/reports/',
-    path: '/reports/',
-    getParentRoute: () => AuthedSchoolAdminRouteRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthedSchoolAdminReportsRoute,
   } as any)
 const AuthedSchoolAdminParentsIndexRoute =
   AuthedSchoolAdminParentsIndexRouteImport.update({
@@ -441,9 +454,9 @@ const AuthedSchoolAdminStudentsStudentIdRoute =
   } as any)
 const AuthedSchoolAdminReportsStatisticsRoute =
   AuthedSchoolAdminReportsStatisticsRouteImport.update({
-    id: '/reports/statistics',
-    path: '/reports/statistics',
-    getParentRoute: () => AuthedSchoolAdminRouteRoute,
+    id: '/statistics',
+    path: '/statistics',
+    getParentRoute: () => AuthedSchoolAdminReportsRoute,
   } as any)
 const AuthedSchoolAdminYearsYearIdIndexRoute =
   AuthedSchoolAdminYearsYearIdIndexRouteImport.update({
@@ -459,15 +472,15 @@ const AuthedSchoolAdminScheduleTimeSlotsIndexRoute =
   } as any)
 const AuthedSchoolAdminReportsTranscriptsIndexRoute =
   AuthedSchoolAdminReportsTranscriptsIndexRouteImport.update({
-    id: '/reports/transcripts/',
-    path: '/reports/transcripts/',
-    getParentRoute: () => AuthedSchoolAdminRouteRoute,
+    id: '/transcripts/',
+    path: '/transcripts/',
+    getParentRoute: () => AuthedSchoolAdminReportsRoute,
   } as any)
 const AuthedSchoolAdminReportsReportCardsIndexRoute =
   AuthedSchoolAdminReportsReportCardsIndexRouteImport.update({
-    id: '/reports/report-cards/',
-    path: '/reports/report-cards/',
-    getParentRoute: () => AuthedSchoolAdminRouteRoute,
+    id: '/report-cards/',
+    path: '/report-cards/',
+    getParentRoute: () => AuthedSchoolAdminReportsRoute,
   } as any)
 const AuthedSchoolAdminYearsYearIdEditRoute =
   AuthedSchoolAdminYearsYearIdEditRouteImport.update({
@@ -489,15 +502,15 @@ const AuthedSchoolAdminTeachersTeacherIdAssignmentsRoute =
   } as any)
 const AuthedSchoolAdminReportsTranscriptsTranscriptIdRoute =
   AuthedSchoolAdminReportsTranscriptsTranscriptIdRouteImport.update({
-    id: '/reports/transcripts/$transcriptId',
-    path: '/reports/transcripts/$transcriptId',
-    getParentRoute: () => AuthedSchoolAdminRouteRoute,
+    id: '/transcripts/$transcriptId',
+    path: '/transcripts/$transcriptId',
+    getParentRoute: () => AuthedSchoolAdminReportsRoute,
   } as any)
 const AuthedSchoolAdminReportsReportCardsCardIdRoute =
   AuthedSchoolAdminReportsReportCardsCardIdRouteImport.update({
-    id: '/reports/report-cards/$cardId',
-    path: '/reports/report-cards/$cardId',
-    getParentRoute: () => AuthedSchoolAdminRouteRoute,
+    id: '/report-cards/$cardId',
+    path: '/report-cards/$cardId',
+    getParentRoute: () => AuthedSchoolAdminReportsRoute,
   } as any)
 const AuthedSchoolAdminAssessmentsAssessmentIdValidateRoute =
   AuthedSchoolAdminAssessmentsAssessmentIdValidateRouteImport.update({
@@ -544,8 +557,10 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterRoute
   '/dashboard': typeof AuthedDashboardRoute
   '/select-portal': typeof AuthedSelectPortalRoute
+  '/verify-student/$studentId': typeof VerifyStudentStudentIdRoute
   '/admin/users': typeof AuthedAdminUsersRoute
   '/parent/children': typeof AuthedParentChildrenRouteWithChildren
+  '/school-admin/reports': typeof AuthedSchoolAdminReportsRouteWithChildren
   '/student/grades': typeof AuthedStudentGradesRoute
   '/student/report-cards': typeof AuthedStudentReportCardsRoute
   '/student/schedule': typeof AuthedStudentScheduleRoute
@@ -618,6 +633,7 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/dashboard': typeof AuthedDashboardRoute
   '/select-portal': typeof AuthedSelectPortalRoute
+  '/verify-student/$studentId': typeof VerifyStudentStudentIdRoute
   '/admin/users': typeof AuthedAdminUsersRoute
   '/parent/children': typeof AuthedParentChildrenRouteWithChildren
   '/student/grades': typeof AuthedStudentGradesRoute
@@ -701,8 +717,10 @@ export interface FileRoutesById {
   '/_auth/register': typeof AuthRegisterRoute
   '/_authed/dashboard': typeof AuthedDashboardRoute
   '/_authed/select-portal': typeof AuthedSelectPortalRoute
+  '/verify-student/$studentId': typeof VerifyStudentStudentIdRoute
   '/_authed/admin/users': typeof AuthedAdminUsersRoute
   '/_authed/parent/children': typeof AuthedParentChildrenRouteWithChildren
+  '/_authed/school-admin/reports': typeof AuthedSchoolAdminReportsRouteWithChildren
   '/_authed/student/grades': typeof AuthedStudentGradesRoute
   '/_authed/student/report-cards': typeof AuthedStudentReportCardsRoute
   '/_authed/student/schedule': typeof AuthedStudentScheduleRoute
@@ -783,8 +801,10 @@ export interface FileRouteTypes {
     | '/register'
     | '/dashboard'
     | '/select-portal'
+    | '/verify-student/$studentId'
     | '/admin/users'
     | '/parent/children'
+    | '/school-admin/reports'
     | '/student/grades'
     | '/student/report-cards'
     | '/student/schedule'
@@ -857,6 +877,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/dashboard'
     | '/select-portal'
+    | '/verify-student/$studentId'
     | '/admin/users'
     | '/parent/children'
     | '/student/grades'
@@ -939,8 +960,10 @@ export interface FileRouteTypes {
     | '/_auth/register'
     | '/_authed/dashboard'
     | '/_authed/select-portal'
+    | '/verify-student/$studentId'
     | '/_authed/admin/users'
     | '/_authed/parent/children'
+    | '/_authed/school-admin/reports'
     | '/_authed/student/grades'
     | '/_authed/student/report-cards'
     | '/_authed/student/schedule'
@@ -1012,6 +1035,7 @@ export interface RootRouteChildren {
   AuthedRoute: typeof AuthedRouteWithChildren
   LogoutRoute: typeof LogoutRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
+  VerifyStudentStudentIdRoute: typeof VerifyStudentStudentIdRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoStartApiRequestRoute: typeof DemoStartApiRequestRoute
   DemoStartServerFuncsRoute: typeof DemoStartServerFuncsRoute
@@ -1056,6 +1080,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify-student/$studentId': {
+      id: '/verify-student/$studentId'
+      path: '/verify-student/$studentId'
+      fullPath: '/verify-student/$studentId'
+      preLoaderRoute: typeof VerifyStudentStudentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed/select-portal': {
@@ -1303,6 +1334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedStudentGradesRouteImport
       parentRoute: typeof AuthedStudentRouteRoute
     }
+    '/_authed/school-admin/reports': {
+      id: '/_authed/school-admin/reports'
+      path: '/reports'
+      fullPath: '/school-admin/reports'
+      preLoaderRoute: typeof AuthedSchoolAdminReportsRouteImport
+      parentRoute: typeof AuthedSchoolAdminRouteRoute
+    }
     '/_authed/parent/children': {
       id: '/_authed/parent/children'
       path: '/children'
@@ -1375,10 +1413,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authed/school-admin/reports/': {
       id: '/_authed/school-admin/reports/'
-      path: '/reports'
+      path: '/'
       fullPath: '/school-admin/reports/'
       preLoaderRoute: typeof AuthedSchoolAdminReportsIndexRouteImport
-      parentRoute: typeof AuthedSchoolAdminRouteRoute
+      parentRoute: typeof AuthedSchoolAdminReportsRoute
     }
     '/_authed/school-admin/parents/': {
       id: '/_authed/school-admin/parents/'
@@ -1480,10 +1518,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authed/school-admin/reports/statistics': {
       id: '/_authed/school-admin/reports/statistics'
-      path: '/reports/statistics'
+      path: '/statistics'
       fullPath: '/school-admin/reports/statistics'
       preLoaderRoute: typeof AuthedSchoolAdminReportsStatisticsRouteImport
-      parentRoute: typeof AuthedSchoolAdminRouteRoute
+      parentRoute: typeof AuthedSchoolAdminReportsRoute
     }
     '/_authed/school-admin/years/$yearId/': {
       id: '/_authed/school-admin/years/$yearId/'
@@ -1501,17 +1539,17 @@ declare module '@tanstack/react-router' {
     }
     '/_authed/school-admin/reports/transcripts/': {
       id: '/_authed/school-admin/reports/transcripts/'
-      path: '/reports/transcripts'
+      path: '/transcripts'
       fullPath: '/school-admin/reports/transcripts/'
       preLoaderRoute: typeof AuthedSchoolAdminReportsTranscriptsIndexRouteImport
-      parentRoute: typeof AuthedSchoolAdminRouteRoute
+      parentRoute: typeof AuthedSchoolAdminReportsRoute
     }
     '/_authed/school-admin/reports/report-cards/': {
       id: '/_authed/school-admin/reports/report-cards/'
-      path: '/reports/report-cards'
+      path: '/report-cards'
       fullPath: '/school-admin/reports/report-cards/'
       preLoaderRoute: typeof AuthedSchoolAdminReportsReportCardsIndexRouteImport
-      parentRoute: typeof AuthedSchoolAdminRouteRoute
+      parentRoute: typeof AuthedSchoolAdminReportsRoute
     }
     '/_authed/school-admin/years/$yearId/edit': {
       id: '/_authed/school-admin/years/$yearId/edit'
@@ -1536,17 +1574,17 @@ declare module '@tanstack/react-router' {
     }
     '/_authed/school-admin/reports/transcripts/$transcriptId': {
       id: '/_authed/school-admin/reports/transcripts/$transcriptId'
-      path: '/reports/transcripts/$transcriptId'
+      path: '/transcripts/$transcriptId'
       fullPath: '/school-admin/reports/transcripts/$transcriptId'
       preLoaderRoute: typeof AuthedSchoolAdminReportsTranscriptsTranscriptIdRouteImport
-      parentRoute: typeof AuthedSchoolAdminRouteRoute
+      parentRoute: typeof AuthedSchoolAdminReportsRoute
     }
     '/_authed/school-admin/reports/report-cards/$cardId': {
       id: '/_authed/school-admin/reports/report-cards/$cardId'
-      path: '/reports/report-cards/$cardId'
+      path: '/report-cards/$cardId'
       fullPath: '/school-admin/reports/report-cards/$cardId'
       preLoaderRoute: typeof AuthedSchoolAdminReportsReportCardsCardIdRouteImport
-      parentRoute: typeof AuthedSchoolAdminRouteRoute
+      parentRoute: typeof AuthedSchoolAdminReportsRoute
     }
     '/_authed/school-admin/assessments/$assessmentId/validate': {
       id: '/_authed/school-admin/assessments/$assessmentId/validate'
@@ -1642,9 +1680,38 @@ const AuthedParentRouteRouteChildren: AuthedParentRouteRouteChildren = {
 const AuthedParentRouteRouteWithChildren =
   AuthedParentRouteRoute._addFileChildren(AuthedParentRouteRouteChildren)
 
-interface AuthedSchoolAdminRouteRouteChildren {
-  AuthedSchoolAdminIndexRoute: typeof AuthedSchoolAdminIndexRoute
+interface AuthedSchoolAdminReportsRouteChildren {
   AuthedSchoolAdminReportsStatisticsRoute: typeof AuthedSchoolAdminReportsStatisticsRoute
+  AuthedSchoolAdminReportsIndexRoute: typeof AuthedSchoolAdminReportsIndexRoute
+  AuthedSchoolAdminReportsReportCardsCardIdRoute: typeof AuthedSchoolAdminReportsReportCardsCardIdRoute
+  AuthedSchoolAdminReportsTranscriptsTranscriptIdRoute: typeof AuthedSchoolAdminReportsTranscriptsTranscriptIdRoute
+  AuthedSchoolAdminReportsReportCardsIndexRoute: typeof AuthedSchoolAdminReportsReportCardsIndexRoute
+  AuthedSchoolAdminReportsTranscriptsIndexRoute: typeof AuthedSchoolAdminReportsTranscriptsIndexRoute
+}
+
+const AuthedSchoolAdminReportsRouteChildren: AuthedSchoolAdminReportsRouteChildren =
+  {
+    AuthedSchoolAdminReportsStatisticsRoute:
+      AuthedSchoolAdminReportsStatisticsRoute,
+    AuthedSchoolAdminReportsIndexRoute: AuthedSchoolAdminReportsIndexRoute,
+    AuthedSchoolAdminReportsReportCardsCardIdRoute:
+      AuthedSchoolAdminReportsReportCardsCardIdRoute,
+    AuthedSchoolAdminReportsTranscriptsTranscriptIdRoute:
+      AuthedSchoolAdminReportsTranscriptsTranscriptIdRoute,
+    AuthedSchoolAdminReportsReportCardsIndexRoute:
+      AuthedSchoolAdminReportsReportCardsIndexRoute,
+    AuthedSchoolAdminReportsTranscriptsIndexRoute:
+      AuthedSchoolAdminReportsTranscriptsIndexRoute,
+  }
+
+const AuthedSchoolAdminReportsRouteWithChildren =
+  AuthedSchoolAdminReportsRoute._addFileChildren(
+    AuthedSchoolAdminReportsRouteChildren,
+  )
+
+interface AuthedSchoolAdminRouteRouteChildren {
+  AuthedSchoolAdminReportsRoute: typeof AuthedSchoolAdminReportsRouteWithChildren
+  AuthedSchoolAdminIndexRoute: typeof AuthedSchoolAdminIndexRoute
   AuthedSchoolAdminStudentsStudentIdRoute: typeof AuthedSchoolAdminStudentsStudentIdRoute
   AuthedSchoolAdminStudentsAssignRoute: typeof AuthedSchoolAdminStudentsAssignRoute
   AuthedSchoolAdminStudentsPreRegisterRoute: typeof AuthedSchoolAdminStudentsPreRegisterRoute
@@ -1653,29 +1720,23 @@ interface AuthedSchoolAdminRouteRouteChildren {
   AuthedSchoolAdminClassroomsIndexRoute: typeof AuthedSchoolAdminClassroomsIndexRoute
   AuthedSchoolAdminFinanceIndexRoute: typeof AuthedSchoolAdminFinanceIndexRoute
   AuthedSchoolAdminParentsIndexRoute: typeof AuthedSchoolAdminParentsIndexRoute
-  AuthedSchoolAdminReportsIndexRoute: typeof AuthedSchoolAdminReportsIndexRoute
   AuthedSchoolAdminScheduleIndexRoute: typeof AuthedSchoolAdminScheduleIndexRoute
   AuthedSchoolAdminStudentsIndexRoute: typeof AuthedSchoolAdminStudentsIndexRoute
   AuthedSchoolAdminTeachersIndexRoute: typeof AuthedSchoolAdminTeachersIndexRoute
   AuthedSchoolAdminYearsIndexRoute: typeof AuthedSchoolAdminYearsIndexRoute
   AuthedSchoolAdminAssessmentsAssessmentIdSubjectsRoute: typeof AuthedSchoolAdminAssessmentsAssessmentIdSubjectsRoute
   AuthedSchoolAdminAssessmentsAssessmentIdValidateRoute: typeof AuthedSchoolAdminAssessmentsAssessmentIdValidateRoute
-  AuthedSchoolAdminReportsReportCardsCardIdRoute: typeof AuthedSchoolAdminReportsReportCardsCardIdRoute
-  AuthedSchoolAdminReportsTranscriptsTranscriptIdRoute: typeof AuthedSchoolAdminReportsTranscriptsTranscriptIdRoute
   AuthedSchoolAdminTeachersTeacherIdAssignmentsRoute: typeof AuthedSchoolAdminTeachersTeacherIdAssignmentsRoute
   AuthedSchoolAdminTeachersTeacherIdWorkloadRoute: typeof AuthedSchoolAdminTeachersTeacherIdWorkloadRoute
   AuthedSchoolAdminYearsYearIdEditRoute: typeof AuthedSchoolAdminYearsYearIdEditRoute
-  AuthedSchoolAdminReportsReportCardsIndexRoute: typeof AuthedSchoolAdminReportsReportCardsIndexRoute
-  AuthedSchoolAdminReportsTranscriptsIndexRoute: typeof AuthedSchoolAdminReportsTranscriptsIndexRoute
   AuthedSchoolAdminScheduleTimeSlotsIndexRoute: typeof AuthedSchoolAdminScheduleTimeSlotsIndexRoute
   AuthedSchoolAdminYearsYearIdIndexRoute: typeof AuthedSchoolAdminYearsYearIdIndexRoute
 }
 
 const AuthedSchoolAdminRouteRouteChildren: AuthedSchoolAdminRouteRouteChildren =
   {
+    AuthedSchoolAdminReportsRoute: AuthedSchoolAdminReportsRouteWithChildren,
     AuthedSchoolAdminIndexRoute: AuthedSchoolAdminIndexRoute,
-    AuthedSchoolAdminReportsStatisticsRoute:
-      AuthedSchoolAdminReportsStatisticsRoute,
     AuthedSchoolAdminStudentsStudentIdRoute:
       AuthedSchoolAdminStudentsStudentIdRoute,
     AuthedSchoolAdminStudentsAssignRoute: AuthedSchoolAdminStudentsAssignRoute,
@@ -1688,7 +1749,6 @@ const AuthedSchoolAdminRouteRouteChildren: AuthedSchoolAdminRouteRouteChildren =
       AuthedSchoolAdminClassroomsIndexRoute,
     AuthedSchoolAdminFinanceIndexRoute: AuthedSchoolAdminFinanceIndexRoute,
     AuthedSchoolAdminParentsIndexRoute: AuthedSchoolAdminParentsIndexRoute,
-    AuthedSchoolAdminReportsIndexRoute: AuthedSchoolAdminReportsIndexRoute,
     AuthedSchoolAdminScheduleIndexRoute: AuthedSchoolAdminScheduleIndexRoute,
     AuthedSchoolAdminStudentsIndexRoute: AuthedSchoolAdminStudentsIndexRoute,
     AuthedSchoolAdminTeachersIndexRoute: AuthedSchoolAdminTeachersIndexRoute,
@@ -1697,20 +1757,12 @@ const AuthedSchoolAdminRouteRouteChildren: AuthedSchoolAdminRouteRouteChildren =
       AuthedSchoolAdminAssessmentsAssessmentIdSubjectsRoute,
     AuthedSchoolAdminAssessmentsAssessmentIdValidateRoute:
       AuthedSchoolAdminAssessmentsAssessmentIdValidateRoute,
-    AuthedSchoolAdminReportsReportCardsCardIdRoute:
-      AuthedSchoolAdminReportsReportCardsCardIdRoute,
-    AuthedSchoolAdminReportsTranscriptsTranscriptIdRoute:
-      AuthedSchoolAdminReportsTranscriptsTranscriptIdRoute,
     AuthedSchoolAdminTeachersTeacherIdAssignmentsRoute:
       AuthedSchoolAdminTeachersTeacherIdAssignmentsRoute,
     AuthedSchoolAdminTeachersTeacherIdWorkloadRoute:
       AuthedSchoolAdminTeachersTeacherIdWorkloadRoute,
     AuthedSchoolAdminYearsYearIdEditRoute:
       AuthedSchoolAdminYearsYearIdEditRoute,
-    AuthedSchoolAdminReportsReportCardsIndexRoute:
-      AuthedSchoolAdminReportsReportCardsIndexRoute,
-    AuthedSchoolAdminReportsTranscriptsIndexRoute:
-      AuthedSchoolAdminReportsTranscriptsIndexRoute,
     AuthedSchoolAdminScheduleTimeSlotsIndexRoute:
       AuthedSchoolAdminScheduleTimeSlotsIndexRoute,
     AuthedSchoolAdminYearsYearIdIndexRoute:
@@ -1832,6 +1884,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthedRoute: AuthedRouteWithChildren,
   LogoutRoute: LogoutRoute,
   UnauthorizedRoute: UnauthorizedRoute,
+  VerifyStudentStudentIdRoute: VerifyStudentStudentIdRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoStartApiRequestRoute: DemoStartApiRequestRoute,
   DemoStartServerFuncsRoute: DemoStartServerFuncsRoute,

@@ -171,7 +171,8 @@ const translations = {
 
       // Feature 5: Offline/Reliable
       reliability: 'Fast & Reliable',
-      reliabilityDesc: 'Designed to work smoothly even with slow connection speeds or locally.',
+      reliabilityDesc:
+        'Designed to work smoothly even with slow connection speeds or locally.',
 
       // Feature 6: Support
       support: 'Local Support',
@@ -419,12 +420,12 @@ const translations = {
       // Feature 3: Academic
       academic: 'Rapports Conformes',
       academicDesc:
-        'Génération de bulletins et relevés de notes conformes aux exigences strictes du Ministère de l\'Éducation guinéen.',
+        "Génération de bulletins et relevés de notes conformes aux exigences strictes du Ministère de l'Éducation guinéen.",
 
       // Feature 4: Pedagogy
       finance: 'Pédagogie & Évaluations',
       financeDesc:
-        'Cycle de vie d\'évaluation rigoureux (Brouillon à Validé) garantissant l\'intégrité des notes.',
+        "Cycle de vie d'évaluation rigoureux (Brouillon à Validé) garantissant l'intégrité des notes.",
 
       // Feature 5: Offline/Reliable
       reliability: 'Connexion Optimisée',
@@ -451,8 +452,7 @@ const translations = {
       howItWorks: 'Comment ça marche ?',
       steps: {
         step1: 'Structure Académique',
-        step1Desc:
-          'Configurez vos cycles, profils, niveaux et matières.',
+        step1Desc: 'Configurez vos cycles, profils, niveaux et matières.',
         step2: 'Inscriptions et Affectations',
         step2Desc:
           'Inscrivez les élèves et assignez les enseignants à leurs emplois du temps.',

@@ -23,7 +23,9 @@ import type { ThemeState } from '@/server/data/theme/types'
  */
 export const getThemeFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    return (await import('@/server/data/theme/factory')).getThemeService().getTheme()
+    return (await import('@/server/data/theme/factory'))
+      .getThemeService()
+      .getTheme()
   },
 )
 
@@ -34,7 +36,9 @@ export const getThemeFn = createServerFn({ method: 'GET' }).handler(
 export const setThemeFn = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) => d as { theme: ThemeState['theme'] })
   .handler(async ({ data }) => {
-    return (await import('@/server/data/theme/factory')).getThemeService().setTheme(data.theme)
+    return (await import('@/server/data/theme/factory'))
+      .getThemeService()
+      .setTheme(data.theme)
   })
 
 /**
@@ -43,7 +47,9 @@ export const setThemeFn = createServerFn({ method: 'POST' })
  */
 export const toggleThemeFn = createServerFn({ method: 'POST' }).handler(
   async () => {
-    return (await import('@/server/data/theme/factory')).getThemeService().toggleTheme()
+    return (await import('@/server/data/theme/factory'))
+      .getThemeService()
+      .toggleTheme()
   },
 )
 
@@ -53,7 +59,9 @@ export const toggleThemeFn = createServerFn({ method: 'POST' }).handler(
  */
 export const resetThemeFn = createServerFn({ method: 'POST' }).handler(
   async () => {
-    return (await import('@/server/data/theme/factory')).getThemeService().resetToSystem()
+    return (await import('@/server/data/theme/factory'))
+      .getThemeService()
+      .resetToSystem()
   },
 )
 

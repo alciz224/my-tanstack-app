@@ -51,7 +51,7 @@ export class ApiStudentsAdapter implements StudentsDataAdapter {
       const cookieHeader = Object.entries(cookies)
         .map(([k, v]) => `${k}=${v}`)
         .join('; ')
-      
+
       const baseUrl = import.meta.env.BACKEND_URL ?? 'http://localhost:8000'
       const url = `${baseUrl}/api/v2/school-admin/students/${id}/`
       const res = await fetch(url, { headers: { cookie: cookieHeader } })
