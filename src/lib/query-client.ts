@@ -8,7 +8,10 @@
  * - Error handling defaults
  */
 
-import { QueryClient } from '@tanstack/react-query'
+import {
+  QueryClient,
+  defaultShouldDehydrateQuery,
+} from '@tanstack/react-query'
 
 /**
  * Create a new QueryClient instance
@@ -53,8 +56,34 @@ export function makeQueryClient() {
         // Retry delay for mutations
         retryDelay: 1000,
       },
+      dehydrate: {
+        // Only dehydrate successful queries to avoid sending errors to the client
+        shouldDehydrateQuery: (query) =>
+          defaultShouldDehydrateQuery(query) &&
+          query.state.status === 'success',
+      },
     },
   })
+}
+
+// Singleton for client-side (browser)
+let browserQueryClient: QueryClient | undefined
+
+/**
+ * Isomorphic QueryClient factory.
+ * - Server: always creates a fresh instance (per-request isolation)
+ * - Client: returns a singleton that persists across navigations
+ */
+export function getQueryClient() {
+  if (typeof window === 'undefined') {
+    // Server: create new per request
+    return makeQueryClient()
+  }
+  // Client: reuse singleton to preserve cache across navigations
+  if (!browserQueryClient) {
+    browserQueryClient = makeQueryClient()
+  }
+  return browserQueryClient
 }
 
 /**

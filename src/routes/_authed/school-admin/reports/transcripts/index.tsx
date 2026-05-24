@@ -38,13 +38,11 @@ function StatusBadge({ status }: { status: string }) {
 
 function DecisionBadge({ decision }: { decision: string }) {
   const styles: Record<string, string> = {
-    PASS: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-    FAIL: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-    REPEAT:
-      'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-    TRANSFER:
-      'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-    PENDING: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
+    PASS: 'bg-success/15 text-success',
+    FAIL: 'bg-destructive/15 text-destructive',
+    REPEAT: 'bg-warning/15 text-warning',
+    TRANSFER: 'bg-info/15 text-info',
+    PENDING: 'bg-muted text-muted-foreground',
   }
   const labels: Record<string, string> = {
     PASS: 'Admis',
@@ -178,7 +176,8 @@ function TranscriptsPage() {
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Link
-                        to={`/school-admin/reports/transcripts/${t.id}`}
+                        to="/school-admin/reports/transcripts/$transcriptId"
+                        params={{ transcriptId: t.id }}
                         className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors"
                         title="Voir"
                       >

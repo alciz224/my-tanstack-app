@@ -5,7 +5,7 @@ import {
   useRouter,
 } from '@tanstack/react-router'
 import * as React from 'react'
-import { QueryClientProvider } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import appCss from '../styles.css?url'
 import type { RouterContext } from '@/router'
 import type { RouteContext } from '@/types/router'
@@ -14,14 +14,10 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { ToastContainer } from '@/components/Toast'
 
 import { subscribeAuthEvents } from '@/auth/authEvents'
-import { safeRedirectPath } from '@/auth/redirects'
+
 import { isCurrentRouteProtected } from '@/auth/routeProtection'
 import { getCurrentUserFn } from '@/server/auth'
-import { makeQueryClient } from '@/lib/query-client'
-import {
-  initLocalAuthClientSession,
-  setSessionUser,
-} from '@/server/data/auth/local.adapter'
+import { setSessionUser } from '@/server/data/auth/local.adapter'
 import { mockUser } from '@/server/data/auth/mocks'
 
 /**
@@ -29,20 +25,7 @@ import { mockUser } from '@/server/data/auth/mocks'
  * Runs on every navigation to keep user state fresh
  */
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async ({ context }): Promise<RouteContext> => {
-    // If a user is already present in the router context (e.g., just set after
-    // a successful login), use it to avoid racing a stale server fetch
-    if (context.user) {
-      if (import.meta.env.DEV) {
-        console.debug(
-          '[__root.beforeLoad] Using existing context user.role:',
-          context.user.role,
-        )
-      }
-      return { user: context.user }
-    }
-
-    // Otherwise fetch fresh user from auth service
+  beforeLoad: async (): Promise<RouteContext> => {
     let user = await getCurrentUserFn()
 
     // Auto-login for local mode to completely bypass login flow
@@ -137,9 +120,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-
-  // Create QueryClient instance (memoized to avoid recreation on re-renders)
-  const [queryClient] = React.useState(() => makeQueryClient())
+  const queryClient = useQueryClient()
 
   // Subscribe to cross-tab auth events
   React.useEffect(() => {
@@ -197,19 +178,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   }, [router])
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <html lang="en">
-        <head>
-          <HeadContent />
-        </head>
-        <body>
-          <div className="min-h-screen bg-background text-foreground">
-            {children}
-          </div>
-          <ToastContainer />
-          <Scripts />
-        </body>
-      </html>
-    </QueryClientProvider>
+    <html lang="en">
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        <div className="min-h-screen bg-background text-foreground">
+          {children}
+        </div>
+        <ToastContainer />
+        <Scripts />
+      </body>
+    </html>
   )
 }
