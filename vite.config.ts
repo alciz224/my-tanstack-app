@@ -29,8 +29,9 @@ const config = defineConfig({
     proxy: {
       '/api': {
         target: process.env.BACKEND_URL || 'http://localhost:8000',
-        changeOrigin: true,
+        changeOrigin: false,
         secure: false,
+        rewrite: (path) => path.endsWith('/') ? path : `${path}/`,
         configure: (proxy, _options) => {
           proxy.on('proxyRes', (proxyRes, _req, _res) => {
             // Rewrite Set-Cookie headers to work with localhost:3000
