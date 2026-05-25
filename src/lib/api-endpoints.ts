@@ -6,7 +6,8 @@
  *
  * Backend API base: http://localhost:8000
  * - V1 endpoints: /api/v1/* (data APIs - JWT or session)
- * - V2 endpoints: /api/v2/* (session-based auth)
+ * - Auth endpoints: /api/v2/auth/* (session-based auth)
+ * - Other endpoints: /api/v1/*
  */
 
 // ============================================================================

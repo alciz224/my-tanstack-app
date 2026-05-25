@@ -8,7 +8,7 @@ import type {
 } from './types'
 
 export class ApiGeographyAdapter implements GeographyDataAdapter {
-  private baseUrl = `${process.env.BACKEND_URL ?? 'http://localhost:8000'}/api/v2`
+  private baseUrl = `${process.env.BACKEND_URL ?? 'http://localhost:8000'}/api/v1`
 
   private async fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const cookies = getCookies()

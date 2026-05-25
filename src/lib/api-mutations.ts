@@ -349,7 +349,7 @@ export async function setCurrentAcademicYear(
 
 /**
  * Get current theme state
- * GET /api/v2/theme/
+ * GET /api/v1/theme/
  */
 export async function getTheme(): Promise<
   MutationResult<{
@@ -368,7 +368,7 @@ export async function getTheme(): Promise<
       headers['X-CSRFToken'] = csrfToken
     }
 
-    const res = await fetch('/api/v2/theme/', {
+    const res = await fetch('/api/v1/theme/', {
       method: 'GET',
       headers,
       credentials: 'include',
@@ -398,7 +398,7 @@ export async function getTheme(): Promise<
 
 /**
  * Set theme to specific value
- * POST /api/v2/theme/
+ * POST /api/v1/theme/
  */
 export async function setTheme(theme: 'light' | 'dark' | 'system'): Promise<
   MutationResult<{
@@ -417,7 +417,7 @@ export async function setTheme(theme: 'light' | 'dark' | 'system'): Promise<
       headers['X-CSRFToken'] = csrfToken
     }
 
-    const res = await fetch('/api/v2/theme/', {
+    const res = await fetch('/api/v1/theme/', {
       method: 'POST',
       headers,
       credentials: 'include',
@@ -448,7 +448,7 @@ export async function setTheme(theme: 'light' | 'dark' | 'system'): Promise<
 
 /**
  * Toggle theme between light/dark
- * POST /api/v2/theme/toggle
+ * POST /api/v1/theme/toggle
  */
 export async function toggleTheme(): Promise<
   MutationResult<{
@@ -467,7 +467,7 @@ export async function toggleTheme(): Promise<
       headers['X-CSRFToken'] = csrfToken
     }
 
-    const res = await fetch('/api/v2/theme/toggle', {
+    const res = await fetch('/api/v1/theme/toggle', {
       method: 'POST',
       headers,
       credentials: 'include',
@@ -497,7 +497,7 @@ export async function toggleTheme(): Promise<
 
 /**
  * Reset theme to system default
- * POST /api/v2/theme/reset
+ * POST /api/v1/theme/reset
  */
 export async function resetTheme(): Promise<
   MutationResult<{
@@ -516,7 +516,7 @@ export async function resetTheme(): Promise<
       headers['X-CSRFToken'] = csrfToken
     }
 
-    const res = await fetch('/api/v2/theme/reset', {
+    const res = await fetch('/api/v1/theme/reset', {
       method: 'POST',
       headers,
       credentials: 'include',

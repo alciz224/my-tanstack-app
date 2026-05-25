@@ -19,7 +19,7 @@ import type { ThemeState } from '@/server/data/theme/types'
 
 /**
  * Get current theme state
- * GET /api/v2/theme/
+ * GET /api/v1/theme/
  */
 export const getThemeFn = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -31,7 +31,7 @@ export const getThemeFn = createServerFn({ method: 'GET' }).handler(
 
 /**
  * Set theme to specific value
- * POST /api/v2/theme/
+ * POST /api/v1/theme/
  */
 export const setThemeFn = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) => d as { theme: ThemeState['theme'] })
@@ -43,7 +43,7 @@ export const setThemeFn = createServerFn({ method: 'POST' })
 
 /**
  * Toggle theme between light/dark
- * POST /api/v2/theme/toggle
+ * POST /api/v1/theme/toggle
  */
 export const toggleThemeFn = createServerFn({ method: 'POST' }).handler(
   async () => {
@@ -55,7 +55,7 @@ export const toggleThemeFn = createServerFn({ method: 'POST' }).handler(
 
 /**
  * Reset theme to system default
- * POST /api/v2/theme/reset
+ * POST /api/v1/theme/reset
  */
 export const resetThemeFn = createServerFn({ method: 'POST' }).handler(
   async () => {

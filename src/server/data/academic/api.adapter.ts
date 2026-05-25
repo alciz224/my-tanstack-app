@@ -12,7 +12,7 @@ import type {
 } from './types'
 
 export class ApiAcademicAdapter implements AcademicDataAdapter {
-  private baseUrl = process.env.VITE_API_URL || 'http://localhost:8000/api/v2'
+  private baseUrl = process.env.VITE_API_URL || 'http://localhost:8000/api/v1'
 
   private async fetchApi<T>(endpoint: string): Promise<T> {
     const cookies = getCookies()

@@ -50,7 +50,7 @@ export class ApiThemeAdapter
         headers['Cookie'] = cookieHeader
       }
 
-      const res = await fetch(`${this.API_BASE_URL}/api/v2/theme/`, {
+      const res = await fetch(`${this.API_BASE_URL}/api/v1/theme/`, {
         method: 'GET',
         headers,
         credentials: 'include',
@@ -98,7 +98,7 @@ export class ApiThemeAdapter
         headers['Cookie'] = cookieHeader
       }
 
-      const res = await fetch(`${this.API_BASE_URL}/api/v2/theme/`, {
+      const res = await fetch(`${this.API_BASE_URL}/api/v1/theme/`, {
         method: 'POST',
         headers,
         credentials: 'include',
@@ -140,7 +140,7 @@ export class ApiThemeAdapter
         headers['Cookie'] = cookieHeader
       }
 
-      const res = await fetch(`${this.API_BASE_URL}/api/v2/theme/toggle`, {
+      const res = await fetch(`${this.API_BASE_URL}/api/v1/theme/toggle`, {
         method: 'POST',
         headers,
         credentials: 'include',

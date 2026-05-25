@@ -2,7 +2,7 @@ import { getCookies } from '@tanstack/react-start/server'
 import type { AdminUser, CreateAdminUserInput, UserDetail, UsersDataAdapter } from './types'
 
 export class ApiUsersAdapter implements UsersDataAdapter {
-  private baseUrl = `${process.env.BACKEND_URL ?? 'http://localhost:8000'}/api/v2`
+  private baseUrl = `${process.env.BACKEND_URL ?? 'http://localhost:8000'}/api/v1`
 
   private async fetchApi<T>(
     endpoint: string,

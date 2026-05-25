@@ -22,7 +22,7 @@ export class ApiStudentsAdapter implements StudentsDataAdapter {
     if (filter?.status) params.set('status', filter.status)
     if (filter?.gender) params.set('gender', filter.gender)
 
-    const url = `${baseUrl}/api/v2/school-admin/students/?${params.toString()}`
+    const url = `${baseUrl}/api/v1/school-admin/students/?${params.toString()}`
 
     const res = await fetch(url, {
       headers: { cookie: cookieHeader },
@@ -53,7 +53,7 @@ export class ApiStudentsAdapter implements StudentsDataAdapter {
         .join('; ')
 
       const baseUrl = import.meta.env.BACKEND_URL ?? 'http://localhost:8000'
-      const url = `${baseUrl}/api/v2/school-admin/students/${id}/`
+      const url = `${baseUrl}/api/v1/school-admin/students/${id}/`
       const res = await fetch(url, { headers: { cookie: cookieHeader } })
       if (!res.ok) return undefined
       return await res.json()

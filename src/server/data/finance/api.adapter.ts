@@ -28,11 +28,11 @@ export class ApiFinanceAdapter implements FinanceDataAdapter {
   }
 
   async getFeeTypes(): Promise<Array<FeeType>> {
-    return this.fetchApi('/api/v2/school-admin/fee-types/')
+    return this.fetchApi('/api/v1/school-admin/fee-types/')
   }
 
   async getSchoolFees(schoolYearId: string): Promise<Array<SchoolFee>> {
-    return this.fetchApi(`/api/v2/school-years/${schoolYearId}/fees/`)
+    return this.fetchApi(`/api/v1/school-years/${schoolYearId}/fees/`)
   }
 
   async createSchoolFee(
@@ -44,7 +44,7 @@ export class ApiFinanceAdapter implements FinanceDataAdapter {
       .map(([k, v]) => `${k}=${v}`)
       .join('; ')
 
-    const res = await fetch(`${this.baseUrl()}/api/v2/school-admin/fees/`, {
+    const res = await fetch(`${this.baseUrl()}/api/v1/school-admin/fees/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', cookie: cookieHeader },
       body: JSON.stringify(data),
@@ -65,7 +65,7 @@ export class ApiFinanceAdapter implements FinanceDataAdapter {
       .join('; ')
 
     const res = await fetch(
-      `${this.baseUrl()}/api/v2/school-admin/fees/${id}/`,
+      `${this.baseUrl()}/api/v1/school-admin/fees/${id}/`,
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', cookie: cookieHeader },
@@ -81,12 +81,12 @@ export class ApiFinanceAdapter implements FinanceDataAdapter {
     studentEnrollmentId: string,
   ): Promise<Array<StudentPayment>> {
     return this.fetchApi(
-      `/api/v2/student-enrollments/${studentEnrollmentId}/payments/`,
+      `/api/v1/student-enrollments/${studentEnrollmentId}/payments/`,
     )
   }
 
   async getClassPayments(classroomId: string): Promise<Array<StudentPayment>> {
-    return this.fetchApi(`/api/v2/classrooms/${classroomId}/payments/`)
+    return this.fetchApi(`/api/v1/classrooms/${classroomId}/payments/`)
   }
 
   async createPayment(
@@ -98,7 +98,7 @@ export class ApiFinanceAdapter implements FinanceDataAdapter {
       .map(([k, v]) => `${k}=${v}`)
       .join('; ')
 
-    const res = await fetch(`${this.baseUrl()}/api/v2/school-admin/payments/`, {
+    const res = await fetch(`${this.baseUrl()}/api/v1/school-admin/payments/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', cookie: cookieHeader },
       body: JSON.stringify(data),
@@ -114,10 +114,10 @@ export class ApiFinanceAdapter implements FinanceDataAdapter {
   ): Promise<Array<FeeSummary>> {
     const params = new URLSearchParams({ school_year_id: schoolYearId })
     if (classroomId) params.set('classroom_id', classroomId)
-    return this.fetchApi(`/api/v2/school-admin/fees/summaries/?${params}`)
+    return this.fetchApi(`/api/v1/school-admin/fees/summaries/?${params}`)
   }
 
   async getFinanceStats(schoolYearId: string): Promise<FinanceStats> {
-    return this.fetchApi(`/api/v2/school-years/${schoolYearId}/fees/stats/`)
+    return this.fetchApi(`/api/v1/school-years/${schoolYearId}/fees/stats/`)
   }
 }

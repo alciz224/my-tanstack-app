@@ -15,7 +15,7 @@ export class ApiParentsAdapter implements ParentsDataAdapter {
     if (filter?.has_email) params.set('has_email', 'true')
     if (filter?.has_phone) params.set('has_phone', 'true')
 
-    const url = `${baseUrl}/api/v2/school-admin/parents/?${params.toString()}`
+    const url = `${baseUrl}/api/v1/school-admin/parents/?${params.toString()}`
 
     const res = await fetch(url, {
       headers: { cookie: cookieHeader },
@@ -37,7 +37,7 @@ export class ApiParentsAdapter implements ParentsDataAdapter {
 
     const baseUrl = import.meta.env.BACKEND_URL ?? 'http://localhost:8000'
 
-    const res = await fetch(`${baseUrl}/api/v2/school-admin/parents/${id}/`, {
+    const res = await fetch(`${baseUrl}/api/v1/school-admin/parents/${id}/`, {
       headers: { cookie: cookieHeader },
     })
 
