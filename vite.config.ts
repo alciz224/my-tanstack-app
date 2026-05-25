@@ -6,7 +6,6 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import viteTsConfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vite'
-import { nitro } from 'nitro/vite'
 
 const config = defineConfig({
   resolve: {
@@ -22,7 +21,6 @@ const config = defineConfig({
     }),
     tailwindcss(),
     tanstackStart(),
-    nitro({ preset: 'vercel' }),
     viteReact(),
   ],
   server: {
