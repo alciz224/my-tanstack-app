@@ -246,10 +246,30 @@ interface Locality {
 ```typescript
 interface AdminUser {
   id: string
-  name: string
+  email: string | null
+  phone: string | null
+  first_name: string
+  last_name: string
+  is_active: boolean
+  is_staff: boolean
+  date_joined: string
+  last_login: string | null
+  updated_at: string
+  role?: string // Derived from groups, may not be present
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
+}
+
+interface CreateAdminUserInput {
   email: string
-  role: 'admin' | 'teacher' | 'student' | 'parent'
-  status: 'Active' | 'Inactive' | 'Pending'
+  phone?: string
+  first_name: string
+  last_name: string
+  is_active: boolean
+  is_staff: boolean
 }
 ```
 
@@ -293,52 +313,147 @@ interface ThemeState {
 
 ### 1.14 Schools — `/super-admin/schools/`
 
-| #   | Action                                                                    | Method | Endpoint | Request | Response | Status         |
-| --- | ------------------------------------------------------------------------- | ------ | -------- | ------- | -------- | -------------- |
-| N/A | Schools list — fully static mock data (5 schools hardcoded). No API call. | —      | —        | —       | —        | ✅ Mock/Static |
+| #   | Action               | Method   | Endpoint                | Request             | Response         | Status  |
+| --- | -------------------- | -------- | ----------------------- | ------------------- | ---------------- | ------- |
+| 1   | **List schools**     | `GET`    | `/api/v2/schools/`      | —                   | `Array<School>`  | ✅ Live |
+| 2   | **Create school**    | `POST`   | `/api/v2/schools/`      | `CreateSchoolInput` | `School`         | ✅ Live |
+| 3   | **Get school by ID** | `GET`    | `/api/v2/schools/{id}/` | —                   | `School \| null` | ✅ Live |
+| 4   | **Update school**    | `PATCH`  | `/api/v2/schools/{id}/` | `Partial<School>`   | `School`         | ✅ Live |
+| 5   | **Delete school**    | `DELETE` | `/api/v2/schools/{id}/` | —                   | `void`           | ✅ Live |
 
-**Expected shape (future API):**
+**Types:**
 
 ```typescript
 interface School {
   id: string
   name: string
-  type: 'Public' | 'Privé' | 'Franco-Arabe'
-  ire: string
-  dpe: string
-  status: 'Active' | 'Inactive'
-  studentsCount: number
+  code: string
+  locality_id: string
+  address?: string
+  phone?: string
+  email?: string
+  website?: string
+  created_at: string
+  updated_at: string
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
+}
+
+interface CreateSchoolInput {
+  name: string
+  code: string
+  locality_id: string
+  address?: string
+  phone?: string
+  email?: string
+  website?: string
 }
 ```
+
+All School entities include the standard audit fields: `created_at`, `updated_at` (both required, always returned by API), plus optional `created_by`, `updated_by`, `is_deleted`, `deleted_at`, `deleted_by`.
 
 ---
 
 ### 1.15 School Detail — `/super-admin/schools/$schoolId`
 
-| #   | Action                                               | Method | Endpoint | Request | Response | Status         |
-| --- | ---------------------------------------------------- | ------ | -------- | ------- | -------- | -------------- |
-| N/A | School detail — fully static mock data. No API call. | —      | —        | —       | —        | ✅ Mock/Static |
+| #   | Action                | Method   | Endpoint                | Request           | Response         | Status  |
+| --- | --------------------- | -------- | ----------------------- | ----------------- | ---------------- | ------- |
+| 1   | **Get school detail** | `GET`    | `/api/v2/schools/{id}/` | —                 | `School \| null` | ✅ Live |
+| 2   | **Update school**     | `PATCH`  | `/api/v2/schools/{id}/` | `Partial<School>` | `School`         | ✅ Live |
+| 3   | **Delete school**     | `DELETE` | `/api/v2/schools/{id}/` | —                 | `void`           | ✅ Live |
 
-**Expected shape (future API):**
+**Type: `School`** (same as 1.14 above)
+
+---
+
+### 1.16 School Sub-resources
+
+| #   | Action                        | Method  | Endpoint                                                     | Request                  | Response                        | Status  |
+| --- | ----------------------------- | ------- | ------------------------------------------------------------ | ------------------------ | ------------------------------- | ------- |
+| 1   | **List school years**         | `GET`   | `/api/v2/schools/{schoolId}/years/`                          | —                        | `Array<SchoolYear>`             | ✅ Live |
+| 2   | **Get school year by ID**     | `GET`   | `/api/v2/school-years/{id}/`                                 | —                        | `SchoolYear \| null`            | ✅ Live |
+| 3   | **Create school year**        | `POST`  | `/api/v2/school-years/`                                      | `Omit<SchoolYear, 'id'>` | `SchoolYear`                    | ✅ Live |
+| 4   | **Update school year**        | `PATCH` | `/api/v2/school-years/{id}/`                                 | `Partial<SchoolYear>`    | `SchoolYear`                    | ✅ Live |
+| 5   | **List school year cycles**   | `GET`   | `/api/v2/school-years/{schoolYearId}/cycles/`                | —                        | `Array<SchoolYearCycle>`        | ✅ Live |
+| 6   | **List school year levels**   | `GET`   | `/api/v2/school-year-cycles/{schoolYearCycleId}/levels/`     | —                        | `Array<SchoolYearLevel>`        | ✅ Live |
+| 7   | **List subjects for level**   | `GET`   | `/api/v2/school-year-levels/{schoolYearLevelId}/subjects/`   | —                        | `Array<SchoolYearLevelSubject>` | ✅ Live |
+| 8   | **List classrooms for level** | `GET`   | `/api/v2/school-year-levels/{schoolYearLevelId}/classrooms/` | —                        | `Array<Classroom>`              | ✅ Live |
+| 9   | **Create classroom**          | `POST`  | `/api/v2/school-admin/classrooms/`                           | `Omit<Classroom, 'id'>`  | `Classroom`                     | ✅ Live |
+
+**Types:**
 
 ```typescript
-interface SchoolDetail {
+interface SchoolYear {
   id: string
+  school_id: string
+  start_date: string
+  end_date: string
   name: string
-  type: string
-  status: string
-  ire: string
-  dpe: string
-  address: string
-  phone: string
-  email: string
-  principal: string
-  stats: {
-    students: number
-    teachers: number
-    classrooms: number
-    cycles: string[]
-  }
+  status: 'CURRENT' | 'FUTURE' | 'ARCHIVE'
+  created_at: string
+  updated_at: string
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
+}
+
+interface SchoolYearCycle {
+  id: string
+  school_year_id: string
+  cycle_id: string
+  term_type_id: string
+  created_at: string
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
+}
+
+interface SchoolYearLevel {
+  id: string
+  school_year_cycle_id: string
+  level_id: string
+  level_name?: string
+  track_id?: string
+  created_at: string
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
+}
+
+interface SchoolYearLevelSubject {
+  id: string
+  school_year_level_id: string
+  subject_id: string
+  coefficient: number
+  created_at: string
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
+}
+
+interface Classroom {
+  id: string
+  school_year_level_id: string
+  name: string
+  capacity?: number
+  room_number?: string
+  created_at: string
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
 }
 ```
 
@@ -360,17 +475,7 @@ interface SchoolDetail {
 | --- | --------------------------------------------------------------------- | ------ | -------- | ------- | -------- | -------------- |
 | N/A | Users list — fully static mock data (5 users hardcoded). No API call. | —      | —        | —       | —        | ✅ Mock/Static |
 
-**Type (same as Super Admin users):**
-
-```typescript
-interface AdminUser {
-  id: string
-  name: string
-  email: string
-  role: 'admin' | 'teacher' | 'student' | 'parent'
-  status: 'Active' | 'Inactive' | 'Pending'
-}
-```
+**Type (same as Super Admin users — see 1.10 above):**
 
 ---
 
@@ -392,5 +497,5 @@ interface AdminUser {
 | Theme (V2)             | `/api/v2/theme/*`                                | Theme settings                                                  |
 | Academic (V1)          | `/api/v1/academic/*`                             | Years, Cycles, Levels, Tracks, Subjects, Terms, AssessmentTypes |
 | Geography (V1)         | `/api/v1/countries/*`, `/api/v1/regions/*`, etc. | Geography management                                            |
-| School Operations (V1) | `/api/v1/school-operations/*`                    | Schools, SchoolYears (not yet connected)                        |
+| School Operations (V2) | `/api/v2/schools/*`, `/api/v2/school-years/*`    | Schools, SchoolYears, Cycles, Levels, Subjects, Classrooms      |
 | Admin (V2)             | `/api/v2/admin/*`                                | User management                                                 |

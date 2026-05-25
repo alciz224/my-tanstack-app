@@ -9,30 +9,94 @@ import {
   Plus,
   Trash2,
 } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { useState } from 'react'
 import { getTermTypesFn, getTermsFn } from '@/server/api/academic'
+import {
+  createTermTypeFn,
+  updateTermTypeFn,
+  deleteTermTypeFn,
+  createTermFn,
+  updateTermFn,
+  deleteTermFn,
+} from '@/server/api/academic-mutations-extra'
+import { academicKeys } from '@/lib/query-client'
+import { toast } from '@/stores/toastStore'
+import type { TermType, Term } from '@/server/data/academic/types'
 
 export const Route = createFileRoute('/_authed/super-admin/periods')({
   component: TermTypesPage,
 })
 
 function TermTypesPage() {
+  const queryClient = useQueryClient()
   const getTermTypes = useServerFn(getTermTypesFn)
   const getTerms = useServerFn(getTermsFn)
+  const createTermType = useServerFn(createTermTypeFn)
+  const updateTermType = useServerFn(updateTermTypeFn)
+  const deleteTermType = useServerFn(deleteTermTypeFn)
+  const createTerm = useServerFn(createTermFn)
+  const updateTerm = useServerFn(updateTermFn)
+  const deleteTerm = useServerFn(deleteTermFn)
 
   const { data: termTypes, isLoading: loadingTermTypes } = useQuery({
-    queryKey: ['academic', 'term-types', 'list'],
+    queryKey: academicKeys.termTypesList(),
     queryFn: () => getTermTypes(),
   })
 
   const { data: terms } = useQuery({
-    queryKey: ['academic', 'terms', 'list'],
+    queryKey: academicKeys.termsList(),
     queryFn: () => getTerms(),
   })
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+  const [createTypeOpen, setCreateTypeOpen] = useState(false)
+  const [editingType, setEditingType] = useState<TermType | null>(null)
+  const [createTermOpen, setCreateTermOpen] = useState<string | null>(null)
+  const [editingTerm, setEditingTerm] = useState<Term | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<{ kind: 'termType'; id: string } | { kind: 'term'; id: string } | null>(null)
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: academicKeys.termTypesList() })
+    queryClient.invalidateQueries({ queryKey: academicKeys.termsList() })
+  }
+
+  const createTypeMut = useMutation({
+    mutationFn: async (data: Omit<TermType, 'id'>) => { const r = await createTermType({ data }); invalidate(); return r },
+    onSuccess: () => { toast.success('Type de période créé avec succès'); setCreateTypeOpen(false) },
+    onError: (e: any) => toast.error(e.message),
+  })
+
+  const updateTypeMut = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<TermType> }) => { const r = await updateTermType({ data: { id, data } }); invalidate(); return r },
+    onSuccess: () => { toast.success('Type de période modifié avec succès'); setEditingType(null) },
+    onError: (e: any) => toast.error(e.message),
+  })
+
+  const deleteTypeMut = useMutation({
+    mutationFn: async (id: string) => { await deleteTermType({ data: { id } }); invalidate() },
+    onSuccess: () => { toast.success('Type de période supprimé avec succès'); setDeleteConfirm(null) },
+    onError: (e: any) => { toast.error(e.message); setDeleteConfirm(null) },
+  })
+
+  const createTermMut = useMutation({
+    mutationFn: async (data: Omit<Term, 'id'>) => { const r = await createTerm({ data }); invalidate(); return r },
+    onSuccess: () => { toast.success('Période créée avec succès'); setCreateTermOpen(null) },
+    onError: (e: any) => toast.error(e.message),
+  })
+
+  const updateTermMut = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Term> }) => { const r = await updateTerm({ data: { id, data } }); invalidate(); return r },
+    onSuccess: () => { toast.success('Période modifiée avec succès'); setEditingTerm(null) },
+    onError: (e: any) => toast.error(e.message),
+  })
+
+  const deleteTermMut = useMutation({
+    mutationFn: async (id: string) => { await deleteTerm({ data: { id } }); invalidate() },
+    onSuccess: () => { toast.success('Période supprimée avec succès'); setDeleteConfirm(null) },
+    onError: (e: any) => { toast.error(e.message); setDeleteConfirm(null) },
+  })
 
   const toggleExpand = (id: string) => {
     setExpandedIds((prev) => {
@@ -79,7 +143,10 @@ function TermTypesPage() {
             semestres)
           </p>
         </div>
-        <button className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium transition-colors hover:bg-primary/90 btn-shine hover-scale">
+        <button
+          onClick={() => setCreateTypeOpen(true)}
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium transition-colors hover:bg-primary/90 btn-shine hover-scale"
+        >
           <Plus className="w-5 h-5" />
           <span>Nouveau Type</span>
         </button>
@@ -120,6 +187,20 @@ function TermTypesPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setEditingType(termType) }}
+                      className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setDeleteConfirm({ kind: 'termType', id: termType.id }) }}
+                      className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                   {getStatusBadge(termType.period_count)}
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <span>
@@ -141,7 +222,10 @@ function TermTypesPage() {
                     <h4 className="text-sm font-medium text-foreground">
                       Périodes
                     </h4>
-                    <button className="text-sm text-primary hover:text-primary/80 flex items-center gap-1">
+                    <button
+                      onClick={() => setCreateTermOpen(termType.id)}
+                      className="text-sm text-primary hover:text-primary/80 flex items-center gap-1"
+                    >
                       <Plus className="w-3.5 h-3.5" />
                       Ajouter une période
                     </button>
@@ -162,10 +246,16 @@ function TermTypesPage() {
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <button className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors">
+                          <button
+                            onClick={() => setEditingTerm(term)}
+                            className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors"
+                          >
                             <Edit className="w-3.5 h-3.5" />
                           </button>
-                          <button className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors">
+                          <button
+                            onClick={() => setDeleteConfirm({ kind: 'term', id: term.id })}
+                            className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors"
+                          >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
@@ -194,12 +284,200 @@ function TermTypesPage() {
               Créez un type de période pour définir comment l'année scolaire est
               divisée
             </p>
-            <button className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
+            <button
+              onClick={() => setCreateTypeOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+            >
               <Plus className="w-4 h-4" />
               Créer un type de période
             </button>
           </div>
         )}
+      </div>
+
+      {createTypeOpen && (
+        <TermTypeModal
+          isSubmitting={createTypeMut.isPending}
+          onClose={() => setCreateTypeOpen(false)}
+          onSubmit={(data) => createTypeMut.mutate(data)}
+        />
+      )}
+      {editingType && (
+        <TermTypeModal
+          initial={editingType}
+          isSubmitting={updateTypeMut.isPending}
+          onClose={() => setEditingType(null)}
+          onSubmit={(data) => updateTypeMut.mutate({ id: editingType.id, data })}
+        />
+      )}
+      {createTermOpen && (
+        <TermModal
+          termTypeId={createTermOpen}
+          isSubmitting={createTermMut.isPending}
+          onClose={() => setCreateTermOpen(null)}
+          onSubmit={(data) => createTermMut.mutate(data)}
+        />
+      )}
+      {editingTerm && (
+        <TermModal
+          initial={editingTerm}
+          isSubmitting={updateTermMut.isPending}
+          onClose={() => setEditingTerm(null)}
+          onSubmit={(data) => updateTermMut.mutate({ id: editingTerm.id, data })}
+        />
+      )}
+      {deleteConfirm && (
+        <ConfirmDelete
+          isSubmitting={deleteConfirm.kind === 'termType' ? deleteTypeMut.isPending : deleteTermMut.isPending}
+          onCancel={() => setDeleteConfirm(null)}
+          onConfirm={() => {
+            if (deleteConfirm.kind === 'termType') {
+              deleteTypeMut.mutate(deleteConfirm.id)
+            } else {
+              deleteTermMut.mutate(deleteConfirm.id)
+            }
+          }}
+        />
+      )}
+    </div>
+  )
+}
+
+function TermTypeModal({ initial, isSubmitting, onClose, onSubmit }: {
+  initial?: TermType; isSubmitting: boolean; onClose: () => void; onSubmit: (data: any) => void
+}) {
+  const isEdit = !!initial
+  const [code, setCode] = useState(initial?.code || '')
+  const [name, setName] = useState(initial?.name || '')
+  const [periodCount, setPeriodCount] = useState<number>(initial?.period_count ?? 2)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (isEdit) {
+      const payload: Partial<TermType> = {}
+      if (code !== initial!.code) payload.code = code
+      if (name !== initial!.name) payload.name = name
+      if (periodCount !== initial!.period_count) payload.period_count = periodCount
+      onSubmit(payload)
+    } else {
+      onSubmit({ code, name, period_count: periodCount })
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card shadow-xl">
+        <div className="border-b border-border px-6 py-4">
+          <h2 className="text-base font-semibold text-foreground">{isEdit ? 'Modifier le Type' : 'Nouveau Type de Période'}</h2>
+        </div>
+        <form onSubmit={handleSubmit} noValidate className="px-6 pb-6 pt-5 space-y-4">
+          <Field label="Code">
+            <input
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              value={code} onChange={(e) => setCode(e.target.value)} required
+            />
+          </Field>
+          <Field label="Nom">
+            <input
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              value={name} onChange={(e) => setName(e.target.value)} required
+            />
+          </Field>
+          <Field label="Nombre de périodes">
+            <input
+              type="number"
+              min={1}
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              value={periodCount} onChange={(e) => setPeriodCount(Number(e.target.value))} required
+            />
+          </Field>
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" onClick={onClose} disabled={isSubmitting} className="rounded-lg border border-input bg-background px-4 py-2 text-sm text-foreground hover:bg-muted disabled:opacity-50">Annuler</button>
+            <button type="submit" disabled={isSubmitting} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">{isSubmitting ? 'En cours...' : isEdit ? 'Modifier' : 'Créer'}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function TermModal({ initial, termTypeId, isSubmitting, onClose, onSubmit }: {
+  initial?: Term; termTypeId?: string; isSubmitting: boolean; onClose: () => void; onSubmit: (data: any) => void
+}) {
+  const isEdit = !!initial
+  const [code, setCode] = useState(initial?.code || '')
+  const [name, setName] = useState(initial?.name || '')
+  const [order, setOrder] = useState<number>(initial?.order ?? 1)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (isEdit) {
+      const payload: Partial<Term> = {}
+      if (code !== initial!.code) payload.code = code
+      if (name !== initial!.name) payload.name = name
+      if (order !== initial!.order) payload.order = order
+      onSubmit(payload)
+    } else {
+      onSubmit({ term_type_id: termTypeId!, code, name, order })
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card shadow-xl">
+        <div className="border-b border-border px-6 py-4">
+          <h2 className="text-base font-semibold text-foreground">{isEdit ? 'Modifier la Période' : 'Ajouter une Période'}</h2>
+        </div>
+        <form onSubmit={handleSubmit} noValidate className="px-6 pb-6 pt-5 space-y-4">
+          <Field label="Code">
+            <input
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              value={code} onChange={(e) => setCode(e.target.value)} required
+            />
+          </Field>
+          <Field label="Nom">
+            <input
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              value={name} onChange={(e) => setName(e.target.value)}
+            />
+          </Field>
+          <Field label="Ordre">
+            <input
+              type="number"
+              min={1}
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              value={order} onChange={(e) => setOrder(Number(e.target.value))} required
+            />
+          </Field>
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" onClick={onClose} disabled={isSubmitting} className="rounded-lg border border-input bg-background px-4 py-2 text-sm text-foreground hover:bg-muted disabled:opacity-50">Annuler</button>
+            <button type="submit" disabled={isSubmitting} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">{isSubmitting ? 'En cours...' : isEdit ? 'Modifier' : 'Ajouter'}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="mb-1 block text-xs font-medium text-foreground">{label}</label>
+      {children}
+    </div>
+  )
+}
+
+function ConfirmDelete({ isSubmitting, onCancel, onConfirm }: { isSubmitting: boolean; onCancel: () => void; onConfirm: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true">
+      <div className="w-full max-w-sm rounded-xl border border-border bg-card shadow-xl p-6">
+        <h3 className="text-sm font-semibold text-foreground mb-2">Confirmer la suppression</h3>
+        <p className="text-xs text-muted-foreground mb-4">Cette action est irréversible.</p>
+        <div className="flex justify-end gap-2">
+          <button onClick={onCancel} disabled={isSubmitting} className="rounded-lg border border-input bg-background px-4 py-2 text-sm text-foreground hover:bg-muted disabled:opacity-50">Annuler</button>
+          <button onClick={onConfirm} disabled={isSubmitting} className="rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-white hover:bg-destructive/90 disabled:opacity-50">{isSubmitting ? 'Suppression...' : 'Supprimer'}</button>
+        </div>
       </div>
     </div>
   )

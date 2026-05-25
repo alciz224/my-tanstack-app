@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as LogoutRouteImport } from './routes/logout'
+import { Route as ApiContractRouteImport } from './routes/api-contract'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
@@ -35,7 +36,6 @@ import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.se
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
 import { Route as DemoApiNamesRouteImport } from './routes/demo/api.names'
 import { Route as AuthedTeacherScheduleRouteImport } from './routes/_authed/teacher/schedule'
-import { Route as AuthedSuperAdminUsersRouteImport } from './routes/_authed/super-admin/users'
 import { Route as AuthedSuperAdminTracksRouteImport } from './routes/_authed/super-admin/tracks'
 import { Route as AuthedSuperAdminThemeSettingsRouteImport } from './routes/_authed/super-admin/theme-settings'
 import { Route as AuthedSuperAdminSubjectsRouteImport } from './routes/_authed/super-admin/subjects'
@@ -56,6 +56,7 @@ import { Route as AuthedAdminUsersRouteImport } from './routes/_authed/admin/use
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
 import { Route as AuthedTeacherGradesIndexRouteImport } from './routes/_authed/teacher/grades/index'
 import { Route as AuthedTeacherClassesIndexRouteImport } from './routes/_authed/teacher/classes/index'
+import { Route as AuthedSuperAdminUsersIndexRouteImport } from './routes/_authed/super-admin/users.index'
 import { Route as AuthedSuperAdminSchoolsIndexRouteImport } from './routes/_authed/super-admin/schools/index'
 import { Route as AuthedSchoolAdminYearsIndexRouteImport } from './routes/_authed/school-admin/years/index'
 import { Route as AuthedSchoolAdminTeachersIndexRouteImport } from './routes/_authed/school-admin/teachers/index'
@@ -71,6 +72,7 @@ import { Route as DemoStartSsrFullSsrRouteImport } from './routes/demo/start.ssr
 import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ssr.data-only'
 import { Route as AuthedTeacherGradesClassIdRouteImport } from './routes/_authed/teacher/grades/$classId'
 import { Route as AuthedTeacherClassesClassIdRouteImport } from './routes/_authed/teacher/classes/$classId'
+import { Route as AuthedSuperAdminUsersUserIdRouteImport } from './routes/_authed/super-admin/users.$userId'
 import { Route as AuthedSuperAdminSchoolsSchoolIdRouteImport } from './routes/_authed/super-admin/schools/$schoolId'
 import { Route as AuthedSchoolAdminYearsCreateRouteImport } from './routes/_authed/school-admin/years/create'
 import { Route as AuthedSchoolAdminStudentsPreRegisterRouteImport } from './routes/_authed/school-admin/students/pre-register'
@@ -100,6 +102,11 @@ const UnauthorizedRoute = UnauthorizedRouteImport.update({
 const LogoutRoute = LogoutRouteImport.update({
   id: '/logout',
   path: '/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiContractRoute = ApiContractRouteImport.update({
+  id: '/api-contract',
+  path: '/api-contract',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedRoute = AuthedRouteImport.update({
@@ -220,11 +227,6 @@ const AuthedTeacherScheduleRoute = AuthedTeacherScheduleRouteImport.update({
   path: '/schedule',
   getParentRoute: () => AuthedTeacherRouteRoute,
 } as any)
-const AuthedSuperAdminUsersRoute = AuthedSuperAdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AuthedSuperAdminRouteRoute,
-} as any)
 const AuthedSuperAdminTracksRoute = AuthedSuperAdminTracksRouteImport.update({
   id: '/tracks',
   path: '/tracks',
@@ -335,6 +337,12 @@ const AuthedTeacherClassesIndexRoute =
     path: '/classes/',
     getParentRoute: () => AuthedTeacherRouteRoute,
   } as any)
+const AuthedSuperAdminUsersIndexRoute =
+  AuthedSuperAdminUsersIndexRouteImport.update({
+    id: '/users/',
+    path: '/users/',
+    getParentRoute: () => AuthedSuperAdminRouteRoute,
+  } as any)
 const AuthedSuperAdminSchoolsIndexRoute =
   AuthedSuperAdminSchoolsIndexRouteImport.update({
     id: '/schools/',
@@ -421,6 +429,12 @@ const AuthedTeacherClassesClassIdRoute =
     id: '/classes/$classId',
     path: '/classes/$classId',
     getParentRoute: () => AuthedTeacherRouteRoute,
+  } as any)
+const AuthedSuperAdminUsersUserIdRoute =
+  AuthedSuperAdminUsersUserIdRouteImport.update({
+    id: '/users/$userId',
+    path: '/users/$userId',
+    getParentRoute: () => AuthedSuperAdminRouteRoute,
   } as any)
 const AuthedSuperAdminSchoolsSchoolIdRoute =
   AuthedSuperAdminSchoolsSchoolIdRouteImport.update({
@@ -545,6 +559,7 @@ const AuthedParentChildrenChildIdGradesRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api-contract': typeof ApiContractRoute
   '/logout': typeof LogoutRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthedAdminRouteRouteWithChildren
@@ -575,7 +590,6 @@ export interface FileRoutesByFullPath {
   '/super-admin/subjects': typeof AuthedSuperAdminSubjectsRoute
   '/super-admin/theme-settings': typeof AuthedSuperAdminThemeSettingsRoute
   '/super-admin/tracks': typeof AuthedSuperAdminTracksRoute
-  '/super-admin/users': typeof AuthedSuperAdminUsersRoute
   '/teacher/schedule': typeof AuthedTeacherScheduleRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
@@ -592,6 +606,7 @@ export interface FileRoutesByFullPath {
   '/school-admin/students/pre-register': typeof AuthedSchoolAdminStudentsPreRegisterRoute
   '/school-admin/years/create': typeof AuthedSchoolAdminYearsCreateRoute
   '/super-admin/schools/$schoolId': typeof AuthedSuperAdminSchoolsSchoolIdRoute
+  '/super-admin/users/$userId': typeof AuthedSuperAdminUsersUserIdRoute
   '/teacher/classes/$classId': typeof AuthedTeacherClassesClassIdRoute
   '/teacher/grades/$classId': typeof AuthedTeacherGradesClassIdRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
@@ -607,6 +622,7 @@ export interface FileRoutesByFullPath {
   '/school-admin/teachers/': typeof AuthedSchoolAdminTeachersIndexRoute
   '/school-admin/years/': typeof AuthedSchoolAdminYearsIndexRoute
   '/super-admin/schools/': typeof AuthedSuperAdminSchoolsIndexRoute
+  '/super-admin/users/': typeof AuthedSuperAdminUsersIndexRoute
   '/teacher/classes/': typeof AuthedTeacherClassesIndexRoute
   '/teacher/grades/': typeof AuthedTeacherGradesIndexRoute
   '/demo/start/ssr/': typeof DemoStartSsrIndexRoute
@@ -627,6 +643,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api-contract': typeof ApiContractRoute
   '/logout': typeof LogoutRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/login': typeof AuthLoginRoute
@@ -650,7 +667,6 @@ export interface FileRoutesByTo {
   '/super-admin/subjects': typeof AuthedSuperAdminSubjectsRoute
   '/super-admin/theme-settings': typeof AuthedSuperAdminThemeSettingsRoute
   '/super-admin/tracks': typeof AuthedSuperAdminTracksRoute
-  '/super-admin/users': typeof AuthedSuperAdminUsersRoute
   '/teacher/schedule': typeof AuthedTeacherScheduleRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
@@ -667,6 +683,7 @@ export interface FileRoutesByTo {
   '/school-admin/students/pre-register': typeof AuthedSchoolAdminStudentsPreRegisterRoute
   '/school-admin/years/create': typeof AuthedSchoolAdminYearsCreateRoute
   '/super-admin/schools/$schoolId': typeof AuthedSuperAdminSchoolsSchoolIdRoute
+  '/super-admin/users/$userId': typeof AuthedSuperAdminUsersUserIdRoute
   '/teacher/classes/$classId': typeof AuthedTeacherClassesClassIdRoute
   '/teacher/grades/$classId': typeof AuthedTeacherGradesClassIdRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
@@ -682,6 +699,7 @@ export interface FileRoutesByTo {
   '/school-admin/teachers': typeof AuthedSchoolAdminTeachersIndexRoute
   '/school-admin/years': typeof AuthedSchoolAdminYearsIndexRoute
   '/super-admin/schools': typeof AuthedSuperAdminSchoolsIndexRoute
+  '/super-admin/users': typeof AuthedSuperAdminUsersIndexRoute
   '/teacher/classes': typeof AuthedTeacherClassesIndexRoute
   '/teacher/grades': typeof AuthedTeacherGradesIndexRoute
   '/demo/start/ssr': typeof DemoStartSsrIndexRoute
@@ -705,6 +723,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/_authed': typeof AuthedRouteWithChildren
+  '/api-contract': typeof ApiContractRoute
   '/logout': typeof LogoutRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/_authed/admin': typeof AuthedAdminRouteRouteWithChildren
@@ -735,7 +754,6 @@ export interface FileRoutesById {
   '/_authed/super-admin/subjects': typeof AuthedSuperAdminSubjectsRoute
   '/_authed/super-admin/theme-settings': typeof AuthedSuperAdminThemeSettingsRoute
   '/_authed/super-admin/tracks': typeof AuthedSuperAdminTracksRoute
-  '/_authed/super-admin/users': typeof AuthedSuperAdminUsersRoute
   '/_authed/teacher/schedule': typeof AuthedTeacherScheduleRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
@@ -752,6 +770,7 @@ export interface FileRoutesById {
   '/_authed/school-admin/students/pre-register': typeof AuthedSchoolAdminStudentsPreRegisterRoute
   '/_authed/school-admin/years/create': typeof AuthedSchoolAdminYearsCreateRoute
   '/_authed/super-admin/schools/$schoolId': typeof AuthedSuperAdminSchoolsSchoolIdRoute
+  '/_authed/super-admin/users/$userId': typeof AuthedSuperAdminUsersUserIdRoute
   '/_authed/teacher/classes/$classId': typeof AuthedTeacherClassesClassIdRoute
   '/_authed/teacher/grades/$classId': typeof AuthedTeacherGradesClassIdRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
@@ -767,6 +786,7 @@ export interface FileRoutesById {
   '/_authed/school-admin/teachers/': typeof AuthedSchoolAdminTeachersIndexRoute
   '/_authed/school-admin/years/': typeof AuthedSchoolAdminYearsIndexRoute
   '/_authed/super-admin/schools/': typeof AuthedSuperAdminSchoolsIndexRoute
+  '/_authed/super-admin/users/': typeof AuthedSuperAdminUsersIndexRoute
   '/_authed/teacher/classes/': typeof AuthedTeacherClassesIndexRoute
   '/_authed/teacher/grades/': typeof AuthedTeacherGradesIndexRoute
   '/demo/start/ssr/': typeof DemoStartSsrIndexRoute
@@ -789,6 +809,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/api-contract'
     | '/logout'
     | '/unauthorized'
     | '/admin'
@@ -819,7 +840,6 @@ export interface FileRouteTypes {
     | '/super-admin/subjects'
     | '/super-admin/theme-settings'
     | '/super-admin/tracks'
-    | '/super-admin/users'
     | '/teacher/schedule'
     | '/demo/api/names'
     | '/demo/start/api-request'
@@ -836,6 +856,7 @@ export interface FileRouteTypes {
     | '/school-admin/students/pre-register'
     | '/school-admin/years/create'
     | '/super-admin/schools/$schoolId'
+    | '/super-admin/users/$userId'
     | '/teacher/classes/$classId'
     | '/teacher/grades/$classId'
     | '/demo/start/ssr/data-only'
@@ -851,6 +872,7 @@ export interface FileRouteTypes {
     | '/school-admin/teachers/'
     | '/school-admin/years/'
     | '/super-admin/schools/'
+    | '/super-admin/users/'
     | '/teacher/classes/'
     | '/teacher/grades/'
     | '/demo/start/ssr/'
@@ -871,6 +893,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/api-contract'
     | '/logout'
     | '/unauthorized'
     | '/login'
@@ -894,7 +917,6 @@ export interface FileRouteTypes {
     | '/super-admin/subjects'
     | '/super-admin/theme-settings'
     | '/super-admin/tracks'
-    | '/super-admin/users'
     | '/teacher/schedule'
     | '/demo/api/names'
     | '/demo/start/api-request'
@@ -911,6 +933,7 @@ export interface FileRouteTypes {
     | '/school-admin/students/pre-register'
     | '/school-admin/years/create'
     | '/super-admin/schools/$schoolId'
+    | '/super-admin/users/$userId'
     | '/teacher/classes/$classId'
     | '/teacher/grades/$classId'
     | '/demo/start/ssr/data-only'
@@ -926,6 +949,7 @@ export interface FileRouteTypes {
     | '/school-admin/teachers'
     | '/school-admin/years'
     | '/super-admin/schools'
+    | '/super-admin/users'
     | '/teacher/classes'
     | '/teacher/grades'
     | '/demo/start/ssr'
@@ -948,6 +972,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/_authed'
+    | '/api-contract'
     | '/logout'
     | '/unauthorized'
     | '/_authed/admin'
@@ -978,7 +1003,6 @@ export interface FileRouteTypes {
     | '/_authed/super-admin/subjects'
     | '/_authed/super-admin/theme-settings'
     | '/_authed/super-admin/tracks'
-    | '/_authed/super-admin/users'
     | '/_authed/teacher/schedule'
     | '/demo/api/names'
     | '/demo/start/api-request'
@@ -995,6 +1019,7 @@ export interface FileRouteTypes {
     | '/_authed/school-admin/students/pre-register'
     | '/_authed/school-admin/years/create'
     | '/_authed/super-admin/schools/$schoolId'
+    | '/_authed/super-admin/users/$userId'
     | '/_authed/teacher/classes/$classId'
     | '/_authed/teacher/grades/$classId'
     | '/demo/start/ssr/data-only'
@@ -1010,6 +1035,7 @@ export interface FileRouteTypes {
     | '/_authed/school-admin/teachers/'
     | '/_authed/school-admin/years/'
     | '/_authed/super-admin/schools/'
+    | '/_authed/super-admin/users/'
     | '/_authed/teacher/classes/'
     | '/_authed/teacher/grades/'
     | '/demo/start/ssr/'
@@ -1033,6 +1059,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
   AuthedRoute: typeof AuthedRouteWithChildren
+  ApiContractRoute: typeof ApiContractRoute
   LogoutRoute: typeof LogoutRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   VerifyStudentStudentIdRoute: typeof VerifyStudentStudentIdRoute
@@ -1059,6 +1086,13 @@ declare module '@tanstack/react-router' {
       path: '/logout'
       fullPath: '/logout'
       preLoaderRoute: typeof LogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api-contract': {
+      id: '/api-contract'
+      path: '/api-contract'
+      fullPath: '/api-contract'
+      preLoaderRoute: typeof ApiContractRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed': {
@@ -1229,13 +1263,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedTeacherScheduleRouteImport
       parentRoute: typeof AuthedTeacherRouteRoute
     }
-    '/_authed/super-admin/users': {
-      id: '/_authed/super-admin/users'
-      path: '/users'
-      fullPath: '/super-admin/users'
-      preLoaderRoute: typeof AuthedSuperAdminUsersRouteImport
-      parentRoute: typeof AuthedSuperAdminRouteRoute
-    }
     '/_authed/super-admin/tracks': {
       id: '/_authed/super-admin/tracks'
       path: '/tracks'
@@ -1376,6 +1403,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedTeacherClassesIndexRouteImport
       parentRoute: typeof AuthedTeacherRouteRoute
     }
+    '/_authed/super-admin/users/': {
+      id: '/_authed/super-admin/users/'
+      path: '/users'
+      fullPath: '/super-admin/users/'
+      preLoaderRoute: typeof AuthedSuperAdminUsersIndexRouteImport
+      parentRoute: typeof AuthedSuperAdminRouteRoute
+    }
     '/_authed/super-admin/schools/': {
       id: '/_authed/super-admin/schools/'
       path: '/schools'
@@ -1480,6 +1514,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/teacher/classes/$classId'
       preLoaderRoute: typeof AuthedTeacherClassesClassIdRouteImport
       parentRoute: typeof AuthedTeacherRouteRoute
+    }
+    '/_authed/super-admin/users/$userId': {
+      id: '/_authed/super-admin/users/$userId'
+      path: '/users/$userId'
+      fullPath: '/super-admin/users/$userId'
+      preLoaderRoute: typeof AuthedSuperAdminUsersUserIdRouteImport
+      parentRoute: typeof AuthedSuperAdminRouteRoute
     }
     '/_authed/super-admin/schools/$schoolId': {
       id: '/_authed/super-admin/schools/$schoolId'
@@ -1803,10 +1844,11 @@ interface AuthedSuperAdminRouteRouteChildren {
   AuthedSuperAdminSubjectsRoute: typeof AuthedSuperAdminSubjectsRoute
   AuthedSuperAdminThemeSettingsRoute: typeof AuthedSuperAdminThemeSettingsRoute
   AuthedSuperAdminTracksRoute: typeof AuthedSuperAdminTracksRoute
-  AuthedSuperAdminUsersRoute: typeof AuthedSuperAdminUsersRoute
   AuthedSuperAdminIndexRoute: typeof AuthedSuperAdminIndexRoute
   AuthedSuperAdminSchoolsSchoolIdRoute: typeof AuthedSuperAdminSchoolsSchoolIdRoute
+  AuthedSuperAdminUsersUserIdRoute: typeof AuthedSuperAdminUsersUserIdRoute
   AuthedSuperAdminSchoolsIndexRoute: typeof AuthedSuperAdminSchoolsIndexRoute
+  AuthedSuperAdminUsersIndexRoute: typeof AuthedSuperAdminUsersIndexRoute
 }
 
 const AuthedSuperAdminRouteRouteChildren: AuthedSuperAdminRouteRouteChildren = {
@@ -1821,10 +1863,11 @@ const AuthedSuperAdminRouteRouteChildren: AuthedSuperAdminRouteRouteChildren = {
   AuthedSuperAdminSubjectsRoute: AuthedSuperAdminSubjectsRoute,
   AuthedSuperAdminThemeSettingsRoute: AuthedSuperAdminThemeSettingsRoute,
   AuthedSuperAdminTracksRoute: AuthedSuperAdminTracksRoute,
-  AuthedSuperAdminUsersRoute: AuthedSuperAdminUsersRoute,
   AuthedSuperAdminIndexRoute: AuthedSuperAdminIndexRoute,
   AuthedSuperAdminSchoolsSchoolIdRoute: AuthedSuperAdminSchoolsSchoolIdRoute,
+  AuthedSuperAdminUsersUserIdRoute: AuthedSuperAdminUsersUserIdRoute,
   AuthedSuperAdminSchoolsIndexRoute: AuthedSuperAdminSchoolsIndexRoute,
+  AuthedSuperAdminUsersIndexRoute: AuthedSuperAdminUsersIndexRoute,
 }
 
 const AuthedSuperAdminRouteRouteWithChildren =
@@ -1882,6 +1925,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
   AuthedRoute: AuthedRouteWithChildren,
+  ApiContractRoute: ApiContractRoute,
   LogoutRoute: LogoutRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   VerifyStudentStudentIdRoute: VerifyStudentStudentIdRoute,

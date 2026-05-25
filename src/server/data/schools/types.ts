@@ -1,14 +1,25 @@
+// All types match the Django backend model precisely.
+// Audit & soft-delete fields follow the shared pattern:
+//   created_at (datetime, required), updated_at (datetime, required)
+//   created_by (FK, optional), updated_by (FK, optional)
+//   is_deleted (boolean), deleted_at (datetime, optional), deleted_by (FK, optional)
+
 export interface School {
   id: string
   name: string
   code: string
-  locality_id: string
+  district_id: string
   address?: string
   phone?: string
   email?: string
   website?: string
-  created_at?: string
-  updated_at?: string
+  created_at: string
+  updated_at: string
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
 }
 
 export interface SchoolYear {
@@ -18,8 +29,13 @@ export interface SchoolYear {
   end_date: string
   name: string
   status: 'CURRENT' | 'FUTURE' | 'ARCHIVE'
-  created_at?: string
-  updated_at?: string
+  created_at: string
+  updated_at: string
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
 }
 
 export interface SchoolYearCycle {
@@ -27,7 +43,12 @@ export interface SchoolYearCycle {
   school_year_id: string
   cycle_id: string
   term_type_id: string
-  created_at?: string
+  created_at: string
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
 }
 
 export interface SchoolYearLevel {
@@ -36,7 +57,12 @@ export interface SchoolYearLevel {
   level_id: string
   level_name?: string
   track_id?: string
-  created_at?: string
+  created_at: string
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
 }
 
 export interface SchoolYearLevelSubject {
@@ -44,7 +70,12 @@ export interface SchoolYearLevelSubject {
   school_year_level_id: string
   subject_id: string
   coefficient: number
-  created_at?: string
+  created_at: string
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
 }
 
 export interface Classroom {
@@ -53,12 +84,30 @@ export interface Classroom {
   name: string
   capacity?: number
   room_number?: string
-  created_at?: string
+  created_at: string
+  created_by?: string
+  updated_by?: string
+  is_deleted?: boolean
+  deleted_at?: string
+  deleted_by?: string
+}
+
+export interface CreateSchoolInput {
+  name: string
+  code: string
+  district_id: string
+  address?: string
+  phone?: string
+  email?: string
+  website?: string
 }
 
 export interface SchoolsDataAdapter {
   getSchools: () => Promise<Array<School>>
   getSchoolById: (id: string) => Promise<School | null>
+  createSchool: (data: CreateSchoolInput) => Promise<School>
+  updateSchool: (id: string, data: Partial<School>) => Promise<School>
+  deleteSchool: (id: string) => Promise<void>
   getSchoolYears: (schoolId: string) => Promise<Array<SchoolYear>>
   getSchoolYearById: (id: string) => Promise<SchoolYear | null>
   createSchoolYear: (

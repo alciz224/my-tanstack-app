@@ -85,7 +85,11 @@ function ReportCardsPage() {
   }, [reportCards])
 
   const allClassrooms = useMemo(() => {
-    let list = [...new Set(reportCards.map((c) => c.classroom_name ?? '').filter(Boolean))].sort()
+    let list = [
+      ...new Set(
+        reportCards.map((c) => c.classroom_name ?? '').filter(Boolean),
+      ),
+    ].sort()
     if (levelFilter) {
       list = list.filter((name) => parseLevel(name) === levelFilter)
     }
@@ -93,23 +97,36 @@ function ReportCardsPage() {
   }, [reportCards, levelFilter])
 
   const allTerms = useMemo(() => {
-    return [...new Set(reportCards.map((c) => c.term_name ?? '').filter(Boolean))].sort()
+    return [
+      ...new Set(reportCards.map((c) => c.term_name ?? '').filter(Boolean)),
+    ].sort()
   }, [reportCards])
 
   const filtered = reportCards.filter((card) => {
     const matchesSearch =
       !search ||
       (card.student_name ?? '').toLowerCase().includes(search.toLowerCase()) ||
-      (card.student_matricule ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (card.student_matricule ?? '')
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
       (card.classroom_name ?? '').toLowerCase().includes(search.toLowerCase())
     const matchesStatus = !statusFilter || card.status === statusFilter
-    const matchesLevel = !levelFilter || parseLevel(card.classroom_name) === levelFilter
-    const matchesClassroom = !classroomFilter || card.classroom_name === classroomFilter
+    const matchesLevel =
+      !levelFilter || parseLevel(card.classroom_name) === levelFilter
+    const matchesClassroom =
+      !classroomFilter || card.classroom_name === classroomFilter
     const matchesTerm = !termFilter || card.term_name === termFilter
-    return matchesSearch && matchesStatus && matchesLevel && matchesClassroom && matchesTerm
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesLevel &&
+      matchesClassroom &&
+      matchesTerm
+    )
   })
 
-  const hasActiveFilters = statusFilter || levelFilter || classroomFilter || termFilter
+  const hasActiveFilters =
+    statusFilter || levelFilter || classroomFilter || termFilter
 
   const clearFilters = () => {
     setLevelFilter('')
@@ -170,7 +187,9 @@ function ReportCardsPage() {
           >
             <option value="">Niveau</option>
             {allLevels.map((l) => (
-              <option key={l} value={l}>{l}</option>
+              <option key={l} value={l}>
+                {l}
+              </option>
             ))}
           </select>
           <select
@@ -180,7 +199,9 @@ function ReportCardsPage() {
           >
             <option value="">Classe</option>
             {allClassrooms.map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>
+                {c}
+              </option>
             ))}
           </select>
           <select
@@ -190,7 +211,9 @@ function ReportCardsPage() {
           >
             <option value="">Trimestre</option>
             {allTerms.map((t) => (
-              <option key={t} value={t}>{t}</option>
+              <option key={t} value={t}>
+                {t}
+              </option>
             ))}
           </select>
           <select

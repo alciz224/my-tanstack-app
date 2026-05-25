@@ -70,4 +70,25 @@ export interface AcademicDataAdapter {
   getTermTypes: () => Promise<Array<TermType>>
   getTerms: () => Promise<Array<Term>>
   getAssessmentTypes: () => Promise<Array<AssessmentType>>
+  createCycle: (data: Omit<Cycle, 'id'>) => Promise<Cycle>
+  updateCycle: (id: string, data: Partial<Cycle>) => Promise<Cycle>
+  deleteCycle: (id: string) => Promise<void>
+  createLevel: (data: Omit<Level, 'id'>) => Promise<Level>
+  updateLevel: (id: string, data: Partial<Level>) => Promise<Level>
+  deleteLevel: (id: string) => Promise<void>
+  createTrack: (data: Omit<Track, 'id'>) => Promise<Track>
+  updateTrack: (id: string, data: Partial<Track>) => Promise<Track>
+  deleteTrack: (id: string) => Promise<void>
+  createSubject: (data: Omit<Subject, 'id'>) => Promise<Subject>
+  updateSubject: (id: string, data: Partial<Subject>) => Promise<Subject>
+  deleteSubject: (id: string) => Promise<void>
+  createTermType: (data: Omit<TermType, 'id'>) => Promise<TermType>
+  updateTermType: (id: string, data: Partial<TermType>) => Promise<TermType>
+  deleteTermType: (id: string) => Promise<void>
+  createTerm: (data: Omit<Term, 'id'>) => Promise<Term>
+  updateTerm: (id: string, data: Partial<Term>) => Promise<Term>
+  deleteTerm: (id: string) => Promise<void>
+  createAssessmentType: (data: Omit<AssessmentType, 'id'>) => Promise<AssessmentType>
+  updateAssessmentType: (id: string, data: Partial<AssessmentType>) => Promise<AssessmentType>
+  deleteAssessmentType: (id: string) => Promise<void>
 }

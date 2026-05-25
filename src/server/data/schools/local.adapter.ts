@@ -8,6 +8,7 @@ import {
 } from './mocks'
 import type {
   Classroom,
+  CreateSchoolInput,
   School,
   SchoolYear,
   SchoolYearCycle,
@@ -30,6 +31,61 @@ export class LocalSchoolsAdapter implements SchoolsDataAdapter {
 
   async getSchoolById(id: string): Promise<School | null> {
     return this.schools.find((s) => s.id === id) || null
+  }
+
+  async createSchool(data: CreateSchoolInput): Promise<School> {
+    const nameExists = this.schools.some((s) => s.name === data.name)
+    if (nameExists) throw new Error('Une école avec ce nom existe déjà')
+
+    const codeExists = this.schools.some((s) => s.code === data.code)
+    if (codeExists) throw new Error('Une école avec ce code existe déjà')
+
+    const newSchool: School = {
+      id: `school-${Date.now()}`,
+      name: data.name,
+      code: data.code,
+      district_id: data.district_id,
+      address: data.address,
+      phone: data.phone,
+      email: data.email,
+      website: data.website,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }
+    this.schools.push(newSchool)
+    return newSchool
+  }
+
+  async updateSchool(id: string, data: Partial<School>): Promise<School> {
+    const index = this.schools.findIndex((s) => s.id === id)
+    if (index === -1) throw new Error('École non trouvée')
+
+    if (data.name) {
+      const nameExists = this.schools.some(
+        (s) => s.name === data.name && s.id !== id,
+      )
+      if (nameExists) throw new Error('Une école avec ce nom existe déjà')
+    }
+
+    if (data.code) {
+      const codeExists = this.schools.some(
+        (s) => s.code === data.code && s.id !== id,
+      )
+      if (codeExists) throw new Error('Une école avec ce code existe déjà')
+    }
+
+    this.schools[index] = {
+      ...this.schools[index],
+      ...data,
+      updated_at: new Date().toISOString(),
+    }
+    return this.schools[index]
+  }
+
+  async deleteSchool(id: string): Promise<void> {
+    const index = this.schools.findIndex((s) => s.id === id)
+    if (index === -1) throw new Error('École non trouvée')
+    this.schools.splice(index, 1)
   }
 
   async getSchoolYears(schoolId: string): Promise<Array<SchoolYear>> {

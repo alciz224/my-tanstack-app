@@ -1,6 +1,7 @@
 import { getCookies } from '@tanstack/react-start/server'
 import type {
   Classroom,
+  CreateSchoolInput,
   School,
   SchoolYear,
   SchoolYearCycle,
@@ -10,7 +11,7 @@ import type {
 } from './types'
 
 export class ApiSchoolsAdapter implements SchoolsDataAdapter {
-  private baseUrl = process.env.VITE_API_URL || 'http://localhost:8000/api/v2'
+  private baseUrl = `${process.env.BACKEND_URL ?? 'http://localhost:8000'}/api/v2`
 
   private async fetchApi<T>(
     endpoint: string,
@@ -46,6 +47,24 @@ export class ApiSchoolsAdapter implements SchoolsDataAdapter {
 
   async getSchoolById(id: string): Promise<School | null> {
     return this.fetchApi<School>(`/schools/${id}/`).catch(() => null)
+  }
+
+  async createSchool(data: CreateSchoolInput): Promise<School> {
+    return this.fetchApi<School>('/schools/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async updateSchool(id: string, data: Partial<School>): Promise<School> {
+    return this.fetchApi<School>(`/schools/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async deleteSchool(id: string): Promise<void> {
+    await this.fetchApi<void>(`/schools/${id}/`, { method: 'DELETE' })
   }
 
   async getSchoolYears(schoolId: string): Promise<Array<SchoolYear>> {
@@ -108,26 +127,9 @@ export class ApiSchoolsAdapter implements SchoolsDataAdapter {
   async createClassroom(
     data: Omit<Classroom, 'id' | 'created_at'>,
   ): Promise<Classroom> {
-    const { getCookies } = await import('@tanstack/react-start/server')
-    const cookies = getCookies()
-    const cookieHeader = Object.entries(cookies)
-      .map(([k, v]) => `${k}=${v}`)
-      .join('; ')
-
-    const baseUrl = import.meta.env.BACKEND_URL ?? 'http://localhost:8000'
-    const res = await fetch(`${baseUrl}/api/v2/school-admin/classrooms/`, {
+    return this.fetchApi<Classroom>('/school-admin/classrooms/', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        cookie: cookieHeader,
-      },
       body: JSON.stringify(data),
     })
-
-    if (!res.ok) {
-      throw new Error(`Failed to create classroom: ${res.status}`)
-    }
-
-    return res.json()
   }
 }

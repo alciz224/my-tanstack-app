@@ -287,14 +287,18 @@ function TranscriptDetailPage() {
               </div>
             </div>
             <div>
-              <p className="font-semibold text-gray-700 mb-3">Le Professeur Principal</p>
+              <p className="font-semibold text-gray-700 mb-3">
+                Le Professeur Principal
+              </p>
               <div className="h-8" />
               <div className="border-t border-gray-300 pt-0.5 text-[10px]">
                 Nom et signature
               </div>
             </div>
             <div>
-              <p className="font-semibold text-gray-700 mb-3">Visa de l'Inspecteur</p>
+              <p className="font-semibold text-gray-700 mb-3">
+                Visa de l'Inspecteur
+              </p>
               <div className="h-8" />
               <div className="border-t border-gray-300 pt-0.5 text-[10px]">
                 Cachet et signature

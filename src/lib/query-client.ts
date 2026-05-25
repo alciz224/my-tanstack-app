@@ -8,10 +8,7 @@
  * - Error handling defaults
  */
 
-import {
-  QueryClient,
-  defaultShouldDehydrateQuery,
-} from '@tanstack/react-query'
+import { QueryClient, defaultShouldDehydrateQuery } from '@tanstack/react-query'
 
 /**
  * Create a new QueryClient instance
@@ -158,17 +155,17 @@ export const geographyKeys = {
     [...geographyKeys.regions(), 'list', filters] as const,
   region: (id: string) => [...geographyKeys.regions(), id] as const,
 
-  administrativeUnits: () =>
-    [...geographyKeys.all, 'administrative-units'] as const,
-  administrativeUnitsList: (filters?: Record<string, any>) =>
-    [...geographyKeys.administrativeUnits(), 'list', filters] as const,
-  administrativeUnit: (id: string) =>
-    [...geographyKeys.administrativeUnits(), id] as const,
+  cities: () =>
+    [...geographyKeys.all, 'cities'] as const,
+  citiesList: (filters?: Record<string, any>) =>
+    [...geographyKeys.cities(), 'list', filters] as const,
+  city: (id: string) =>
+    [...geographyKeys.cities(), id] as const,
 
-  localities: () => [...geographyKeys.all, 'localities'] as const,
-  localitiesList: (filters?: Record<string, any>) =>
-    [...geographyKeys.localities(), 'list', filters] as const,
-  locality: (id: string) => [...geographyKeys.localities(), id] as const,
+  districts: () => [...geographyKeys.all, 'districts'] as const,
+  districtsList: (filters?: Record<string, any>) =>
+    [...geographyKeys.districts(), 'list', filters] as const,
+  district: (id: string) => [...geographyKeys.districts(), id] as const,
 } as const
 
 /**

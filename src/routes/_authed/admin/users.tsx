@@ -18,38 +18,48 @@ function AdminUsersPage() {
   const users = [
     {
       id: 'USR-001',
-      name: 'Jean Dupont',
+      first_name: 'Jean',
+      last_name: 'Dupont',
       email: 'jean.dupont@example.com',
+      phone: '+224 612 345 678',
       role: 'admin',
-      status: 'Active',
+      is_active: true,
     },
     {
       id: 'USR-002',
-      name: 'Marie Martin',
+      first_name: 'Marie',
+      last_name: 'Martin',
       email: 'marie.m@example.com',
+      phone: null,
       role: 'teacher',
-      status: 'Active',
+      is_active: true,
     },
     {
       id: 'USR-003',
-      name: 'Paul Bernard',
+      first_name: 'Paul',
+      last_name: 'Bernard',
       email: 'paul.b@example.com',
+      phone: null,
       role: 'student',
-      status: 'Inactive',
+      is_active: false,
     },
     {
       id: 'USR-004',
-      name: 'Sophie Laurent',
+      first_name: 'Sophie',
+      last_name: 'Laurent',
       email: 'sophie.l@example.com',
+      phone: null,
       role: 'parent',
-      status: 'Active',
+      is_active: true,
     },
     {
       id: 'USR-005',
-      name: 'Lucas Moreau',
+      first_name: 'Lucas',
+      last_name: 'Moreau',
       email: 'lucas.m@example.com',
+      phone: null,
       role: 'teacher',
-      status: 'Pending',
+      is_active: false,
     },
   ]
 
@@ -134,7 +144,7 @@ function AdminUsersPage() {
                       </div>
                       <div>
                         <div className="font-semibold text-foreground">
-                          {user.name}
+                          {user.first_name} {user.last_name}
                         </div>
                         <div className="text-xs text-muted-foreground font-mono mt-0.5">
                           {user.id}
@@ -159,15 +169,9 @@ function AdminUsersPage() {
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide
-                      ${
-                        user.status === 'Active'
-                          ? 'bg-success/15 text-success'
-                          : user.status === 'Pending'
-                            ? 'bg-warning/15 text-warning'
-                            : 'bg-muted text-muted-foreground'
-                      }`}
+                      ${user.is_active ? 'bg-success/15 text-success' : 'bg-muted text-muted-foreground'}`}
                     >
-                      {user.status}
+                      {user.is_active ? 'Actif' : 'Inactif'}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">

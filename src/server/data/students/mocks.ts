@@ -16,8 +16,8 @@ export interface Student {
   gender: 'M' | 'F'
   date_of_birth: string
   photo_url: string | null
-  birthplace_locality_id: string | null
-  birthplace_locality_name: string | null
+  birthplace_district_id: string | null
+  birthplace_district_name: string | null
   address: string | null
   academic_year: string
   school_year_level_id: string
@@ -243,26 +243,26 @@ const GUINEAN_FEMALE_NAMES: Array<[string, string]> = [
   ['Mariam', 'Traoré'],
 ]
 
-const LOCALITIES: Array<{ id: string; name: string }> = [
-  { id: 'LOC-CON', name: 'Conakry' },
-  { id: 'LOC-KIN', name: 'Kindia' },
-  { id: 'LOC-LAB', name: 'Labé' },
-  { id: 'LOC-BOK', name: 'Boké' },
-  { id: 'LOC-NZE', name: 'Nzérékoré' },
-  { id: 'LOC-KAN', name: 'Kankan' },
-  { id: 'LOC-MAM', name: 'Mamou' },
-  { id: 'LOC-DAB', name: 'Dabola' },
-  { id: 'LOC-SIG', name: 'Siguiri' },
-  { id: 'LOC-FOR', name: 'Forécariah' },
-  { id: 'LOC-TEL', name: 'Télimélé' },
-  { id: 'LOC-GAO', name: 'Gaoual' },
-  { id: 'LOC-KOU', name: 'Koundara' },
-  { id: 'LOC-MAC', name: 'Macenta' },
-  { id: 'LOC-GUE', name: 'Guéckédou' },
-  { id: 'LOC-KIS', name: 'Kissidougou' },
+const DISTRICTS: Array<{ id: string; name: string }> = [
+  { id: 'DST-CON-CEN', name: 'Conakry' },
+  { id: 'DST-KIN-CEN', name: 'Kindia' },
+  { id: 'DST-LAB-CEN', name: 'Labé' },
+  { id: 'DST-BOK-VIL', name: 'Boké' },
+  { id: 'DST-NZE-VIL', name: 'Nzérékoré' },
+  { id: 'DST-KAN-VIL', name: 'Kankan' },
+  { id: 'DST-MAM-CEN', name: 'Mamou' },
+  { id: 'DST-DAB-CEN', name: 'Dabola' },
+  { id: 'DST-SIG-CEN', name: 'Siguiri' },
+  { id: 'DST-FOR-CEN', name: 'Forécariah' },
+  { id: 'DST-TEL-CEN', name: 'Télimélé' },
+  { id: 'DST-GAU-CEN', name: 'Gaoual' },
+  { id: 'DST-KOU-CEN', name: 'Koundara' },
+  { id: 'DST-MAC-CEN', name: 'Macenta' },
+  { id: 'DST-MAC-CEN', name: 'Guéckédou' },
+  { id: 'DST-KIS-CEN', name: 'Kissidougou' },
 ]
 
-const ADDRESSES_BY_LOCALITY: Record<string, Array<string>> = {
+const ADDRESSES_BY_DISTRICT: Record<string, Array<string>> = {
   Conakry: [
     'Ratoma, Conakry',
     'Kaloum, Conakry',
@@ -447,7 +447,7 @@ function generateStudentsForLevel(
 
     for (let i = 0; i < maleCount; i++) {
       const [first, last] = shuffledMale[i % shuffledMale.length]
-      const locality = pick(LOCALITIES)
+      const district = pick(DISTRICTS)
       const phone = pick(PHONES)
       const parentPrefix = pick(PARENT_NAME_PREFIXES)
       const prevClassroom = PREV_CLASSROOMS[classroom.id]
@@ -464,9 +464,9 @@ function generateStudentsForLevel(
         gender: 'M',
         date_of_birth: generateDOB(config.baseBirthYear, 'M'),
         photo_url: null,
-        birthplace_locality_id: locality.id,
-        birthplace_locality_name: locality.name,
-        address: pick(ADDRESSES_BY_LOCALITY[locality.name] || [locality.name]),
+        birthplace_district_id: district.id,
+        birthplace_district_name: district.name,
+        address: pick(ADDRESSES_BY_DISTRICT[district.name] || [district.name]),
         academic_year: '2024-2025',
         school_year_level_id: config.sylId,
         cycle: config.cycle,
@@ -494,7 +494,7 @@ function generateStudentsForLevel(
 
     for (let i = 0; i < femaleCount; i++) {
       const [first, last] = shuffledFemale[i % shuffledFemale.length]
-      const locality = pick(LOCALITIES)
+      const district = pick(DISTRICTS)
       const phone = pick(PHONES)
       const parentPrefix = pick(PARENT_NAME_PREFIXES)
       const prevClassroom = PREV_CLASSROOMS[classroom.id]
@@ -511,9 +511,9 @@ function generateStudentsForLevel(
         gender: 'F',
         date_of_birth: generateDOB(config.baseBirthYear, 'F'),
         photo_url: null,
-        birthplace_locality_id: locality.id,
-        birthplace_locality_name: locality.name,
-        address: pick(ADDRESSES_BY_LOCALITY[locality.name] || [locality.name]),
+        birthplace_district_id: district.id,
+        birthplace_district_name: district.name,
+        address: pick(ADDRESSES_BY_DISTRICT[district.name] || [district.name]),
         academic_year: '2024-2025',
         school_year_level_id: config.sylId,
         cycle: config.cycle,
@@ -576,8 +576,8 @@ export const MOCK_STUDENTS: Array<Student> = [
     gender: 'M',
     date_of_birth: '2011-05-12',
     photo_url: null,
-    birthplace_locality_id: 'LOC-CON',
-    birthplace_locality_name: 'Conakry',
+    birthplace_district_id: 'DST-CON-CEN',
+    birthplace_district_name: 'Conakry',
     address: 'Ratoma, Conakry',
     academic_year: '2024-2025',
     school_year_level_id: 'syl-1',
@@ -606,8 +606,8 @@ export const MOCK_STUDENTS: Array<Student> = [
     gender: 'F',
     date_of_birth: '2011-08-22',
     photo_url: null,
-    birthplace_locality_id: 'LOC-CON',
-    birthplace_locality_name: 'Conakry',
+    birthplace_district_id: 'DST-CON-CEN',
+    birthplace_district_name: 'Conakry',
     address: 'Kaloum, Conakry',
     academic_year: '2024-2025',
     school_year_level_id: 'syl-1',
@@ -636,8 +636,8 @@ export const MOCK_STUDENTS: Array<Student> = [
     gender: 'M',
     date_of_birth: '2010-11-03',
     photo_url: null,
-    birthplace_locality_id: 'LOC-KIN',
-    birthplace_locality_name: 'Kindia',
+    birthplace_district_id: 'DST-KIN-CEN',
+    birthplace_district_name: 'Kindia',
     address: 'Kindia Centre',
     academic_year: '2024-2025',
     school_year_level_id: 'syl-1',
@@ -666,8 +666,8 @@ export const MOCK_STUDENTS: Array<Student> = [
     gender: 'F',
     date_of_birth: '2011-02-18',
     photo_url: null,
-    birthplace_locality_id: 'LOC-CON',
-    birthplace_locality_name: 'Conakry',
+    birthplace_district_id: 'DST-CON-CEN',
+    birthplace_district_name: 'Conakry',
     address: 'Dixinn, Conakry',
     academic_year: '2024-2025',
     school_year_level_id: 'syl-1',
@@ -696,8 +696,8 @@ export const MOCK_STUDENTS: Array<Student> = [
     gender: 'M',
     date_of_birth: '2010-06-25',
     photo_url: null,
-    birthplace_locality_id: 'LOC-LAB',
-    birthplace_locality_name: 'Labé',
+    birthplace_district_id: 'DST-LAB-CEN',
+    birthplace_district_name: 'Labé',
     address: 'Labé, Quartier Lidé',
     academic_year: '2024-2025',
     school_year_level_id: 'syl-2',
@@ -726,8 +726,8 @@ export const MOCK_STUDENTS: Array<Student> = [
     gender: 'F',
     date_of_birth: '2010-09-10',
     photo_url: null,
-    birthplace_locality_id: 'LOC-CON',
-    birthplace_locality_name: 'Conakry',
+    birthplace_district_id: 'DST-CON-CEN',
+    birthplace_district_name: 'Conakry',
     address: 'Matam, Conakry',
     academic_year: '2024-2025',
     school_year_level_id: 'syl-2',
@@ -756,8 +756,8 @@ export const MOCK_STUDENTS: Array<Student> = [
     gender: 'M',
     date_of_birth: '2008-04-15',
     photo_url: null,
-    birthplace_locality_id: 'LOC-BOK',
-    birthplace_locality_name: 'Boké',
+    birthplace_district_id: 'DST-BOK-VIL',
+    birthplace_district_name: 'Boké',
     address: 'Boké, Quartier Minier',
     academic_year: '2024-2025',
     school_year_level_id: 'syl-4',
@@ -786,8 +786,8 @@ export const MOCK_STUDENTS: Array<Student> = [
     gender: 'F',
     date_of_birth: '2006-12-08',
     photo_url: null,
-    birthplace_locality_id: 'LOC-NZE',
-    birthplace_locality_name: 'Nzérékoré',
+    birthplace_district_id: 'DST-NZE-VIL',
+    birthplace_district_name: 'Nzérékoré',
     address: 'Nzérékoré, Quartier Plateau',
     academic_year: '2024-2025',
     school_year_level_id: 'syl-7',
@@ -816,8 +816,8 @@ export const MOCK_STUDENTS: Array<Student> = [
     gender: 'M',
     date_of_birth: '2012-01-20',
     photo_url: null,
-    birthplace_locality_id: 'LOC-CON',
-    birthplace_locality_name: 'Conakry',
+    birthplace_district_id: 'DST-CON-CEN',
+    birthplace_district_name: 'Conakry',
     address: 'Coyah, Conakry',
     academic_year: '2024-2025',
     school_year_level_id: 'syl-1',
@@ -846,8 +846,8 @@ export const MOCK_STUDENTS: Array<Student> = [
     gender: 'M',
     date_of_birth: '2005-07-30',
     photo_url: null,
-    birthplace_locality_id: 'LOC-KAN',
-    birthplace_locality_name: 'Kankan',
+    birthplace_district_id: 'DST-KAN-VIL',
+    birthplace_district_name: 'Kankan',
     address: 'Kankan, Quartier Commerce',
     academic_year: '2023-2024',
     school_year_level_id: 'syl-7',

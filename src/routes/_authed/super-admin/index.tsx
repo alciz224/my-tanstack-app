@@ -84,7 +84,8 @@ function SuperAdminDashboard() {
             description="Gérer les années académiques de référence"
             icon={BookOpen}
           />
-          <ActionButton
+          <ActionLink
+            to="/super-admin/schools"
             title="Gérer les établissements"
             description="Créer, modifier ou supprimer des établissements"
             icon={Database}

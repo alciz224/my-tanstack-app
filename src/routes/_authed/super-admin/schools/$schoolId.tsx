@@ -1,18 +1,32 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import {
-  Activity,
   ArrowLeft,
   BookOpen,
   Building2,
   Edit,
+  Globe,
   GraduationCap,
+  Loader2,
   Mail,
   MapPin,
   Phone,
-  Settings,
-  Shield,
+  Trash2,
   Users,
 } from 'lucide-react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useServerFn } from '@tanstack/react-start'
+import { useState, useMemo } from 'react'
+import { getSchoolByIdFn, updateSchoolFn, deleteSchoolFn } from '@/server/api/schools'
+import {
+  getRegionsFn,
+  getCitiesFn,
+  getDistrictsFn,
+} from '@/server/api/geography'
+import { geographyKeys } from '@/lib/query-client'
+import { schoolOpsKeys } from '@/lib/query-client'
+import { toast } from '@/stores/toastStore'
+import type { School } from '@/server/data/schools/types'
+import { CreateEditSchoolModal, DeleteSchoolConfirm } from './index'
 
 export const Route = createFileRoute('/_authed/super-admin/schools/$schoolId')({
   component: SchoolDetailPage,
@@ -20,33 +34,98 @@ export const Route = createFileRoute('/_authed/super-admin/schools/$schoolId')({
 
 function SchoolDetailPage() {
   const { schoolId } = Route.useParams()
+  const queryClient = useQueryClient()
+  const getSchool = useServerFn(getSchoolByIdFn)
+  const getRegions = useServerFn(getRegionsFn)
+  const getCities = useServerFn(getCitiesFn)
+  const getDistricts = useServerFn(getDistrictsFn)
 
-  // Mock detail data based on Guinean context
-  const school = {
-    id: schoolId,
-    name:
-      schoolId === 'SCH-001'
-        ? 'Lycée Albert Camus'
-        : 'Groupe Scolaire Ousmane Camara',
-    type: schoolId === 'SCH-001' ? 'Public' : 'Privé',
-    status: 'Active',
-    ire: 'Conakry',
-    dpe: schoolId === 'SCH-001' ? 'Ratoma' : 'Dixinn',
-    address: 'Quartier Kipé, Commune de Ratoma, Conakry',
-    phone: '+224 622 00 11 22',
-    email: 'contact@albertcamus.edu.gn',
-    principal: 'M. Ibrahima Sory Diallo',
-    stats: {
-      students: 2450,
-      teachers: 85,
-      classrooms: 42,
-      cycles: ['Collège', 'Lycée'],
+  const [editing, setEditing] = useState<School | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<School | null>(null)
+
+  const { data: school, isLoading } = useQuery({
+    queryKey: schoolOpsKeys.school(schoolId),
+    queryFn: () => getSchool({ data: schoolId }),
+  })
+
+  const { data: regions } = useQuery({
+    queryKey: geographyKeys.regionsList(),
+    queryFn: () => getRegions(),
+  })
+  const { data: cities } = useQuery({
+    queryKey: geographyKeys.citiesList(),
+    queryFn: () => getCities(),
+  })
+  const { data: districts } = useQuery({
+    queryKey: geographyKeys.districtsList(),
+    queryFn: () => getDistricts(),
+  })
+
+  const regionAndCity = useMemo(() => {
+    if (!districts || !cities || !regions || !school) return null
+    const district = districts.find((d) => d.id === school.district_id)
+    if (!district) return null
+    const city = cities.find((c) => c.id === district.city_id)
+    if (!city) return null
+    const region = regions.find((r) => r.id === city.region_id)
+    return { region: region?.name ?? null, city: city.name }
+  }, [districts, cities, regions, school])
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: schoolOpsKeys.schools() })
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<School> }) => {
+      return await updateSchoolFn({ id, data })
     },
+    onSuccess: () => {
+      invalidate()
+      toast.success('École modifiée avec succès')
+      setEditing(null)
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Impossible de modifier l\'école')
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await deleteSchoolFn({ id })
+    },
+    onSuccess: () => {
+      invalidate()
+      toast.success('École supprimée avec succès')
+      setDeleteConfirm(null)
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Impossible de supprimer l\'école')
+    },
+  })
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    )
   }
+
+  if (!school) {
+    return (
+      <div className="text-center py-20 text-muted-foreground">
+        École non trouvée.
+        <br />
+        <Link to="/super-admin/schools" className="text-primary hover:underline mt-2 inline-block">
+          Retour à la liste
+        </Link>
+      </div>
+    )
+  }
+
+  const setDeleteSchool = () => setDeleteConfirm(school)
 
   return (
     <div className="space-y-6 animate-fade-in-up">
-      {/* Back Navigation */}
       <div>
         <Link
           to="/super-admin/schools"
@@ -57,7 +136,6 @@ function SchoolDetailPage() {
         </Link>
       </div>
 
-      {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-lg">
         <div className="flex items-center gap-6">
           <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/20 flex items-center justify-center text-white border border-white/20 shadow-sm backdrop-blur-sm">
@@ -68,203 +146,175 @@ function SchoolDetailPage() {
               <h1 className="text-2xl sm:text-3xl font-bold text-white">
                 {school.name}
               </h1>
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide bg-white/20 text-white backdrop-blur-sm border border-white/30">
-                {school.status}
-              </span>
             </div>
-            <p className="text-white/80 font-mono text-sm mb-2">{school.id}</p>
-            <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-white/90">
-              <span className="flex items-center">
-                <MapPin className="w-4 h-4 mr-1.5 text-white/70" />{' '}
-                {school.address}
+            <p className="text-white/80 font-mono text-sm mb-2">{school.code}</p>
+            {school.address && (
+              <span className="flex items-center text-sm text-white/90">
+                <MapPin className="w-4 h-4 mr-1.5 text-white/70" /> {school.address}
               </span>
-              <span className="flex items-center">
-                <Shield className="w-4 h-4 mr-1.5 text-white/70" /> Type:{' '}
-                {school.type}
-              </span>
-            </div>
+            )}
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <button className="flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white border border-white/20 rounded-lg font-medium transition-colors hover-scale flex backdrop-blur-sm">
+          <button
+            onClick={() => setEditing(school)}
+            className="flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white border border-white/20 rounded-lg font-medium transition-colors hover-scale flex backdrop-blur-sm"
+          >
             <Edit className="w-4 h-4" />
             <span>Modifier</span>
           </button>
-          <button className="flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 bg-white text-blue-700 hover:text-blue-800 rounded-lg font-medium transition-colors hover:bg-white/90 btn-shine hover-scale flex shadow-sm">
-            <Settings className="w-4 h-4" />
-            <span>Configuration</span>
+          <button
+            onClick={setDeleteSchool}
+            className="flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 bg-red-500/30 hover:bg-red-500/50 text-white border border-white/20 rounded-lg font-medium transition-colors hover-scale flex backdrop-blur-sm"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Supprimer</span>
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column (Main Info & Stats) */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Key Statistics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div className="bg-card border border-border rounded-lg p-5 flex flex-col items-center justify-center text-center hover-lift">
               <Users className="w-6 h-6 text-primary mb-2" />
-              <span className="text-2xl font-bold text-foreground mb-1">
-                {school.stats.students.toLocaleString('fr-FR')}
-              </span>
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Élèves
-              </span>
+              <span className="text-2xl font-bold text-foreground mb-1">—</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Élèves</span>
             </div>
             <div className="bg-card border border-border rounded-lg p-5 flex flex-col items-center justify-center text-center hover-lift">
               <GraduationCap className="w-6 h-6 text-secondary mb-2" />
-              <span className="text-2xl font-bold text-foreground mb-1">
-                {school.stats.teachers}
-              </span>
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Enseignants
-              </span>
+              <span className="text-2xl font-bold text-foreground mb-1">—</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Enseignants</span>
             </div>
             <div className="bg-card border border-border rounded-lg p-5 flex flex-col items-center justify-center text-center hover-lift">
               <BookOpen className="w-6 h-6 text-accent mb-2" />
-              <span className="text-2xl font-bold text-foreground mb-1">
-                {school.stats.classrooms}
-              </span>
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Salles
-              </span>
-            </div>
-            <div className="bg-card border border-border rounded-lg p-5 flex flex-col items-center justify-center text-center hover-lift">
-              <Activity className="w-6 h-6 text-emerald-500 mb-2" />
-              <span className="text-2xl font-bold text-foreground mb-1">
-                {school.stats.cycles.length}
-              </span>
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Cycles
-              </span>
+              <span className="text-2xl font-bold text-foreground mb-1">—</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Salles</span>
             </div>
           </div>
 
-          {/* Detailed Info Card */}
           <div className="bg-card border border-border rounded-lg p-6 hover-lift">
             <h2 className="text-lg font-semibold text-foreground mb-4 border-b border-border pb-2">
-              Informations Académiques
+              Informations
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
               <div>
-                <p className="text-sm text-muted-foreground mb-1">
-                  Inspection Régionale (IRE)
-                </p>
-                <p className="font-medium text-foreground">{school.ire}</p>
+                <p className="text-sm text-muted-foreground mb-1">Code</p>
+                <p className="font-medium text-foreground">{school.code}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">
-                  Direction Préfectorale (DPE/DCE)
-                </p>
-                <p className="font-medium text-foreground">{school.dpe}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">
-                  Directeur / Proviseur
-                </p>
-                <p className="font-medium text-foreground">
-                  {school.principal}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">
-                  Cycles d'enseignement
-                </p>
-                <div className="flex gap-2 flex-wrap">
-                  {school.stats.cycles.map((cycle) => (
-                    <span
-                      key={cycle}
-                      className="bg-muted text-foreground/80 px-2 py-0.5 rounded text-sm"
-                    >
-                      {cycle}
-                    </span>
-                  ))}
+              {regionAndCity && (
+                <>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Région</p>
+                    <p className="font-medium text-foreground flex items-center gap-1.5">
+                      <Globe className="w-4 h-4 text-muted-foreground" /> {regionAndCity.region}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Ville / Commune</p>
+                    <p className="font-medium text-foreground">{regionAndCity.city}</p>
+                  </div>
+                </>
+              )}
+              {school.website && (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Site web</p>
+                  <p className="font-medium text-foreground">{school.website}</p>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Right Column (Contact & Actions) */}
         <div className="space-y-6">
-          {/* Contact Card */}
           <div className="bg-card border border-border rounded-lg p-6 hover-lift">
             <h2 className="text-lg font-semibold text-foreground mb-4 border-b border-border pb-2">
               Coordonnées
             </h2>
             <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    Adresse complète
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {school.address}
-                  </p>
+              {school.address && (
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Adresse</p>
+                    <p className="text-sm text-muted-foreground">{school.address}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    Téléphone
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {school.phone}
-                  </p>
+              )}
+              {school.phone && (
+                <div className="flex items-start gap-3">
+                  <Phone className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Téléphone</p>
+                    <p className="text-sm text-muted-foreground">{school.phone}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    Email de contact
-                  </p>
-                  <a
-                    href={`mailto:${school.email}`}
-                    className="text-sm text-primary hover:underline"
-                  >
-                    {school.email}
-                  </a>
+              )}
+              {school.email && (
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Email</p>
+                    <a href={`mailto:${school.email}`} className="text-sm text-primary hover:underline">
+                      {school.email}
+                    </a>
+                  </div>
                 </div>
-              </div>
+              )}
+              {!school.address && !school.phone && !school.email && (
+                <p className="text-sm text-muted-foreground">Aucune coordonnée renseignée.</p>
+              )}
             </div>
           </div>
 
-          {/* Quick Actions */}
           <div className="bg-card border border-border rounded-lg p-6 hover-lift">
             <h2 className="text-lg font-semibold text-foreground mb-4 border-b border-border pb-2">
               Accès Rapide
             </h2>
             <div className="space-y-2">
-              <button className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group">
+              <button className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group cursor-not-allowed opacity-70">
                 <div className="flex items-center gap-3 text-foreground/80 group-hover:text-foreground">
                   <Users className="w-4 h-4" />
-                  <span className="text-sm font-medium">
-                    Gérer le personnel
-                  </span>
+                  <span className="text-sm font-medium">Gérer le personnel</span>
                 </div>
               </button>
-              <button className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group">
+              <button className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group cursor-not-allowed opacity-70">
                 <div className="flex items-center gap-3 text-foreground/80 group-hover:text-foreground">
                   <GraduationCap className="w-4 h-4" />
                   <span className="text-sm font-medium">Gérer les élèves</span>
                 </div>
               </button>
-              <button className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group">
+              <button className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors group cursor-not-allowed opacity-70">
                 <div className="flex items-center gap-3 text-foreground/80 group-hover:text-foreground">
                   <BookOpen className="w-4 h-4" />
-                  <span className="text-sm font-medium">
-                    Programmes académiques
-                  </span>
+                  <span className="text-sm font-medium">Programmes académiques</span>
                 </div>
               </button>
             </div>
           </div>
         </div>
       </div>
+
+      {editing && (
+        <CreateEditSchoolModal
+          school={editing}
+          isSubmitting={updateMutation.isPending}
+          onClose={() => setEditing(null)}
+          onSubmit={(data) =>
+            updateMutation.mutate(data as { id: string; data: Partial<School> })
+          }
+        />
+      )}
+
+      {deleteConfirm && (
+        <DeleteSchoolConfirm
+          school={deleteConfirm}
+          isSubmitting={deleteMutation.isPending}
+          onClose={() => setDeleteConfirm(null)}
+          onConfirm={() => deleteMutation.mutate(deleteConfirm.id)}
+        />
+      )}
     </div>
   )
 }

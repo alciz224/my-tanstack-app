@@ -8,21 +8,90 @@ import {
   Loader2,
   Plus,
   Search,
+  Trash2,
+  X,
 } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
+import { useState } from 'react'
 import { getSubjectsFn } from '@/server/api/academic'
+import {
+  createSubjectFn,
+  updateSubjectFn,
+  deleteSubjectFn,
+} from '@/server/api/academic-mutations-extra'
+import { academicKeys } from '@/lib/query-client'
+import { toast } from '@/stores/toastStore'
+import type { Subject } from '@/server/data/academic/types'
 
 export const Route = createFileRoute('/_authed/super-admin/subjects')({
   component: SubjectsPage,
 })
 
 function SubjectsPage() {
+  const queryClient = useQueryClient()
   const getSubjects = useServerFn(getSubjectsFn)
+  const createSubject = useServerFn(createSubjectFn)
+  const updateSubject = useServerFn(updateSubjectFn)
+  const deleteSubject = useServerFn(deleteSubjectFn)
+
+  const [createOpen, setCreateOpen] = useState(false)
+  const [editing, setEditing] = useState<Subject | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<Subject | null>(null)
 
   const { data: subjects, isLoading } = useQuery({
-    queryKey: ['academic', 'subjects', 'list'],
+    queryKey: academicKeys.subjectsList(),
     queryFn: () => getSubjects(),
+  })
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: academicKeys.subjects() })
+
+  const createMut = useMutation({
+    mutationFn: async (data: Omit<Subject, 'id'>) => {
+      const r = await createSubject({ data })
+      invalidate()
+      return r
+    },
+    onSuccess: () => {
+      toast.success('Matière créée avec succès')
+      setCreateOpen(false)
+    },
+    onError: (e: any) => toast.error(e.message),
+  })
+
+  const updateMut = useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string
+      data: Partial<Subject>
+    }) => {
+      const r = await updateSubject({ data: { id, data } })
+      invalidate()
+      return r
+    },
+    onSuccess: () => {
+      toast.success('Matière modifiée avec succès')
+      setEditing(null)
+    },
+    onError: (e: any) => toast.error(e.message),
+  })
+
+  const deleteMut = useMutation({
+    mutationFn: async (id: string) => {
+      await deleteSubject({ data: { id } })
+      invalidate()
+    },
+    onSuccess: () => {
+      toast.success('Matière supprimée avec succès')
+      setDeleteConfirm(null)
+    },
+    onError: (e: any) => {
+      toast.error(e.message)
+      setDeleteConfirm(null)
+    },
   })
 
   return (
@@ -37,7 +106,10 @@ function SubjectsPage() {
             affectations.
           </p>
         </div>
-        <button className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium transition-colors hover:bg-primary/90 btn-shine hover-scale">
+        <button
+          onClick={() => setCreateOpen(true)}
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium transition-colors hover:bg-primary/90 btn-shine hover-scale"
+        >
           <Plus className="w-5 h-5" />
           <span>Nouvelle Matière</span>
         </button>
@@ -140,13 +212,228 @@ function SubjectsPage() {
               </div>
             </div>
 
-            <div className="border-t border-border pt-4 mt-4 flex justify-end">
-              <button className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors hover-scale">
+            <div className="border-t border-border pt-4 mt-4 flex justify-end gap-3">
+              <button
+                onClick={() => setDeleteConfirm(sub)}
+                className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors hover-scale"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setEditing(sub)}
+                className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors hover-scale"
+              >
                 <Edit className="w-4 h-4" />
               </button>
             </div>
           </div>
         ))}
+      </div>
+
+      {createOpen && (
+        <SubjectModal
+          isSubmitting={createMut.isPending}
+          onClose={() => setCreateOpen(false)}
+          onSubmit={(data) => createMut.mutate(data)}
+        />
+      )}
+      {editing && (
+        <SubjectModal
+          initial={editing}
+          isSubmitting={updateMut.isPending}
+          onClose={() => setEditing(null)}
+          onSubmit={(data) =>
+            updateMut.mutate({ id: editing.id, data })
+          }
+        />
+      )}
+      {deleteConfirm && (
+        <ConfirmDelete
+          subject={deleteConfirm}
+          isSubmitting={deleteMut.isPending}
+          onClose={() => setDeleteConfirm(null)}
+          onConfirm={() => deleteMut.mutate(deleteConfirm.id)}
+        />
+      )}
+    </div>
+  )
+}
+
+function SubjectModal({
+  initial,
+  isSubmitting,
+  onClose,
+  onSubmit,
+}: {
+  initial?: Subject
+  isSubmitting: boolean
+  onClose: () => void
+  onSubmit: (data: any) => void
+}) {
+  const isEdit = !!initial
+  const [code, setCode] = useState(initial?.code || '')
+  const [name, setName] = useState(initial?.name || '')
+  const [description, setDescription] = useState(initial?.description || '')
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (isEdit) {
+      const payload: Partial<Subject> = {}
+      if (code !== initial!.code) payload.code = code
+      if (name !== initial!.name) payload.name = name
+      if (description !== (initial!.description ?? ''))
+        payload.description = description || undefined
+      onSubmit(payload)
+    } else {
+      onSubmit({
+        code,
+        name,
+        description: description || undefined,
+      })
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="w-full max-w-md rounded-xl border border-border bg-card shadow-xl">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+          <h2 className="text-base font-semibold text-foreground">
+            {isEdit ? 'Modifier la Matière' : 'Nouvelle Matière'}
+          </h2>
+          <button
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} noValidate className="px-6 pb-6 pt-5 space-y-4">
+          <Field label="Code">
+            <input
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              required
+            />
+          </Field>
+          <Field label="Nom">
+            <input
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </Field>
+          <Field label="Description">
+            <textarea
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring min-h-[80px] resize-y"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+            />
+          </Field>
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="rounded-lg border border-input bg-background px-4 py-2 text-sm text-foreground hover:bg-muted disabled:opacity-50"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            >
+              {isSubmitting
+                ? 'En cours...'
+                : isEdit
+                  ? 'Modifier'
+                  : 'Créer'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function Field({
+  label,
+  children,
+}: {
+  label: string
+  children: React.ReactNode
+}) {
+  return (
+    <div>
+      <label className="mb-1 block text-xs font-medium text-foreground">
+        {label}
+      </label>
+      {children}
+    </div>
+  )
+}
+
+function ConfirmDelete({
+  subject,
+  isSubmitting,
+  onClose,
+  onConfirm,
+}: {
+  subject: Subject
+  isSubmitting: boolean
+  onClose: () => void
+  onConfirm: () => void
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="w-full max-w-sm rounded-xl border border-border bg-card shadow-xl p-6">
+        <div className="mb-4 flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-lg">
+            <Trash2 className="w-5 h-5 text-destructive" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">
+              Supprimer cette matière ?
+            </h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              <span className="font-medium text-foreground">
+                {subject.code} — {subject.name}
+              </span>{' '}
+              sera définitivement supprimée.
+              <span className="block mt-1 font-medium text-destructive">
+                Cette action est irréversible.
+              </span>
+            </p>
+          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="rounded-lg border border-input bg-background px-4 py-2 text-sm text-foreground hover:bg-muted disabled:opacity-50"
+          >
+            Annuler
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isSubmitting}
+            className="rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-white hover:bg-destructive/90 disabled:opacity-50"
+          >
+            {isSubmitting ? 'Suppression...' : 'Supprimer'}
+          </button>
+        </div>
       </div>
     </div>
   )

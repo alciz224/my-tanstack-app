@@ -1,12 +1,14 @@
 import { createServerFn } from '@tanstack/react-start'
 import type {
   Classroom,
+  CreateSchoolInput,
   School,
   SchoolYear,
   SchoolYearCycle,
   SchoolYearLevel,
   SchoolYearLevelSubject,
 } from '@/server/data/schools/types'
+
 export const getSchoolsFn = createServerFn({ method: 'GET' }).handler(
   async (): Promise<Array<School>> => {
     const { getSchoolsService } = await import('@/server/data/schools/factory')
@@ -117,3 +119,24 @@ export const createClassroomFn = createServerFn({ method: 'POST' })
       })
     },
   )
+
+export const createSchoolFn = createServerFn({ method: 'POST' })
+  .inputValidator((d: unknown) => d as CreateSchoolInput)
+  .handler(async ({ data }) => {
+    const { getSchoolsService } = await import('@/server/data/schools/factory')
+    return getSchoolsService().createSchool(data)
+  })
+
+export const updateSchoolFn = createServerFn({ method: 'POST' })
+  .inputValidator((d: unknown) => d as { id: string; data: Partial<School> })
+  .handler(async ({ data }) => {
+    const { getSchoolsService } = await import('@/server/data/schools/factory')
+    return getSchoolsService().updateSchool(data.id, data.data)
+  })
+
+export const deleteSchoolFn = createServerFn({ method: 'POST' })
+  .inputValidator((d: unknown) => d as { id: string })
+  .handler(async ({ data }) => {
+    const { getSchoolsService } = await import('@/server/data/schools/factory')
+    return getSchoolsService().deleteSchool(data.id)
+  })
