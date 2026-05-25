@@ -9,7 +9,7 @@ import {
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { UserRole } from '@/types/roles'
-import { selectRoleFn } from '@/server/auth'
+import { selectRoleFn } from '@/lib/auth-client'
 import { toast } from '@/stores/toastStore'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { PORTAL_LABELS, PORTAL_ROUTES, isValidRole } from '@/types/roles'

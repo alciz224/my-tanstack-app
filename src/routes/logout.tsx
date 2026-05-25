@@ -1,7 +1,7 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import * as React from 'react'
 import { emitAuthEvent } from '@/auth/authEvents'
-import { logoutFn } from '@/server/auth'
+import { logoutFn } from '@/lib/auth-client'
 import { toast } from '@/stores/toastStore'
 import { useTranslation } from '@/lib/i18n'
 

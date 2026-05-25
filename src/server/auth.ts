@@ -1,26 +1,21 @@
 /**
- * Authentication Module
+ * Authentication Module — Server-Only
  *
- * This module handles all authentication operations for the GuiSchool application.
- * It contains both SERVER FUNCTIONS (SSR) and CLIENT FUNCTIONS (browser-only).
+ * Contains:
+ *   getCurrentUserFn — server function for SSR auth checks
+ *   localLoginFn etc. — server functions for LOCAL mode (in-memory session)
+ *   Types (User, LoginInput, AuthResult, etc.)
  *
- * CRITICAL DISTINCTION:
- * - Server functions (createServerFn): Run on the server during SSR, forward cookies
- * - Client functions (async function): Run in the browser, manage session cookies
- *
- * WHY THIS MATTERS:
- * - Login/logout MUST run in browser to set/clear httpOnly cookies (API mode)
- * - User fetching MUST run on server (SSR) to forward cookies to Django (API mode)
- * - In LOCAL mode, ALL operations go through server functions so they share
- *   in-memory session state on the server process
+ * Client-side auth functions (login, register, selectRole, logout) are in
+ * src/lib/auth-client.ts to avoid TanStack Start's server-module RPC boundary.
+ * They import local*Fn from here only for local data mode.
  *
  * ADAPTER PATTERN:
- * All auth operations now go through the auth data adapter (local or API),
- * following the same pattern as geography, academic, and users.
+ * All auth operations go through the auth data adapter (local or API).
  * When VITE_LOCAL_DATA=true, the local adapter provides a fully mocked auth
  * flow with in-memory session state.
  *
- * @see docs/ARCHITECTURE.md for detailed explanation
+ * @see src/lib/auth-client.ts for browser-side login/register/logout
  */
 
 import { createServerFn } from '@tanstack/react-start'
@@ -155,102 +150,29 @@ export const getCurrentUserFn = createServerFn({ method: 'GET' }).handler(
 // is needed for proper httpOnly cookie handling.
 // ============================================================================
 
-const _localLoginFn = createServerFn({ method: 'POST' })
+export const localLoginFn = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) => d as LoginInput)
   .handler(async ({ data }) => {
     const authService = getAuthService()
     return authService.login(data)
   })
 
-const _localRegisterFn = createServerFn({ method: 'POST' })
+export const localRegisterFn = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) => d as RegisterInput)
   .handler(async ({ data }) => {
     const authService = getAuthService()
     return authService.register(data)
   })
 
-const _localSelectRoleFn = createServerFn({ method: 'POST' })
+export const localSelectRoleFn = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) => d as SelectRoleInput)
   .handler(async ({ data }) => {
     const authService = getAuthService()
     return authService.selectRole(data)
   })
 
-const _localLogoutFn = createServerFn({ method: 'POST' }).handler(async () => {
+export const localLogoutFn = createServerFn({ method: 'POST' }).handler(async () => {
   const authService = getAuthService()
   return authService.logout()
 })
 
-// ============================================================================
-// Exported client functions
-// ============================================================================
-// These are the public API. Each one checks isLocalDataMode():
-//   - LOCAL mode  → calls the server function (shared in-memory state)
-//   - API mode    → does browser-side fetch (httpOnly cookie flow)
-// ============================================================================
-
-/**
- * Client-side login function
- *
- * In LOCAL mode: delegates to server function so session state is shared.
- * In API mode: runs in browser for proper httpOnly cookie handling.
- *
- * @param data - Login credentials
- * @returns AuthResult with user data on success, or detailed error information
- */
-export async function loginFn(data: LoginInput): Promise<AuthResult> {
-  if (isLocalDataMode()) {
-    return _localLoginFn({ data })
-  }
-
-  // ── API mode: browser-side fetch ─────────────────────────────────
-  const authService = getAuthService()
-  return authService.login(data)
-}
-
-/**
- * Client-side registration function
- *
- * @param data - Registration information
- * @returns AuthResult with user data on success, or detailed error information
- */
-export async function registerFn(data: RegisterInput): Promise<AuthResult> {
-  if (isLocalDataMode()) {
-    return _localRegisterFn({ data })
-  }
-
-  const authService = getAuthService()
-  return authService.register(data)
-}
-
-/**
- * Client-side role selection function
- *
- * @param data - Role selection data
- * @returns SelectRoleResult with updated user data on success
- */
-export async function selectRoleFn(
-  data: SelectRoleInput,
-): Promise<SelectRoleResult> {
-  if (isLocalDataMode()) {
-    return _localSelectRoleFn({ data })
-  }
-
-  const authService = getAuthService()
-  return authService.selectRole(data)
-}
-
-/**
- * Logout function - clears session cookies (API) or in-memory state (local)
- */
-export async function logoutFn(): Promise<{
-  success: boolean
-  error?: string
-}> {
-  if (isLocalDataMode()) {
-    return _localLogoutFn()
-  }
-
-  const authService = getAuthService()
-  return authService.logout()
-}
