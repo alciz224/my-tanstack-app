@@ -3,10 +3,7 @@ import { ApiSchoolYearAdapter } from './api.adapter'
 import type { SchoolYearDataAdapter } from './types'
 
 export function getSchoolYearService(): SchoolYearDataAdapter {
-  if (
-    process.env.VITE_LOCAL_DATA === 'true' ||
-    process.env.NODE_ENV !== 'production'
-  ) {
+  if (import.meta.env.VITE_LOCAL_DATA === 'true') {
     return new LocalSchoolYearAdapter()
   }
   return new ApiSchoolYearAdapter()

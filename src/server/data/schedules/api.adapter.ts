@@ -34,6 +34,9 @@ export class ApiSchedulesAdapter implements SchedulesDataAdapter {
     if (response.status === 204) return {} as T
 
     const json = await response.json()
+    if (json && typeof json === 'object' && 'success' in json && 'data' in json) {
+      return json.data as T
+    }
     return (Array.isArray(json) ? json : (json.results ?? json)) as T
   }
 

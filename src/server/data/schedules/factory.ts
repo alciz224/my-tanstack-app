@@ -3,10 +3,7 @@ import { ApiSchedulesAdapter } from './api.adapter'
 import type { SchedulesDataAdapter } from './types'
 
 export function getSchedulesService(): SchedulesDataAdapter {
-  if (
-    process.env.VITE_LOCAL_DATA === 'true' ||
-    process.env.NODE_ENV !== 'production'
-  ) {
+  if (import.meta.env.VITE_LOCAL_DATA === 'true') {
     return new LocalSchedulesAdapter()
   }
   return new ApiSchedulesAdapter()

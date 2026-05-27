@@ -1,9 +1,9 @@
 import { getCookies } from '@tanstack/react-start/server'
 import type {
-  City,
+  AdministrativeUnit,
   Country,
-  District,
   GeographyDataAdapter,
+  Locality,
   RegionAdministrative,
 } from './types'
 
@@ -26,13 +26,16 @@ export class ApiGeographyAdapter implements GeographyDataAdapter {
     })
     if (!response.ok) throw new Error(`API Error: ${response.status} on ${endpoint}`)
     const json = await response.json()
+    if (json && typeof json === 'object' && 'success' in json && 'data' in json) {
+      return json.data as T
+    }
     return (Array.isArray(json) ? json : (json.results ?? json)) as T
   }
 
   async getCountries() { return this.fetchApi<Array<Country>>('/countries/') }
   async getRegions() { return this.fetchApi<Array<RegionAdministrative>>('/regions/') }
-  async getCities() { return this.fetchApi<Array<City>>('/cities/') }
-  async getDistricts() { return this.fetchApi<Array<District>>('/districts/') }
+  async getAdministrativeUnits() { return this.fetchApi<Array<AdministrativeUnit>>('/administrative-units/') }
+  async getLocalities() { return this.fetchApi<Array<Locality>>('/localities/') }
 
   async createCountry(data: Omit<Country, 'id'>) {
     return this.fetchApi<Country>('/countries/', { method: 'POST', body: JSON.stringify(data) })
@@ -52,22 +55,22 @@ export class ApiGeographyAdapter implements GeographyDataAdapter {
   async deleteRegion(id: string) {
     await this.fetchApi<void>(`/regions/${id}/`, { method: 'DELETE' })
   }
-  async createCity(data: Omit<City, 'id'>) {
-    return this.fetchApi<City>('/cities/', { method: 'POST', body: JSON.stringify(data) })
+  async createAdministrativeUnit(data: Omit<AdministrativeUnit, 'id'>) {
+    return this.fetchApi<AdministrativeUnit>('/administrative-units/', { method: 'POST', body: JSON.stringify(data) })
   }
-  async updateCity(id: string, data: Partial<City>) {
-    return this.fetchApi<City>(`/cities/${id}/`, { method: 'PATCH', body: JSON.stringify(data) })
+  async updateAdministrativeUnit(id: string, data: Partial<AdministrativeUnit>) {
+    return this.fetchApi<AdministrativeUnit>(`/administrative-units/${id}/`, { method: 'PATCH', body: JSON.stringify(data) })
   }
-  async deleteCity(id: string) {
-    await this.fetchApi<void>(`/cities/${id}/`, { method: 'DELETE' })
+  async deleteAdministrativeUnit(id: string) {
+    await this.fetchApi<void>(`/administrative-units/${id}/`, { method: 'DELETE' })
   }
-  async createDistrict(data: Omit<District, 'id'>) {
-    return this.fetchApi<District>('/districts/', { method: 'POST', body: JSON.stringify(data) })
+  async createLocality(data: Omit<Locality, 'id'>) {
+    return this.fetchApi<Locality>('/localities/', { method: 'POST', body: JSON.stringify(data) })
   }
-  async updateDistrict(id: string, data: Partial<District>) {
-    return this.fetchApi<District>(`/districts/${id}/`, { method: 'PATCH', body: JSON.stringify(data) })
+  async updateLocality(id: string, data: Partial<Locality>) {
+    return this.fetchApi<Locality>(`/localities/${id}/`, { method: 'PATCH', body: JSON.stringify(data) })
   }
-  async deleteDistrict(id: string) {
-    await this.fetchApi<void>(`/districts/${id}/`, { method: 'DELETE' })
+  async deleteLocality(id: string) {
+    await this.fetchApi<void>(`/localities/${id}/`, { method: 'DELETE' })
   }
 }

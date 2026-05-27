@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
-import type { City, Country, District, RegionAdministrative } from '@/server/data/geography/types'
+import type { AdministrativeUnit, Country, Locality, RegionAdministrative } from '@/server/data/geography/types'
 
 export const createCountryFn = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) => d as Omit<Country, 'id'>)
@@ -37,38 +37,38 @@ export const deleteRegionFn = createServerFn({ method: 'POST' })
     return (await import('@/server/data/geography/factory')).getGeographyService().deleteRegion(data.id)
   })
 
-export const createCityFn = createServerFn({ method: 'POST' })
-  .inputValidator((d: unknown) => d as Omit<City, 'id'>)
+export const createAdministrativeUnitFn = createServerFn({ method: 'POST' })
+  .inputValidator((d: unknown) => d as Omit<AdministrativeUnit, 'id'>)
   .handler(async ({ data }) => {
-    return (await import('@/server/data/geography/factory')).getGeographyService().createCity(data)
+    return (await import('@/server/data/geography/factory')).getGeographyService().createAdministrativeUnit(data)
   })
 
-export const updateCityFn = createServerFn({ method: 'POST' })
-  .inputValidator((d: unknown) => d as { id: string; data: Partial<City> })
+export const updateAdministrativeUnitFn = createServerFn({ method: 'POST' })
+  .inputValidator((d: unknown) => d as { id: string; data: Partial<AdministrativeUnit> })
   .handler(async ({ data }) => {
-    return (await import('@/server/data/geography/factory')).getGeographyService().updateCity(data.id, data.data)
+    return (await import('@/server/data/geography/factory')).getGeographyService().updateAdministrativeUnit(data.id, data.data)
   })
 
-export const deleteCityFn = createServerFn({ method: 'POST' })
+export const deleteAdministrativeUnitFn = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) => d as { id: string })
   .handler(async ({ data }) => {
-    return (await import('@/server/data/geography/factory')).getGeographyService().deleteCity(data.id)
+    return (await import('@/server/data/geography/factory')).getGeographyService().deleteAdministrativeUnit(data.id)
   })
 
-export const createDistrictFn = createServerFn({ method: 'POST' })
-  .inputValidator((d: unknown) => d as Omit<District, 'id'>)
+export const createLocalityFn = createServerFn({ method: 'POST' })
+  .inputValidator((d: unknown) => d as Omit<Locality, 'id'>)
   .handler(async ({ data }) => {
-    return (await import('@/server/data/geography/factory')).getGeographyService().createDistrict(data)
+    return (await import('@/server/data/geography/factory')).getGeographyService().createLocality(data)
   })
 
-export const updateDistrictFn = createServerFn({ method: 'POST' })
-  .inputValidator((d: unknown) => d as { id: string; data: Partial<District> })
+export const updateLocalityFn = createServerFn({ method: 'POST' })
+  .inputValidator((d: unknown) => d as { id: string; data: Partial<Locality> })
   .handler(async ({ data }) => {
-    return (await import('@/server/data/geography/factory')).getGeographyService().updateDistrict(data.id, data.data)
+    return (await import('@/server/data/geography/factory')).getGeographyService().updateLocality(data.id, data.data)
   })
 
-export const deleteDistrictFn = createServerFn({ method: 'POST' })
+export const deleteLocalityFn = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) => d as { id: string })
   .handler(async ({ data }) => {
-    return (await import('@/server/data/geography/factory')).getGeographyService().deleteDistrict(data.id)
+    return (await import('@/server/data/geography/factory')).getGeographyService().deleteLocality(data.id)
   })

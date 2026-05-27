@@ -3,10 +3,7 @@ import { ApiUsersAdapter } from './api.adapter'
 import type { UsersDataAdapter } from './types'
 
 export function getUsersService(): UsersDataAdapter {
-  if (
-    process.env.VITE_LOCAL_DATA === 'true' ||
-    process.env.NODE_ENV !== 'production'
-  ) {
+  if (import.meta.env.VITE_LOCAL_DATA === 'true') {
     return new LocalUsersAdapter()
   }
   return new ApiUsersAdapter()

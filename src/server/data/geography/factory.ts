@@ -3,11 +3,7 @@ import { ApiGeographyAdapter } from './api.adapter'
 import type { GeographyDataAdapter } from './types'
 
 export function getGeographyService(): GeographyDataAdapter {
-  // Use local mock data by default for now if LOCAL_DATA is true, otherwise use API
-  if (
-    process.env.VITE_LOCAL_DATA === 'true' ||
-    process.env.NODE_ENV !== 'production'
-  ) {
+  if (import.meta.env.VITE_LOCAL_DATA === 'true') {
     return new LocalGeographyAdapter()
   }
   return new ApiGeographyAdapter()

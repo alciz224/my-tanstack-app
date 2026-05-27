@@ -1,17 +1,17 @@
-import { mockCities, mockCountries, mockDistricts, mockRegions } from './mocks'
+import { mockAdministrativeUnits, mockCountries, mockLocalities, mockRegions } from './mocks'
 import type {
-  City,
+  AdministrativeUnit,
   Country,
-  District,
   GeographyDataAdapter,
+  Locality,
   RegionAdministrative,
 } from './types'
 
 export class LocalGeographyAdapter implements GeographyDataAdapter {
   private countries = structuredClone(mockCountries)
   private regions = structuredClone(mockRegions)
-  private cities = structuredClone(mockCities)
-  private districts = structuredClone(mockDistricts)
+  private administrativeUnits = structuredClone(mockAdministrativeUnits)
+  private localities = structuredClone(mockLocalities)
 
   private async delay(ms = 200) {
     return new Promise((resolve) => setTimeout(resolve, ms))
@@ -27,14 +27,14 @@ export class LocalGeographyAdapter implements GeographyDataAdapter {
     return structuredClone(this.regions)
   }
 
-  async getCities() {
+  async getAdministrativeUnits() {
     await this.delay()
-    return structuredClone(this.cities)
+    return structuredClone(this.administrativeUnits)
   }
 
-  async getDistricts() {
+  async getLocalities() {
     await this.delay()
-    return structuredClone(this.districts)
+    return structuredClone(this.localities)
   }
 
   async createCountry(data: Omit<Country, 'id'>) {
@@ -83,58 +83,58 @@ export class LocalGeographyAdapter implements GeographyDataAdapter {
     await this.delay()
     const idx = this.regions.findIndex((r) => r.id === id)
     if (idx === -1) throw new Error('Region not found')
-    if (this.cities.some((c) => c.region_id === id)) {
-      throw new Error('Cannot delete region with existing cities')
+    if (this.administrativeUnits.some((au) => au.region_id === id)) {
+      throw new Error('Cannot delete region with existing administrative units')
     }
     this.regions.splice(idx, 1)
   }
 
-  async createCity(data: Omit<City, 'id'>) {
+  async createAdministrativeUnit(data: Omit<AdministrativeUnit, 'id'>) {
     await this.delay()
-    const id = `CIT-${data.code}`
-    const item: City = { id, ...data }
-    this.cities.push(item)
+    const id = `AU-${data.code}`
+    const item: AdministrativeUnit = { id, ...data }
+    this.administrativeUnits.push(item)
     return structuredClone(item)
   }
 
-  async updateCity(id: string, data: Partial<City>) {
+  async updateAdministrativeUnit(id: string, data: Partial<AdministrativeUnit>) {
     await this.delay()
-    const idx = this.cities.findIndex((c) => c.id === id)
-    if (idx === -1) throw new Error('City not found')
-    this.cities[idx] = { ...this.cities[idx], ...data }
-    return structuredClone(this.cities[idx])
+    const idx = this.administrativeUnits.findIndex((au) => au.id === id)
+    if (idx === -1) throw new Error('AdministrativeUnit not found')
+    this.administrativeUnits[idx] = { ...this.administrativeUnits[idx], ...data }
+    return structuredClone(this.administrativeUnits[idx])
   }
 
-  async deleteCity(id: string) {
+  async deleteAdministrativeUnit(id: string) {
     await this.delay()
-    const idx = this.cities.findIndex((c) => c.id === id)
-    if (idx === -1) throw new Error('City not found')
-    if (this.districts.some((d) => d.city_id === id)) {
-      throw new Error('Cannot delete city with existing districts')
+    const idx = this.administrativeUnits.findIndex((au) => au.id === id)
+    if (idx === -1) throw new Error('AdministrativeUnit not found')
+    if (this.localities.some((loc) => loc.administrative_unit_id === id)) {
+      throw new Error('Cannot delete administrative unit with existing localities')
     }
-    this.cities.splice(idx, 1)
+    this.administrativeUnits.splice(idx, 1)
   }
 
-  async createDistrict(data: Omit<District, 'id'>) {
+  async createLocality(data: Omit<Locality, 'id'>) {
     await this.delay()
-    const id = `DST-${data.code}`
-    const item: District = { id, ...data }
-    this.districts.push(item)
+    const id = `LOC-${data.code}`
+    const item: Locality = { id, ...data }
+    this.localities.push(item)
     return structuredClone(item)
   }
 
-  async updateDistrict(id: string, data: Partial<District>) {
+  async updateLocality(id: string, data: Partial<Locality>) {
     await this.delay()
-    const idx = this.districts.findIndex((d) => d.id === id)
-    if (idx === -1) throw new Error('District not found')
-    this.districts[idx] = { ...this.districts[idx], ...data }
-    return structuredClone(this.districts[idx])
+    const idx = this.localities.findIndex((loc) => loc.id === id)
+    if (idx === -1) throw new Error('Locality not found')
+    this.localities[idx] = { ...this.localities[idx], ...data }
+    return structuredClone(this.localities[idx])
   }
 
-  async deleteDistrict(id: string) {
+  async deleteLocality(id: string) {
     await this.delay()
-    const idx = this.districts.findIndex((d) => d.id === id)
-    if (idx === -1) throw new Error('District not found')
-    this.districts.splice(idx, 1)
+    const idx = this.localities.findIndex((loc) => loc.id === id)
+    if (idx === -1) throw new Error('Locality not found')
+    this.localities.splice(idx, 1)
   }
 }

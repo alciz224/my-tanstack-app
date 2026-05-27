@@ -22,8 +22,8 @@ import {
 } from '@/server/api/schools'
 import {
   getRegionsFn,
-  getCitiesFn,
-  getDistrictsFn,
+  getAdministrativeUnitsFn,
+  getLocalitiesFn,
 } from '@/server/api/geography'
 import { geographyKeys } from '@/lib/query-client'
 import { schoolOpsKeys } from '@/lib/query-client'
@@ -41,8 +41,8 @@ function SchoolsListPage() {
   const updateSchool = useServerFn(updateSchoolFn)
   const deleteSchool = useServerFn(deleteSchoolFn)
   const getRegions = useServerFn(getRegionsFn)
-  const getCities = useServerFn(getCitiesFn)
-  const getDistricts = useServerFn(getDistrictsFn)
+  const getAdministrativeUnits = useServerFn(getAdministrativeUnitsFn)
+  const getLocalities = useServerFn(getLocalitiesFn)
 
   const [createOpen, setCreateOpen] = useState(false)
   const [editing, setEditing] = useState<School | null>(null)
@@ -60,19 +60,19 @@ function SchoolsListPage() {
     queryFn: () => getRegions(),
   })
 
-  const { data: cities } = useQuery({
-    queryKey: geographyKeys.citiesList(),
-    queryFn: () => getCities(),
+  const { data: administrativeUnits } = useQuery({
+    queryKey: geographyKeys.administrativeUnitsList(),
+    queryFn: () => getAdministrativeUnits(),
   })
 
-  const { data: districts } = useQuery({
-    queryKey: geographyKeys.districtsList(),
-    queryFn: () => getDistricts(),
+  const { data: localities } = useQuery({
+    queryKey: geographyKeys.localitiesList(),
+    queryFn: () => getLocalities(),
   })
 
-  const cityToRegion = useMemo(
-    () => new Map((cities ?? []).map((c) => [c.id, c.region_id])),
-    [cities],
+  const auToRegion = useMemo(
+    () => new Map((administrativeUnits ?? []).map((au) => [au.id, au.region_id])),
+    [administrativeUnits],
   )
 
   const invalidate = () =>
@@ -124,30 +124,30 @@ function SchoolsListPage() {
     () => new Map((regions ?? []).map((r) => [r.id, r])),
     [regions],
   )
-  const districtMap = useMemo(
-    () => new Map((districts ?? []).map((d) => [d.id, d])),
-    [districts],
+  const localityMap = useMemo(
+    () => new Map((localities ?? []).map((loc) => [loc.id, loc])),
+    [localities],
   )
-  const cityMap = useMemo(
-    () => new Map((cities ?? []).map((c) => [c.id, c])),
-    [cities],
+  const auMap = useMemo(
+    () => new Map((administrativeUnits ?? []).map((au) => [au.id, au])),
+    [administrativeUnits],
   )
 
-  const districtToRegion = useMemo(() => {
+  const localityToRegion = useMemo(() => {
     const map = new Map<string, string>()
-    for (const d of districts ?? []) {
-      const regionId = cityToRegion.get(d.city_id)
-      if (regionId) map.set(d.id, regionId)
+    for (const loc of localities ?? []) {
+      const regionId = auToRegion.get(loc.administrative_unit_id)
+      if (regionId) map.set(loc.id, regionId)
     }
     return map
-  }, [districts, cityToRegion])
+  }, [localities, auToRegion])
 
   const filtered = (schools ?? []).filter((s) => {
     const matchSearch =
       !search ||
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.code.toLowerCase().includes(search.toLowerCase())
-    const schoolRegionId = districtToRegion.get(s.district_id)
+    const schoolRegionId = localityToRegion.get(s.locality_id)
     const matchRegion = !regionFilter || schoolRegionId === regionFilter
     return matchSearch && matchRegion
   })
@@ -214,9 +214,9 @@ function SchoolsListPage() {
           </div>
         )}
         {filtered.map((school) => {
-          const district = districtMap.get(school.district_id)
-          const city = district ? cityMap.get(district.city_id) : undefined
-          const region = city ? regionMap.get(city.region_id) : undefined
+          const locality = localityMap.get(school.locality_id)
+          const au = locality ? auMap.get(locality.administrative_unit_id) : undefined
+          const region = au ? regionMap.get(au.region_id) : undefined
           return (
             <div
               key={school.id}
@@ -242,7 +242,7 @@ function SchoolsListPage() {
                   {region && (
                     <div className="flex items-center text-sm text-foreground/80">
                       <Globe className="w-4 h-4 mr-2 text-muted-foreground" />
-                      <span>{region.name}{city ? ` — ${city.name}` : ''}{district ? ` — ${district.name}` : ''}</span>
+                      <span>{region.name}{au ? ` — ${au.name}` : ''}{locality ? ` — ${locality.name}` : ''}</span>
                     </div>
                   )}
                   {school.address && (
@@ -338,41 +338,41 @@ export function CreateEditSchoolModal({
 }) {
   const isEdit = !!school
   const getRegions = useServerFn(getRegionsFn)
-  const getCities = useServerFn(getCitiesFn)
-  const getDistricts = useServerFn(getDistrictsFn)
+  const getAdministrativeUnits = useServerFn(getAdministrativeUnitsFn)
+  const getLocalities = useServerFn(getLocalitiesFn)
 
   const { data: regions } = useQuery({
     queryKey: ['geography', 'regions'],
     queryFn: () => getRegions(),
   })
-  const { data: cities } = useQuery({
-    queryKey: ['geography', 'cities'],
-    queryFn: () => getCities(),
+  const { data: administrativeUnits } = useQuery({
+    queryKey: ['geography', 'administrative-units'],
+    queryFn: () => getAdministrativeUnits(),
   })
-  const { data: districts } = useQuery({
-    queryKey: ['geography', 'districts'],
-    queryFn: () => getDistricts(),
+  const { data: localities } = useQuery({
+    queryKey: ['geography', 'localities'],
+    queryFn: () => getLocalities(),
   })
 
   const [name, setName] = useState(school?.name ?? '')
   const [code, setCode] = useState(school?.code ?? '')
-  const [districtId, setDistrictId] = useState(school?.district_id ?? '')
+  const [localityId, setLocalityId] = useState(school?.locality_id ?? '')
   const [address, setAddress] = useState(school?.address ?? '')
   const [phone, setPhone] = useState(school?.phone ?? '')
   const [email, setEmail] = useState(school?.email ?? '')
   const [website, setWebsite] = useState(school?.website ?? '')
 
   const [regionId, setRegionId] = useState('')
-  const [cityId, setCityId] = useState('')
+  const [administrativeUnitId, setAdministrativeUnitId] = useState('')
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const filteredRegions = regions ?? []
-  const filteredCities = (cities ?? []).filter(
-    (c) => !regionId || c.region_id === regionId,
+  const filteredAdministrativeUnits = (administrativeUnits ?? []).filter(
+    (au) => !regionId || au.region_id === regionId,
   )
-  const filteredDistricts = (districts ?? []).filter(
-    (d) => !cityId || d.city_id === cityId,
+  const filteredLocalities = (localities ?? []).filter(
+    (loc) => !administrativeUnitId || loc.administrative_unit_id === administrativeUnitId,
   )
 
   const inputBase =
@@ -384,7 +384,7 @@ export function CreateEditSchoolModal({
     const e: Record<string, string> = {}
     if (!name.trim()) e.name = 'Le nom est requis'
     if (!code.trim()) e.code = 'Le code est requis'
-    if (!districtId) e.district_id = 'Veuillez sélectionner un district/quartier'
+    if (!localityId) e.locality_id = 'Veuillez sélectionner une localité'
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = 'Email invalide'
     if (phone && !/^[\d\s\+\(\)-]+$/.test(phone)) e.phone = 'Numéro de téléphone invalide'
     setErrors(e)
@@ -398,7 +398,7 @@ export function CreateEditSchoolModal({
       const payload: Record<string, any> = {}
       if (name !== school.name) payload.name = name.trim()
       if (code !== school.code) payload.code = code.trim()
-      if (districtId !== school.district_id) payload.district_id = districtId
+      if (localityId !== school.locality_id) payload.locality_id = localityId
       if (address !== (school.address ?? '')) payload.address = address || undefined
       if (phone !== (school.phone ?? '')) payload.phone = phone || undefined
       if (email !== (school.email ?? '')) payload.email = email || undefined
@@ -408,7 +408,7 @@ export function CreateEditSchoolModal({
       onSubmit({
         name: name.trim(),
         code: code.trim(),
-        district_id: districtId,
+        locality_id: localityId,
         address: address || undefined,
         phone: phone || undefined,
         email: email || undefined,
@@ -486,7 +486,7 @@ export function CreateEditSchoolModal({
                 <label className={labelClass}>Région (IRE)</label>
                 <select
                   value={regionId}
-                  onChange={(e) => { setRegionId(e.target.value); setCityId(''); setDistrictId('') }}
+                  onChange={(e) => { setRegionId(e.target.value); setAdministrativeUnitId(''); setLocalityId('') }}
                   className={inputBase}
                 >
                   <option value="">Sélectionnez une région</option>
@@ -497,34 +497,34 @@ export function CreateEditSchoolModal({
               </div>
 
               <div>
-                <label className={labelClass}>Ville / Commune</label>
+                <label className={labelClass}>Unité Administrative</label>
                 <select
-                  value={cityId}
-                  onChange={(e) => { setCityId(e.target.value); setDistrictId('') }}
+                  value={administrativeUnitId}
+                  onChange={(e) => { setAdministrativeUnitId(e.target.value); setLocalityId('') }}
                   className={inputBase}
                   disabled={!regionId}
                 >
-                  <option value="">Sélectionnez une ville/commune</option>
-                  {filteredCities.map((c) => (
-                    <option key={c.id} value={c.id}>{c.name} ({c.type === 'CAPITAL' ? 'Capitale' : c.type === 'COMMUNE' ? 'Commune' : 'Ville'})</option>
+                  <option value="">Sélectionnez une unité administrative</option>
+                  {filteredAdministrativeUnits.map((au) => (
+                    <option key={au.id} value={au.id}>{au.name} ({au.type === 'CAPITAL' ? 'Capitale' : au.type === 'COMMUNE' ? 'Commune' : 'Ville'})</option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className={labelClass}>District / Quartier *</label>
+                <label className={labelClass}>Localité *</label>
                 <select
-                  value={districtId}
-                  onChange={(e) => { setDistrictId(e.target.value); setErrors((err) => ({ ...err, district_id: '' })) }}
-                  className={`${inputBase} ${errors.district_id ? inputError : ''}`}
-                  disabled={!cityId}
+                  value={localityId}
+                  onChange={(e) => { setLocalityId(e.target.value); setErrors((err) => ({ ...err, locality_id: '' })) }}
+                  className={`${inputBase} ${errors.locality_id ? inputError : ''}`}
+                  disabled={!administrativeUnitId}
                 >
-                  <option value="">Sélectionnez un district/quartier</option>
-                  {filteredDistricts.map((d) => (
-                    <option key={d.id} value={d.id}>{d.name}</option>
+                  <option value="">Sélectionnez une localité</option>
+                  {filteredLocalities.map((loc) => (
+                    <option key={loc.id} value={loc.id}>{loc.name}</option>
                   ))}
                 </select>
-                {errors.district_id && <p className="mt-1 text-xs text-destructive">{errors.district_id}</p>}
+                {errors.locality_id && <p className="mt-1 text-xs text-destructive">{errors.locality_id}</p>}
               </div>
             </div>
           </div>

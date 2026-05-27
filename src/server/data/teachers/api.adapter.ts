@@ -35,6 +35,9 @@ export class ApiTeachersAdapter implements TeachersDataAdapter {
     }
 
     const json = await response.json()
+    if (json && typeof json === 'object' && 'success' in json && 'data' in json) {
+      return json.data as T
+    }
     return (Array.isArray(json) ? json : (json.results ?? json)) as T
   }
 

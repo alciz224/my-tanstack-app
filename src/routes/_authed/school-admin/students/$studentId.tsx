@@ -322,7 +322,7 @@ function StudentDetailPage() {
                       Lieu de naissance
                     </p>
                     <p className="font-medium">
-                      {student.birthplace_district_name ?? 'Non renseigné'}
+                      {student.birthplace_locality_name ?? 'Non renseigné'}
                     </p>
                   </div>
                   <div>

@@ -4,31 +4,31 @@ import { useServerFn } from '@tanstack/react-start'
 import { useState } from 'react'
 import { Edit, Globe, Loader2, Map, MapPin, Plus, Search, Trash2 } from 'lucide-react'
 import {
-  getCitiesFn, getCountriesFn, getDistrictsFn, getRegionsFn,
+  getAdministrativeUnitsFn, getCountriesFn, getLocalitiesFn, getRegionsFn,
 } from '@/server/api/geography'
 import {
   createCountryFn, updateCountryFn, deleteCountryFn,
   createRegionFn, updateRegionFn, deleteRegionFn,
-  createCityFn, updateCityFn, deleteCityFn,
-  createDistrictFn, updateDistrictFn, deleteDistrictFn,
+  createAdministrativeUnitFn, updateAdministrativeUnitFn, deleteAdministrativeUnitFn,
+  createLocalityFn, updateLocalityFn, deleteLocalityFn,
 } from '@/server/api/geography-mutations'
 import { geographyKeys } from '@/lib/query-client'
 import { toast } from '@/stores/toastStore'
-import type { City, Country, District, RegionAdministrative } from '@/server/data/geography/types'
+import type { AdministrativeUnit, RegionAdministrative } from '@/server/data/geography/types'
 
 export const Route = createFileRoute('/_authed/super-admin/geography')({
   component: GeographyPage,
 })
 
-type TabType = 'countries' | 'regions' | 'cities' | 'districts'
+type TabType = 'countries' | 'regions' | 'administrative-units' | 'localities'
 
 function GeographyPage() {
   const [activeTab, setActiveTab] = useState<TabType>('countries')
   const queryClient = useQueryClient()
   const getCountries = useServerFn(getCountriesFn)
   const getRegions = useServerFn(getRegionsFn)
-  const getCities = useServerFn(getCitiesFn)
-  const getDistricts = useServerFn(getDistrictsFn)
+  const getAdministrativeUnits = useServerFn(getAdministrativeUnitsFn)
+  const getLocalities = useServerFn(getLocalitiesFn)
 
   const { data: countries, isLoading: loadingCountries } = useQuery({
     queryKey: geographyKeys.countriesList(),
@@ -38,13 +38,13 @@ function GeographyPage() {
     queryKey: geographyKeys.regionsList(),
     queryFn: () => getRegions(),
   })
-  const { data: cities, isLoading: loadingCities } = useQuery({
-    queryKey: geographyKeys.citiesList(),
-    queryFn: () => getCities(),
+  const { data: administrativeUnits, isLoading: loadingAdministrativeUnits } = useQuery({
+    queryKey: geographyKeys.administrativeUnitsList(),
+    queryFn: () => getAdministrativeUnits(),
   })
-  const { data: districts, isLoading: loadingDistricts } = useQuery({
-    queryKey: geographyKeys.districtsList(),
-    queryFn: () => getDistricts(),
+  const { data: localities, isLoading: loadingLocalities } = useQuery({
+    queryKey: geographyKeys.localitiesList(),
+    queryFn: () => getLocalities(),
   })
 
   const [editing, setEditing] = useState<{ type: TabType; item: any } | null>(null)
@@ -58,16 +58,16 @@ function GeographyPage() {
     regions: {
       create: useServerFn(createRegionFn), update: useServerFn(updateRegionFn), delete: useServerFn(deleteRegionFn),
     },
-    cities: {
-      create: useServerFn(createCityFn), update: useServerFn(updateCityFn), delete: useServerFn(deleteCityFn),
+    'administrative-units': {
+      create: useServerFn(createAdministrativeUnitFn), update: useServerFn(updateAdministrativeUnitFn), delete: useServerFn(deleteAdministrativeUnitFn),
     },
-    districts: {
-      create: useServerFn(createDistrictFn), update: useServerFn(updateDistrictFn), delete: useServerFn(deleteDistrictFn),
+    localities: {
+      create: useServerFn(createLocalityFn), update: useServerFn(updateLocalityFn), delete: useServerFn(deleteLocalityFn),
     },
   }
 
   const currentCrud = crud[activeTab]
-  const keyMap = { countries: geographyKeys.countries(), regions: geographyKeys.regions(), cities: geographyKeys.cities(), districts: geographyKeys.districts() }
+  const keyMap = { countries: geographyKeys.countries(), regions: geographyKeys.regions(), 'administrative-units': geographyKeys.administrativeUnits(), localities: geographyKeys.localities() }
   const invalidate = () => queryClient.invalidateQueries({ queryKey: keyMap[activeTab] })
 
   const createMut = useMutation({
@@ -91,7 +91,7 @@ function GeographyPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Découpage Administratif</h1>
-          <p className="text-muted-foreground mt-1">Hiérarchie: Pays → Région → Ville → District/Quartier</p>
+          <p className="text-muted-foreground mt-1">Hiérarchie: Pays → Région → Unité Administrative → Localité</p>
         </div>
         <button onClick={() => setIsCreateOpen(true)} className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium transition-colors hover:bg-primary/90 btn-shine hover-scale">
           <Plus className="w-5 h-5" /> <span>Nouveau</span>
@@ -99,16 +99,16 @@ function GeographyPage() {
       </div>
 
       <div className="flex w-fit bg-muted p-1 rounded-lg">
-        {(['countries', 'regions', 'cities', 'districts'] as const).map((tab) => (
+        {(['countries', 'regions', 'administrative-units', 'localities'] as const).map((tab) => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === tab ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
           >
             {tab === 'countries' && <Globe className="w-4 h-4" />}
             {tab === 'regions' && <Globe className="w-4 h-4" />}
-            {tab === 'cities' && <Map className="w-4 h-4" />}
-            {tab === 'districts' && <MapPin className="w-4 h-4" />}
+            {tab === 'administrative-units' && <Map className="w-4 h-4" />}
+            {tab === 'localities' && <MapPin className="w-4 h-4" />}
             {tab === 'countries' && 'Pays'} {tab === 'regions' && 'Régions'}
-            {tab === 'cities' && 'Villes / Communes'} {tab === 'districts' && 'Districts / Quartiers'}
+            {tab === 'administrative-units' && 'Unités Administratives'} {tab === 'localities' && 'Localités'}
           </button>
         ))}
       </div>
@@ -143,26 +143,26 @@ function GeographyPage() {
                 onDelete={() => setDeleteConfirm({ type: 'regions', id: r.id })}
               />
             )))}
-            {activeTab === 'cities' && (loadingCities ? <SkeletonRow /> : !cities?.length ? <EmptyRow /> : cities.map((c) => {
-              const region = regions?.find((r) => r.id === c.region_id)
+            {activeTab === 'administrative-units' && (loadingAdministrativeUnits ? <SkeletonRow /> : !administrativeUnits?.length ? <EmptyRow /> : administrativeUnits.map((au) => {
+              const region = regions?.find((r) => r.id === au.region_id)
               return (
-                <Row key={c.id} code={c.code} name={c.name}
-                  meta={region ? `${region.name} — ${c.type === 'CAPITAL' ? 'Capitale' : c.type === 'COMMUNE' ? 'Commune' : 'Ville'}` : c.type}
+                <Row key={au.id} code={au.code} name={au.name}
+                  meta={region ? `${region.name} — ${au.type === 'CAPITAL' ? 'Capitale' : au.type === 'COMMUNE' ? 'Commune' : 'Ville'}` : au.type}
                   icon={<Map className="w-4 h-4" />}
-                  onEdit={() => setEditing({ type: 'cities', item: c })}
-                  onDelete={() => setDeleteConfirm({ type: 'cities', id: c.id })}
+                  onEdit={() => setEditing({ type: 'administrative-units', item: au })}
+                  onDelete={() => setDeleteConfirm({ type: 'administrative-units', id: au.id })}
                 />
               )
             }))}
-            {activeTab === 'districts' && (loadingDistricts ? <SkeletonRow /> : !districts?.length ? <EmptyRow /> : districts.map((d) => {
-              const city = cities?.find((c) => c.id === d.city_id)
-              const region = city ? regions?.find((r) => r.id === city.region_id) : undefined
+            {activeTab === 'localities' && (loadingLocalities ? <SkeletonRow /> : !localities?.length ? <EmptyRow /> : localities.map((loc) => {
+              const au = administrativeUnits?.find((au) => au.id === loc.administrative_unit_id)
+              const region = au ? regions?.find((r) => r.id === au.region_id) : undefined
               return (
-                <Row key={d.id} code={d.code} name={d.name}
-                  meta={[region?.name, city?.name].filter(Boolean).join(' — ') || `${d.type === 'QUARTIER' ? 'Quartier' : 'District'}`}
+                <Row key={loc.id} code={loc.code} name={loc.name}
+                  meta={[region?.name, au?.name].filter(Boolean).join(' — ') || `${loc.type === 'QUARTIER' ? 'Quartier' : 'District'}`}
                   icon={<MapPin className="w-4 h-4" />}
-                  onEdit={() => setEditing({ type: 'districts', item: d })}
-                  onDelete={() => setDeleteConfirm({ type: 'districts', id: d.id })}
+                  onEdit={() => setEditing({ type: 'localities', item: loc })}
+                  onDelete={() => setDeleteConfirm({ type: 'localities', id: loc.id })}
                 />
               )
             }))}
@@ -171,14 +171,14 @@ function GeographyPage() {
       </div>
 
       {isCreateOpen && (
-        <EntityModal type={activeTab} regions={regions} cities={cities}
+        <EntityModal type={activeTab} regions={regions} administrativeUnits={administrativeUnits}
           isSubmitting={createMut.isPending}
           onClose={() => setIsCreateOpen(false)}
           onSubmit={(data) => createMut.mutate(data)}
         />
       )}
       {editing && (
-        <EntityModal type={editing.type} regions={regions} cities={cities}
+        <EntityModal type={editing.type} regions={regions} administrativeUnits={administrativeUnits}
           initial={editing.item} isSubmitting={updateMut.isPending}
           onClose={() => setEditing(null)}
           onSubmit={(data) => updateMut.mutate({ id: editing.item.id, data })}
@@ -227,8 +227,8 @@ function EmptyRow() {
   )
 }
 
-function EntityModal({ type: entityType, regions, cities, initial, isSubmitting, onClose, onSubmit }: {
-  type: TabType; regions?: RegionAdministrative[]; cities?: City[];
+function EntityModal({ type: entityType, regions, administrativeUnits, initial, isSubmitting, onClose, onSubmit }: {
+  type: TabType; regions?: RegionAdministrative[]; administrativeUnits?: AdministrativeUnit[];
   initial?: any; isSubmitting: boolean; onClose: () => void; onSubmit: (data: any) => void
 }) {
   const isEdit = !!initial
@@ -236,16 +236,16 @@ function EntityModal({ type: entityType, regions, cities, initial, isSubmitting,
   const [name, setName] = useState(initial?.name || '')
   const [description, setDescription] = useState(initial?.description || '')
   const [regionId, setRegionId] = useState(initial?.region_id || '')
-  const [cityId, setCityId] = useState(initial?.city_id || '')
-  const [cityType, setCityType] = useState(initial?.type || 'VILLE')
+  const [administrativeUnitId, setAdministrativeUnitId] = useState(initial?.administrative_unit_id || '')
+  const [auType, setAuType] = useState(initial?.type || 'VILLE')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     let payload: any = { code, name }
     if (entityType === 'countries') payload.description = description
     if (entityType === 'regions') { payload.country_id = 'GN'; payload.description = description }
-    if (entityType === 'cities') { payload.region_id = regionId; payload.type = cityType }
-    if (entityType === 'districts') payload.city_id = cityId
+    if (entityType === 'administrative-units') { payload.region_id = regionId; payload.type = auType }
+    if (entityType === 'localities') payload.administrative_unit_id = administrativeUnitId
     onSubmit(payload)
   }
 
@@ -257,7 +257,7 @@ function EntityModal({ type: entityType, regions, cities, initial, isSubmitting,
         <div className="border-b border-border px-6 py-4">
           <h2 className="text-base font-semibold text-foreground">
             {isEdit ? 'Modifier' : 'Nouveau'}{' '}
-            {entityType === 'countries' ? 'Pays' : entityType === 'regions' ? 'Région' : entityType === 'cities' ? 'Ville / Commune' : 'District / Quartier'}
+            {entityType === 'countries' ? 'Pays' : entityType === 'regions' ? 'Région' : entityType === 'administrative-units' ? 'Unité Administrative' : 'Localité'}
           </h2>
         </div>
         <form onSubmit={handleSubmit} noValidate className="px-6 pb-6 pt-5 space-y-4">
@@ -275,7 +275,7 @@ function EntityModal({ type: entityType, regions, cities, initial, isSubmitting,
               <Field label="Description"><input className={inputBase} value={description} onChange={(e) => setDescription(e.target.value)} /></Field>
             </>
           )}
-          {entityType === 'cities' && (
+          {entityType === 'administrative-units' && (
             <>
               <Field label="Région">
                 <select className={inputBase} value={regionId} onChange={(e) => setRegionId(e.target.value)} required>
@@ -284,7 +284,7 @@ function EntityModal({ type: entityType, regions, cities, initial, isSubmitting,
                 </select>
               </Field>
               <Field label="Type">
-                <select className={inputBase} value={cityType} onChange={(e) => setCityType(e.target.value)}>
+                <select className={inputBase} value={auType} onChange={(e) => setAuType(e.target.value)}>
                   <option value="VILLE">Ville</option>
                   <option value="COMMUNE">Commune</option>
                   <option value="CAPITAL">Capitale</option>
@@ -294,12 +294,12 @@ function EntityModal({ type: entityType, regions, cities, initial, isSubmitting,
               <Field label="Nom"><input className={inputBase} value={name} onChange={(e) => setName(e.target.value)} required /></Field>
             </>
           )}
-          {entityType === 'districts' && (
+          {entityType === 'localities' && (
             <>
-              <Field label="Ville / Commune">
-                <select className={inputBase} value={cityId} onChange={(e) => setCityId(e.target.value)} required>
+              <Field label="Unité Administrative">
+                <select className={inputBase} value={administrativeUnitId} onChange={(e) => setAdministrativeUnitId(e.target.value)} required>
                   <option value="">Sélectionner...</option>
-                  {cities?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  {administrativeUnits?.map((au) => <option key={au.id} value={au.id}>{au.name}</option>)}
                 </select>
               </Field>
               <Field label="Code"><input className={inputBase} value={code} onChange={(e) => setCode(e.target.value)} required /></Field>

@@ -8,10 +8,10 @@ export const getRegionsFn = createServerFn({ method: 'GET' }).handler(async () =
   return (await import('@/server/data/geography/factory')).getGeographyService().getRegions()
 })
 
-export const getCitiesFn = createServerFn({ method: 'GET' }).handler(async () => {
-  return (await import('@/server/data/geography/factory')).getGeographyService().getCities()
+export const getAdministrativeUnitsFn = createServerFn({ method: 'GET' }).handler(async () => {
+  return (await import('@/server/data/geography/factory')).getGeographyService().getAdministrativeUnits()
 })
 
-export const getDistrictsFn = createServerFn({ method: 'GET' }).handler(async () => {
-  return (await import('@/server/data/geography/factory')).getGeographyService().getDistricts()
+export const getLocalitiesFn = createServerFn({ method: 'GET' }).handler(async () => {
+  return (await import('@/server/data/geography/factory')).getGeographyService().getLocalities()
 })

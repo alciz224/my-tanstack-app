@@ -19,8 +19,8 @@ import { useState, useMemo } from 'react'
 import { getSchoolByIdFn, updateSchoolFn, deleteSchoolFn } from '@/server/api/schools'
 import {
   getRegionsFn,
-  getCitiesFn,
-  getDistrictsFn,
+  getAdministrativeUnitsFn,
+  getLocalitiesFn,
 } from '@/server/api/geography'
 import { geographyKeys } from '@/lib/query-client'
 import { schoolOpsKeys } from '@/lib/query-client'
@@ -37,8 +37,8 @@ function SchoolDetailPage() {
   const queryClient = useQueryClient()
   const getSchool = useServerFn(getSchoolByIdFn)
   const getRegions = useServerFn(getRegionsFn)
-  const getCities = useServerFn(getCitiesFn)
-  const getDistricts = useServerFn(getDistrictsFn)
+  const getAdministrativeUnits = useServerFn(getAdministrativeUnitsFn)
+  const getLocalities = useServerFn(getLocalitiesFn)
 
   const [editing, setEditing] = useState<School | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<School | null>(null)
@@ -52,24 +52,24 @@ function SchoolDetailPage() {
     queryKey: geographyKeys.regionsList(),
     queryFn: () => getRegions(),
   })
-  const { data: cities } = useQuery({
-    queryKey: geographyKeys.citiesList(),
-    queryFn: () => getCities(),
+  const { data: administrativeUnits } = useQuery({
+    queryKey: geographyKeys.administrativeUnitsList(),
+    queryFn: () => getAdministrativeUnits(),
   })
-  const { data: districts } = useQuery({
-    queryKey: geographyKeys.districtsList(),
-    queryFn: () => getDistricts(),
+  const { data: localities } = useQuery({
+    queryKey: geographyKeys.localitiesList(),
+    queryFn: () => getLocalities(),
   })
 
-  const regionAndCity = useMemo(() => {
-    if (!districts || !cities || !regions || !school) return null
-    const district = districts.find((d) => d.id === school.district_id)
-    if (!district) return null
-    const city = cities.find((c) => c.id === district.city_id)
-    if (!city) return null
-    const region = regions.find((r) => r.id === city.region_id)
-    return { region: region?.name ?? null, city: city.name }
-  }, [districts, cities, regions, school])
+  const regionAndAU = useMemo(() => {
+    if (!localities || !administrativeUnits || !regions || !school) return null
+    const locality = localities.find((loc) => loc.id === school.locality_id)
+    if (!locality) return null
+    const au = administrativeUnits.find((au) => au.id === locality.administrative_unit_id)
+    if (!au) return null
+    const region = regions.find((r) => r.id === au.region_id)
+    return { region: region?.name ?? null, au: au.name }
+  }, [localities, administrativeUnits, regions, school])
 
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: schoolOpsKeys.schools() })
@@ -203,17 +203,17 @@ function SchoolDetailPage() {
                 <p className="text-sm text-muted-foreground mb-1">Code</p>
                 <p className="font-medium text-foreground">{school.code}</p>
               </div>
-              {regionAndCity && (
+              {regionAndAU && (
                 <>
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">Région</p>
                     <p className="font-medium text-foreground flex items-center gap-1.5">
-                      <Globe className="w-4 h-4 text-muted-foreground" /> {regionAndCity.region}
+                      <Globe className="w-4 h-4 text-muted-foreground" /> {regionAndAU.region}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground mb-1">Ville / Commune</p>
-                    <p className="font-medium text-foreground">{regionAndCity.city}</p>
+                    <p className="text-sm text-muted-foreground mb-1">Unité Administrative</p>
+                    <p className="font-medium text-foreground">{regionAndAU.au}</p>
                   </div>
                 </>
               )}

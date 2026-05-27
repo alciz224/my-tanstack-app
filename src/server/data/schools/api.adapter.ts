@@ -38,47 +38,50 @@ export class ApiSchoolsAdapter implements SchoolsDataAdapter {
     }
 
     const json = await response.json()
+    if (json && typeof json === 'object' && 'success' in json && 'data' in json) {
+      return json.data as T
+    }
     return (Array.isArray(json) ? json : (json.results ?? json)) as T
   }
 
   async getSchools(): Promise<Array<School>> {
-    return this.fetchApi<Array<School>>('/schools/')
+    return this.fetchApi<Array<School>>('/school-operations/schools/')
   }
 
   async getSchoolById(id: string): Promise<School | null> {
-    return this.fetchApi<School>(`/schools/${id}/`).catch(() => null)
+    return this.fetchApi<School>(`/school-operations/schools/${id}/`).catch(() => null)
   }
 
   async createSchool(data: CreateSchoolInput): Promise<School> {
-    return this.fetchApi<School>('/schools/', {
+    return this.fetchApi<School>('/school-operations/schools/', {
       method: 'POST',
       body: JSON.stringify(data),
     })
   }
 
   async updateSchool(id: string, data: Partial<School>): Promise<School> {
-    return this.fetchApi<School>(`/schools/${id}/`, {
+    return this.fetchApi<School>(`/school-operations/schools/${id}/`, {
       method: 'PATCH',
       body: JSON.stringify(data),
     })
   }
 
   async deleteSchool(id: string): Promise<void> {
-    await this.fetchApi<void>(`/schools/${id}/`, { method: 'DELETE' })
+    await this.fetchApi<void>(`/school-operations/schools/${id}/`, { method: 'DELETE' })
   }
 
   async getSchoolYears(schoolId: string): Promise<Array<SchoolYear>> {
-    return this.fetchApi<Array<SchoolYear>>(`/schools/${schoolId}/years/`)
+    return this.fetchApi<Array<SchoolYear>>(`/school-operations/school-years/by-school/${schoolId}/`)
   }
 
   async getSchoolYearById(id: string): Promise<SchoolYear | null> {
-    return this.fetchApi<SchoolYear>(`/school-years/${id}/`).catch(() => null)
+    return this.fetchApi<SchoolYear>(`/school-operations/school-years/${id}/`).catch(() => null)
   }
 
   async createSchoolYear(
     data: Omit<SchoolYear, 'id' | 'created_at' | 'updated_at'>,
   ): Promise<SchoolYear> {
-    return this.fetchApi<SchoolYear>('/school-years/', {
+    return this.fetchApi<SchoolYear>('/school-operations/school-years/', {
       method: 'POST',
       body: JSON.stringify(data),
     })
@@ -88,7 +91,7 @@ export class ApiSchoolsAdapter implements SchoolsDataAdapter {
     id: string,
     data: Partial<SchoolYear>,
   ): Promise<SchoolYear> {
-    return this.fetchApi<SchoolYear>(`/school-years/${id}/`, {
+    return this.fetchApi<SchoolYear>(`/school-operations/school-years/${id}/`, {
       method: 'PATCH',
       body: JSON.stringify(data),
     })
@@ -98,7 +101,7 @@ export class ApiSchoolsAdapter implements SchoolsDataAdapter {
     schoolYearId: string,
   ): Promise<Array<SchoolYearCycle>> {
     return this.fetchApi<Array<SchoolYearCycle>>(
-      `/school-years/${schoolYearId}/cycles/`,
+      `/school-operations/school-year-cycles/by-school-year/${schoolYearId}/`,
     )
   }
 
@@ -106,7 +109,7 @@ export class ApiSchoolsAdapter implements SchoolsDataAdapter {
     schoolYearCycleId: string,
   ): Promise<Array<SchoolYearLevel>> {
     return this.fetchApi<Array<SchoolYearLevel>>(
-      `/school-year-cycles/${schoolYearCycleId}/levels/`,
+      `/school-operations/school-year-levels/by-school-year-cycle/${schoolYearCycleId}/`,
     )
   }
 
@@ -114,20 +117,20 @@ export class ApiSchoolsAdapter implements SchoolsDataAdapter {
     schoolYearLevelId: string,
   ): Promise<Array<SchoolYearLevelSubject>> {
     return this.fetchApi<Array<SchoolYearLevelSubject>>(
-      `/school-year-levels/${schoolYearLevelId}/subjects/`,
+      `/school-operations/school-year-level-subjects/?school_year_level=${schoolYearLevelId}`,
     )
   }
 
   async getClassrooms(schoolYearLevelId: string): Promise<Array<Classroom>> {
     return this.fetchApi<Array<Classroom>>(
-      `/school-year-levels/${schoolYearLevelId}/classrooms/`,
+      `/enrollment/classrooms/?school_year_level=${schoolYearLevelId}`,
     )
   }
 
   async createClassroom(
     data: Omit<Classroom, 'id' | 'created_at'>,
   ): Promise<Classroom> {
-    return this.fetchApi<Classroom>('/school-admin/classrooms/', {
+    return this.fetchApi<Classroom>('/enrollment/classrooms/', {
       method: 'POST',
       body: JSON.stringify(data),
     })

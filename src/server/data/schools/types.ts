@@ -8,7 +8,7 @@ export interface School {
   id: string
   name: string
   code: string
-  district_id: string
+  locality_id: string
   address?: string
   phone?: string
   email?: string
@@ -95,7 +95,7 @@ export interface Classroom {
 export interface CreateSchoolInput {
   name: string
   code: string
-  district_id: string
+  locality_id: string
   address?: string
   phone?: string
   email?: string

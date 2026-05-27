@@ -44,7 +44,7 @@ export class LocalSchoolsAdapter implements SchoolsDataAdapter {
       id: `school-${Date.now()}`,
       name: data.name,
       code: data.code,
-      district_id: data.district_id,
+      locality_id: data.locality_id,
       address: data.address,
       phone: data.phone,
       email: data.email,
