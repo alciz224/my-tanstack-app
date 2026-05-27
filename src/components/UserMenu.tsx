@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { LogOut, Shield, User as UserIcon } from 'lucide-react'
+import { Lock, LogOut, Shield, User as UserIcon } from 'lucide-react'
 import type { User } from '@/server/auth'
 import type { UserRole } from '@/types/roles'
 import { useTranslation } from '@/lib/i18n'
@@ -113,12 +113,30 @@ export function UserMenu({ user, isAuthRefreshing }: UserMenuProps) {
                 )}
 
               <Link
-                to="/dashboard"
+                to="/profile"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-foreground"
               >
                 <UserIcon className="w-4 h-4" />
                 <span>{t('nav.profile')}</span>
+              </Link>
+
+              <Link
+                to="/password/change"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-foreground"
+              >
+                <Lock className="w-4 h-4" />
+                <span>Changer le mot de passe</span>
+              </Link>
+
+              <Link
+                to="/verify"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-foreground"
+              >
+                <Shield className="w-4 h-4" />
+                <span>Vérifier mon compte</span>
               </Link>
 
               {/* Switch Portal Button - only show if user has multiple roles */}

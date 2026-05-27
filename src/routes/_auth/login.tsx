@@ -264,6 +264,15 @@ function LoginPage() {
           />
         </FormField>
 
+        <div className="flex justify-end -mt-3">
+          <Link
+            to="/password/reset"
+            className="text-sm text-primary hover:underline"
+          >
+            Mot de passe oublié ?
+          </Link>
+        </div>
+
         <div className="flex items-center">
           <input
             id="remember-me"

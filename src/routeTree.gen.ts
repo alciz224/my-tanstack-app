@@ -16,7 +16,9 @@ import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VerifyStudentStudentIdRouteImport } from './routes/verify-student.$studentId'
+import { Route as AuthedVerifyRouteImport } from './routes/_authed/verify'
 import { Route as AuthedSelectPortalRouteImport } from './routes/_authed/select-portal'
+import { Route as AuthedProfileRouteImport } from './routes/_authed/profile'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
@@ -51,8 +53,10 @@ import { Route as AuthedStudentScheduleRouteImport } from './routes/_authed/stud
 import { Route as AuthedStudentReportCardsRouteImport } from './routes/_authed/student/report-cards'
 import { Route as AuthedStudentGradesRouteImport } from './routes/_authed/student/grades'
 import { Route as AuthedSchoolAdminReportsRouteImport } from './routes/_authed/school-admin/reports'
+import { Route as AuthedPasswordChangeRouteImport } from './routes/_authed/password/change'
 import { Route as AuthedParentChildrenRouteImport } from './routes/_authed/parent/children'
 import { Route as AuthedAdminUsersRouteImport } from './routes/_authed/admin/users'
+import { Route as AuthPasswordResetRouteImport } from './routes/_auth/password/reset'
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
 import { Route as AuthedTeacherGradesIndexRouteImport } from './routes/_authed/teacher/grades/index'
 import { Route as AuthedTeacherClassesIndexRouteImport } from './routes/_authed/teacher/classes/index'
@@ -79,6 +83,7 @@ import { Route as AuthedSchoolAdminStudentsPreRegisterRouteImport } from './rout
 import { Route as AuthedSchoolAdminStudentsAssignRouteImport } from './routes/_authed/school-admin/students/assign'
 import { Route as AuthedSchoolAdminStudentsStudentIdRouteImport } from './routes/_authed/school-admin/students/$studentId'
 import { Route as AuthedSchoolAdminReportsStatisticsRouteImport } from './routes/_authed/school-admin/reports/statistics'
+import { Route as AuthPasswordResetConfirmRouteImport } from './routes/_auth/password/reset.confirm'
 import { Route as AuthedSchoolAdminYearsYearIdIndexRouteImport } from './routes/_authed/school-admin/years/$yearId/index'
 import { Route as AuthedSchoolAdminScheduleTimeSlotsIndexRouteImport } from './routes/_authed/school-admin/schedule/time-slots/index'
 import { Route as AuthedSchoolAdminReportsTranscriptsIndexRouteImport } from './routes/_authed/school-admin/reports/transcripts/index'
@@ -127,9 +132,19 @@ const VerifyStudentStudentIdRoute = VerifyStudentStudentIdRouteImport.update({
   path: '/verify-student/$studentId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedVerifyRoute = AuthedVerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthedSelectPortalRoute = AuthedSelectPortalRouteImport.update({
   id: '/select-portal',
   path: '/select-portal',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedProfileRoute = AuthedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthedRoute,
 } as any)
 const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
@@ -310,6 +325,11 @@ const AuthedSchoolAdminReportsRoute =
     path: '/reports',
     getParentRoute: () => AuthedSchoolAdminRouteRoute,
   } as any)
+const AuthedPasswordChangeRoute = AuthedPasswordChangeRouteImport.update({
+  id: '/password/change',
+  path: '/password/change',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthedParentChildrenRoute = AuthedParentChildrenRouteImport.update({
   id: '/children',
   path: '/children',
@@ -319,6 +339,11 @@ const AuthedAdminUsersRoute = AuthedAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
   getParentRoute: () => AuthedAdminRouteRoute,
+} as any)
+const AuthPasswordResetRoute = AuthPasswordResetRouteImport.update({
+  id: '/password/reset',
+  path: '/password/reset',
+  getParentRoute: () => AuthRoute,
 } as any)
 const DemoStartSsrIndexRoute = DemoStartSsrIndexRouteImport.update({
   id: '/demo/start/ssr/',
@@ -472,6 +497,12 @@ const AuthedSchoolAdminReportsStatisticsRoute =
     path: '/statistics',
     getParentRoute: () => AuthedSchoolAdminReportsRoute,
   } as any)
+const AuthPasswordResetConfirmRoute =
+  AuthPasswordResetConfirmRouteImport.update({
+    id: '/confirm',
+    path: '/confirm',
+    getParentRoute: () => AuthPasswordResetRoute,
+  } as any)
 const AuthedSchoolAdminYearsYearIdIndexRoute =
   AuthedSchoolAdminYearsYearIdIndexRouteImport.update({
     id: '/years/$yearId/',
@@ -571,10 +602,14 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/dashboard': typeof AuthedDashboardRoute
+  '/profile': typeof AuthedProfileRoute
   '/select-portal': typeof AuthedSelectPortalRoute
+  '/verify': typeof AuthedVerifyRoute
   '/verify-student/$studentId': typeof VerifyStudentStudentIdRoute
+  '/password/reset': typeof AuthPasswordResetRouteWithChildren
   '/admin/users': typeof AuthedAdminUsersRoute
   '/parent/children': typeof AuthedParentChildrenRouteWithChildren
+  '/password/change': typeof AuthedPasswordChangeRoute
   '/school-admin/reports': typeof AuthedSchoolAdminReportsRouteWithChildren
   '/student/grades': typeof AuthedStudentGradesRoute
   '/student/report-cards': typeof AuthedStudentReportCardsRoute
@@ -600,6 +635,7 @@ export interface FileRoutesByFullPath {
   '/student/': typeof AuthedStudentIndexRoute
   '/super-admin/': typeof AuthedSuperAdminIndexRoute
   '/teacher/': typeof AuthedTeacherIndexRoute
+  '/password/reset/confirm': typeof AuthPasswordResetConfirmRoute
   '/school-admin/reports/statistics': typeof AuthedSchoolAdminReportsStatisticsRoute
   '/school-admin/students/$studentId': typeof AuthedSchoolAdminStudentsStudentIdRoute
   '/school-admin/students/assign': typeof AuthedSchoolAdminStudentsAssignRoute
@@ -649,10 +685,14 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/dashboard': typeof AuthedDashboardRoute
+  '/profile': typeof AuthedProfileRoute
   '/select-portal': typeof AuthedSelectPortalRoute
+  '/verify': typeof AuthedVerifyRoute
   '/verify-student/$studentId': typeof VerifyStudentStudentIdRoute
+  '/password/reset': typeof AuthPasswordResetRouteWithChildren
   '/admin/users': typeof AuthedAdminUsersRoute
   '/parent/children': typeof AuthedParentChildrenRouteWithChildren
+  '/password/change': typeof AuthedPasswordChangeRoute
   '/student/grades': typeof AuthedStudentGradesRoute
   '/student/report-cards': typeof AuthedStudentReportCardsRoute
   '/student/schedule': typeof AuthedStudentScheduleRoute
@@ -677,6 +717,7 @@ export interface FileRoutesByTo {
   '/student': typeof AuthedStudentIndexRoute
   '/super-admin': typeof AuthedSuperAdminIndexRoute
   '/teacher': typeof AuthedTeacherIndexRoute
+  '/password/reset/confirm': typeof AuthPasswordResetConfirmRoute
   '/school-admin/reports/statistics': typeof AuthedSchoolAdminReportsStatisticsRoute
   '/school-admin/students/$studentId': typeof AuthedSchoolAdminStudentsStudentIdRoute
   '/school-admin/students/assign': typeof AuthedSchoolAdminStudentsAssignRoute
@@ -735,10 +776,14 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_authed/dashboard': typeof AuthedDashboardRoute
+  '/_authed/profile': typeof AuthedProfileRoute
   '/_authed/select-portal': typeof AuthedSelectPortalRoute
+  '/_authed/verify': typeof AuthedVerifyRoute
   '/verify-student/$studentId': typeof VerifyStudentStudentIdRoute
+  '/_auth/password/reset': typeof AuthPasswordResetRouteWithChildren
   '/_authed/admin/users': typeof AuthedAdminUsersRoute
   '/_authed/parent/children': typeof AuthedParentChildrenRouteWithChildren
+  '/_authed/password/change': typeof AuthedPasswordChangeRoute
   '/_authed/school-admin/reports': typeof AuthedSchoolAdminReportsRouteWithChildren
   '/_authed/student/grades': typeof AuthedStudentGradesRoute
   '/_authed/student/report-cards': typeof AuthedStudentReportCardsRoute
@@ -764,6 +809,7 @@ export interface FileRoutesById {
   '/_authed/student/': typeof AuthedStudentIndexRoute
   '/_authed/super-admin/': typeof AuthedSuperAdminIndexRoute
   '/_authed/teacher/': typeof AuthedTeacherIndexRoute
+  '/_auth/password/reset/confirm': typeof AuthPasswordResetConfirmRoute
   '/_authed/school-admin/reports/statistics': typeof AuthedSchoolAdminReportsStatisticsRoute
   '/_authed/school-admin/students/$studentId': typeof AuthedSchoolAdminStudentsStudentIdRoute
   '/_authed/school-admin/students/assign': typeof AuthedSchoolAdminStudentsAssignRoute
@@ -821,10 +867,14 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/dashboard'
+    | '/profile'
     | '/select-portal'
+    | '/verify'
     | '/verify-student/$studentId'
+    | '/password/reset'
     | '/admin/users'
     | '/parent/children'
+    | '/password/change'
     | '/school-admin/reports'
     | '/student/grades'
     | '/student/report-cards'
@@ -850,6 +900,7 @@ export interface FileRouteTypes {
     | '/student/'
     | '/super-admin/'
     | '/teacher/'
+    | '/password/reset/confirm'
     | '/school-admin/reports/statistics'
     | '/school-admin/students/$studentId'
     | '/school-admin/students/assign'
@@ -899,10 +950,14 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/dashboard'
+    | '/profile'
     | '/select-portal'
+    | '/verify'
     | '/verify-student/$studentId'
+    | '/password/reset'
     | '/admin/users'
     | '/parent/children'
+    | '/password/change'
     | '/student/grades'
     | '/student/report-cards'
     | '/student/schedule'
@@ -927,6 +982,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/super-admin'
     | '/teacher'
+    | '/password/reset/confirm'
     | '/school-admin/reports/statistics'
     | '/school-admin/students/$studentId'
     | '/school-admin/students/assign'
@@ -984,10 +1040,14 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/register'
     | '/_authed/dashboard'
+    | '/_authed/profile'
     | '/_authed/select-portal'
+    | '/_authed/verify'
     | '/verify-student/$studentId'
+    | '/_auth/password/reset'
     | '/_authed/admin/users'
     | '/_authed/parent/children'
+    | '/_authed/password/change'
     | '/_authed/school-admin/reports'
     | '/_authed/student/grades'
     | '/_authed/student/report-cards'
@@ -1013,6 +1073,7 @@ export interface FileRouteTypes {
     | '/_authed/student/'
     | '/_authed/super-admin/'
     | '/_authed/teacher/'
+    | '/_auth/password/reset/confirm'
     | '/_authed/school-admin/reports/statistics'
     | '/_authed/school-admin/students/$studentId'
     | '/_authed/school-admin/students/assign'
@@ -1123,11 +1184,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyStudentStudentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed/verify': {
+      id: '/_authed/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof AuthedVerifyRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/select-portal': {
       id: '/_authed/select-portal'
       path: '/select-portal'
       fullPath: '/select-portal'
       preLoaderRoute: typeof AuthedSelectPortalRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/profile': {
+      id: '/_authed/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthedProfileRouteImport
       parentRoute: typeof AuthedRoute
     }
     '/_authed/dashboard': {
@@ -1368,6 +1443,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedSchoolAdminReportsRouteImport
       parentRoute: typeof AuthedSchoolAdminRouteRoute
     }
+    '/_authed/password/change': {
+      id: '/_authed/password/change'
+      path: '/password/change'
+      fullPath: '/password/change'
+      preLoaderRoute: typeof AuthedPasswordChangeRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/parent/children': {
       id: '/_authed/parent/children'
       path: '/children'
@@ -1381,6 +1463,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/users'
       preLoaderRoute: typeof AuthedAdminUsersRouteImport
       parentRoute: typeof AuthedAdminRouteRoute
+    }
+    '/_auth/password/reset': {
+      id: '/_auth/password/reset'
+      path: '/password/reset'
+      fullPath: '/password/reset'
+      preLoaderRoute: typeof AuthPasswordResetRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/demo/start/ssr/': {
       id: '/demo/start/ssr/'
@@ -1564,6 +1653,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedSchoolAdminReportsStatisticsRouteImport
       parentRoute: typeof AuthedSchoolAdminReportsRoute
     }
+    '/_auth/password/reset/confirm': {
+      id: '/_auth/password/reset/confirm'
+      path: '/confirm'
+      fullPath: '/password/reset/confirm'
+      preLoaderRoute: typeof AuthPasswordResetConfirmRouteImport
+      parentRoute: typeof AuthPasswordResetRoute
+    }
     '/_authed/school-admin/years/$yearId/': {
       id: '/_authed/school-admin/years/$yearId/'
       path: '/years/$yearId'
@@ -1665,14 +1761,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthPasswordResetRouteChildren {
+  AuthPasswordResetConfirmRoute: typeof AuthPasswordResetConfirmRoute
+}
+
+const AuthPasswordResetRouteChildren: AuthPasswordResetRouteChildren = {
+  AuthPasswordResetConfirmRoute: AuthPasswordResetConfirmRoute,
+}
+
+const AuthPasswordResetRouteWithChildren =
+  AuthPasswordResetRoute._addFileChildren(AuthPasswordResetRouteChildren)
+
 interface AuthRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  AuthPasswordResetRoute: typeof AuthPasswordResetRouteWithChildren
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  AuthPasswordResetRoute: AuthPasswordResetRouteWithChildren,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -1904,7 +2013,10 @@ interface AuthedRouteChildren {
   AuthedSuperAdminRouteRoute: typeof AuthedSuperAdminRouteRouteWithChildren
   AuthedTeacherRouteRoute: typeof AuthedTeacherRouteRouteWithChildren
   AuthedDashboardRoute: typeof AuthedDashboardRoute
+  AuthedProfileRoute: typeof AuthedProfileRoute
   AuthedSelectPortalRoute: typeof AuthedSelectPortalRoute
+  AuthedVerifyRoute: typeof AuthedVerifyRoute
+  AuthedPasswordChangeRoute: typeof AuthedPasswordChangeRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
@@ -1915,7 +2027,10 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedSuperAdminRouteRoute: AuthedSuperAdminRouteRouteWithChildren,
   AuthedTeacherRouteRoute: AuthedTeacherRouteRouteWithChildren,
   AuthedDashboardRoute: AuthedDashboardRoute,
+  AuthedProfileRoute: AuthedProfileRoute,
   AuthedSelectPortalRoute: AuthedSelectPortalRoute,
+  AuthedVerifyRoute: AuthedVerifyRoute,
+  AuthedPasswordChangeRoute: AuthedPasswordChangeRoute,
 }
 
 const AuthedRouteWithChildren =

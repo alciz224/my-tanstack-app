@@ -13,11 +13,17 @@ export class ApiUsersAdapter implements UsersDataAdapter {
       .map(([k, v]) => `${k}=${v}`)
       .join('; ')
 
+    const csrfToken = cookies['csrftoken'] ?? cookies['XSRF-TOKEN']
+
+    const method = options?.method ?? 'GET'
+
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method,
       ...options,
       headers: {
         'Content-Type': 'application/json',
         Cookie: cookie,
+        ...(csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
         ...options?.headers,
       },
     })
@@ -29,6 +35,9 @@ export class ApiUsersAdapter implements UsersDataAdapter {
     }
 
     const json = await response.json()
+    if (json && typeof json === 'object' && 'success' in json && 'data' in json) {
+      return json.data as T
+    }
     return (Array.isArray(json) ? json : (json.results ?? json)) as T
   }
 
@@ -37,7 +46,12 @@ export class ApiUsersAdapter implements UsersDataAdapter {
   }
 
   async getUserById(id: string): Promise<UserDetail | null> {
-    return this.fetchApi<UserDetail>(`/admin/users/${id}/`).catch(() => null)
+    try {
+      return await this.fetchApi<UserDetail>(`/admin/users/${id}/`)
+    } catch (error) {
+      console.error(`[ApiUsersAdapter] getUserById failed for ${id}:`, error)
+      return null
+    }
   }
 
   async createUser(data: CreateAdminUserInput): Promise<AdminUser> {
